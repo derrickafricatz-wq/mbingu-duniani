@@ -1,14 +1,30 @@
-const CACHE_NAME = "afya-care-v9";
+const CACHE_NAME = "afya-care-v10";
 
 const APP_FILES = [
+
+  // CORE
   "/AFYA-CARE/",
   "/AFYA-CARE/index.html",
+  "/AFYA-CARE/manifest.json",
+  "/AFYA-CARE/sw.js",
+
+  // DATA FILES
+  "/AFYA-CARE/health-data.js",
+  "/AFYA-CARE/lesson-data.js",
+  "/AFYA-CARE/ads-data.js",
+  "/AFYA-CARE/special-ads.js",
+  "/AFYA-CARE/hints.js",
+
+  // IMAGES
   "/AFYA-CARE/images/ad3.png",
   "/AFYA-CARE/images/one.jpg",
+
+  // VIDEOS
   "/AFYA-CARE/videos/choo.mp4",
   "/AFYA-CARE/videos/usafi.mp4",
   "/AFYA-CARE/videos/chanjo.mp4",
   "/AFYA-CARE/videos/meno.mp4"
+
 ];
 
 self.addEventListener("install", (event) => {
