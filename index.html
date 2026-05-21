@@ -674,14 +674,66 @@ function startLessonAds(lessonId){
   lessonAdInterval=setInterval(showLessonAd,25000);
 }
 
-/* ================= VIDEO PLAYLIST ================= */
-let playlist=[].concat(...Object.values(lessons));
-let index=0;
+/* =========================
+   OFFLINE VIDEO PLAYER
+========================= */
 
-function playVideo(i){ if(i>=playlist.length) i=0; if(i<0) i=playlist.length-1; index=i; video.src=playlist[index]; video.play().catch(()=>{}); }
+let playlist = [].concat(...Object.values(lessons));
+
+let index = 0;
+
+/* PLAY VIDEO */
+async function playVideo(i){
+
+  if(i >= playlist.length) i = 0;
+
+  if(i < 0) i = playlist.length - 1;
+
+  index = i;
+
+  const path = playlist[index];
+
+  /* GET FILE NAME */
+  const id = path
+    .split("/")
+    .pop()
+    .replace(".mp4","");
+
+  /* CHECK DATABASE */
+  const blob = await getMedia(id);
+
+  /* PLAY OFFLINE VERSION */
+  if(blob){
+
+    const localURL = URL.createObjectURL(blob);
+
+    video.src = localURL;
+
+    console.log("Playing offline:",id);
+
+  }
+
+  /* FALLBACK TO ONLINE */
+  else{
+
+    video.src = path;
+
+    console.log("Streaming online:",id);
+
+  }
+
+  video.play().catch(()=>{});
+
+}
+
+/* START FIRST VIDEO */
 playVideo(0);
-video.addEventListener("ended", () => {
+
+/* AUTO NEXT */
+video.addEventListener("ended",()=>{
+
   playVideo(index + 1);
+
 });
 
 /* INSTALL APP */
