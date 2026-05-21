@@ -886,11 +886,27 @@ setInterval(rotateLessonHints, 2000);
 function pressKey(n){ display.value+=n; }
 function clearInput(){ display.value=""; }
 function submitLesson(){
-  let v=display.value;
+
+  let v = display.value;
+
   if(lessons[v]){
-    currentLesson=v; playlist=lessons[v]; index=0; playVideo(0); stopAds(); startLessonAds(v);
+
+    currentLesson = v;
+
+    playlist = lessons[v];
+
+    index = 0;
+
+    playVideo(0);
+
+    stopAds();
+
+    startLessonAds(v);
+
   }
-  display.value="";
+
+  display.value = "";
+
 }
 function refreshLessons(){
   currentLesson=null; playlist=[].concat(...Object.values(lessons)); index=0; playVideo(0);
