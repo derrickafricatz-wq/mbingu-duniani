@@ -1256,6 +1256,57 @@ document.addEventListener("touchend",(e)=>{
   }
 });
 
+  /* =========================
+   PRELOAD OFFLINE VIDEOS
+========================= */
+
+async function preloadMedia(){
+
+  await openDatabase();
+
+  const files = [
+
+    {
+      id:"choo",
+      url:"videos/choo.mp4"
+    },
+
+    {
+      id:"usafi",
+      url:"videos/usafi.mp4"
+    },
+
+    {
+      id:"chanjo",
+      url:"videos/chanjo.mp4"
+    },
+
+    {
+      id:"meno",
+      url:"videos/meno.mp4"
+    }
+
+  ];
+
+  for(const item of files){
+
+    const existing = await getMedia(item.id);
+
+    if(!existing){
+
+      await saveMedia(item.id,item.url);
+
+      console.log("Saved offline:",item.id);
+
+    }
+
+  }
+
+}
+
+/* START DOWNLOAD */
+preloadMedia();
+
 </script>
 </body>
 </html>
