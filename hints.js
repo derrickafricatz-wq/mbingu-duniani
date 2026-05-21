@@ -1,6 +1,6 @@
 const lessonHints = [
-  "1 • Choo Bora",
-  "2 • Usafi", 
-  "3 . Chanjo",
+  "1 • Afya",
+  "2 • Choo", 
+  "3 . Chanjo. Usafi",
   "10 • Kinywa"
 ];
