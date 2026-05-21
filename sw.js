@@ -1,70 +1,47 @@
-const CACHE_NAME = "afya-care-v11";
+const CACHE_NAME = "afya-care-v13";
 
-/* ================= CORE FILES ================= */
+/* =========================
+   CORE APP FILES
+========================= */
 
 const APP_FILES = [
 
-  // ROOT
+  /* ROOT */
   "/AFYA-CARE/",
   "/AFYA-CARE/index.html",
   "/AFYA-CARE/manifest.json",
   "/AFYA-CARE/sw.js",
 
-  // DATA FILES
+  /* DATA */
   "/AFYA-CARE/health-data.js",
   "/AFYA-CARE/lesson-data.js",
   "/AFYA-CARE/ads-data.js",
   "/AFYA-CARE/special-ads.js",
   "/AFYA-CARE/hints.js",
 
-  // IMAGES
+  /* IMAGES */
   "/AFYA-CARE/images/ad3.png",
   "/AFYA-CARE/images/one.jpg"
 
 ];
 
-/* ================= VIDEO FILES ================= */
-
-const VIDEO_FILES = [
-
-  "/AFYA-CARE/videos/choo.mp4",
-  "/AFYA-CARE/videos/usafi.mp4",
-  "/AFYA-CARE/videos/chanjo.mp4",
-  "/AFYA-CARE/videos/meno.mp4"
-
-];
-
-/* ================= INSTALL ================= */
+/* =========================
+   INSTALL
+========================= */
 
 self.addEventListener("install", (event) => {
 
   event.waitUntil(
 
-    caches.open(CACHE_NAME).then(async (cache) => {
+    caches.open(CACHE_NAME)
 
-      /* CACHE SMALL FILES */
-      await cache.addAll(APP_FILES);
+      .then((cache) => {
 
-      /* CACHE VIDEOS ONE BY ONE */
-      for (const video of VIDEO_FILES) {
+        console.log("Caching app files...");
 
-        try {
+        return cache.addAll(APP_FILES);
 
-          const response = await fetch(video);
-
-          await cache.put(video, response.clone());
-
-          console.log("Cached video:", video);
-
-        } catch (err) {
-
-          console.log("Failed video:", video);
-
-        }
-
-      }
-
-    })
+      })
 
   );
 
@@ -72,7 +49,9 @@ self.addEventListener("install", (event) => {
 
 });
 
-/* ================= ACTIVATE ================= */
+/* =========================
+   ACTIVATE
+========================= */
 
 self.addEventListener("activate", (event) => {
 
@@ -85,6 +64,8 @@ self.addEventListener("activate", (event) => {
         keys.map((key) => {
 
           if (key !== CACHE_NAME) {
+
+            console.log("Deleting old cache:", key);
 
             return caches.delete(key);
 
@@ -102,25 +83,72 @@ self.addEventListener("activate", (event) => {
 
 });
 
-/* ================= FETCH ================= */
+/* =========================
+   FETCH
+========================= */
 
 self.addEventListener("fetch", (event) => {
 
+  /* ONLY HANDLE GET REQUESTS */
+  if(event.request.method !== "GET") return;
+
   event.respondWith(
 
-    caches.match(event.request).then((cached) => {
+    caches.match(event.request)
 
-      /* RETURN CACHE FIRST */
-      if (cached) {
+      .then((cachedResponse) => {
 
-        return cached;
+        /* RETURN CACHE IF FOUND */
+        if(cachedResponse){
 
-      }
+          return cachedResponse;
 
-      /* OTHERWISE FETCH FROM INTERNET */
-      return fetch(event.request);
+        }
 
-    })
+        /* OTHERWISE FETCH FROM INTERNET */
+        return fetch(event.request)
+
+          .then((networkResponse) => {
+
+            /* INVALID RESPONSE */
+            if(
+              !networkResponse ||
+              networkResponse.status !== 200 ||
+              networkResponse.type !== "basic"
+            ){
+
+              return networkResponse;
+
+            }
+
+            /* CLONE RESPONSE */
+            const responseClone = networkResponse.clone();
+
+            /* SAVE NEW FILES */
+            caches.open(CACHE_NAME)
+
+              .then((cache) => {
+
+                cache.put(event.request, responseClone);
+
+              });
+
+            return networkResponse;
+
+          })
+
+          .catch(() => {
+
+            /* OFFLINE FALLBACK */
+            if(event.request.destination === "document"){
+
+              return caches.match("/AFYA-CARE/index.html");
+
+            }
+
+          });
+
+      })
 
   );
 
