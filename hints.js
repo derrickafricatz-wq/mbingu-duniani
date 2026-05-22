@@ -6,5 +6,6 @@ const lessonHints = [
   "5 . Chanjo",
   "5 . Usafi",
   "10 • Kinywa",
+  "15 . Moyo",
   "20 . clinic"
 ];
