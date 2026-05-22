@@ -19,7 +19,8 @@ let lessons = {
 
   "5": [
     "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/chanjo.mp4",
-    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/usafi.mp4"
+    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/usafi.mp4",
+    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/mazingira.mp4"
   ],
 
   "10": [
