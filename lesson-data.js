@@ -28,7 +28,7 @@ let lessons = {
 
   "20": [
     "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/clinic.mp4",
-    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/clinic 1.mp4
+    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/clinic 1.mp4"
   ]
 
 };
