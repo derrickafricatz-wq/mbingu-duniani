@@ -26,6 +26,10 @@ let lessons = {
     "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/meno.mp4"
   ],
 
+  "15": [
+    "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/moyo.mp4"
+  ],
+
   "20": [
     "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/clinic.mp4",
     "https://derrickafricatz-wq.github.io/AFYA-CARE/videos/clinic 1.mp4"
