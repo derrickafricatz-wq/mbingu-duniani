@@ -1,4 +1,4 @@
-const CACHE_NAME = "afya-care-v25";
+const CACHE_NAME = "afya-care-v26";
 
 /* =========================
    CORE APP FILES
@@ -19,7 +19,15 @@ const APP_FILES = [
   "/AFYA-CARE/special-ads.js",
   "/AFYA-CARE/hints.js",
 
-  /* =========================
+ 
+/* =========================
+     SPECIAL ADS IMAGES ONLY
+  ========================= */
+  "/AFYA-CARE/images/1.jpg",
+  "/AFYA-CARE/images/2.jpg",
+
+   
+/* =========================
      ADS IMAGES ONLY
   ========================= */
   "/AFYA-CARE/images/ad3.png",
