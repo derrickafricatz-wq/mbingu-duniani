@@ -1,4 +1,4 @@
-const CACHE_NAME = "afya-care-v22";
+const CACHE_NAME = "afya-care-v25";
 
 /* =========================
    CORE APP FILES
@@ -12,16 +12,29 @@ const APP_FILES = [
   "/AFYA-CARE/manifest.json",
   "/AFYA-CARE/sw.js",
 
-  /* DATA */
+  /* DATA FILES */
   "/AFYA-CARE/health-data.js",
   "/AFYA-CARE/lesson-data.js",
   "/AFYA-CARE/ads-data.js",
   "/AFYA-CARE/special-ads.js",
   "/AFYA-CARE/hints.js",
 
-  /* IMAGES */
+  /* =========================
+     ADS IMAGES ONLY
+  ========================= */
   "/AFYA-CARE/images/ad3.png",
-  "/AFYA-CARE/images/one.jpg"
+  "/AFYA-CARE/images/one.jpg",
+
+  /* =========================
+     HEALTH CLASS IMAGES ONLY
+  ========================= */
+  "/AFYA-CARE/images/a1.jpeg",
+  "/AFYA-CARE/images/a2.jpeg",
+  "/AFYA-CARE/images/b.jpeg",
+  "/AFYA-CARE/images/c.jpeg",
+  "/AFYA-CARE/images/d.jpeg",
+  "/AFYA-CARE/images/e1.png",
+  "/AFYA-CARE/images/e2.jpeg"
 
 ];
 
