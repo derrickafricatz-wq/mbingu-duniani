@@ -1,1 +1,2 @@
-const lessonAds={2:["https://i.imgur.com/lvRn9kT.jpeg","https://i.imgur.com/egaJf4s.png"],};
+const lessonAds={1:["https://derrickafricatz-wq.github.io/AFYA-CARE/images/1.jpg",
+                    "https://derrickafricatz-wq.github.io/AFYA-CARE/images/2.jpg"],};
