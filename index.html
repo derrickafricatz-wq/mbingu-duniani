@@ -33,38 +33,6 @@ html, body {
   background: black;
 }
 
-  /* VIDEO ZOOM */
-#videoZoom {
-  position: fixed;
-  right: 20px;
-  bottom: 180px;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0,0,0,0.65);
-  padding: 8px;
-  border-radius: 15px;
-}
-
-#videoZoom button {
-  width: 45px;
-  height: 45px;
-  border: none;
-  border-radius: 50%;
-  background: #00ffff;
-  color: black;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-#zoomLevel {
-  color: white;
-  min-width: 55px;
-  text-align: center;
-  font-size: 16px;
-}
-
 /* CLOCK */
 #clockBox {
   position: fixed;
@@ -465,12 +433,6 @@ function getMedia(id){
 
 <video id="brandVideo" autoplay muted playsinline></video>
 
-  <div id="videoZoom">
-  <button onclick="zoomVideo(-0.1)">−</button>
-  <span id="zoomLevel">100%</span>
-  <button onclick="zoomVideo(0.1)">+</button>
-  </div>
-
 <div id="clockBox"></div>
 <button id="settingsBtn" style="
   position:fixed;
@@ -524,12 +486,13 @@ function getMedia(id){
   <div id="controlGrid">
 
   <!-- VIDEO CONTROLS -->
-<button class="ctrl-btn" id="prev">⏮</button>
 <button class="ctrl-btn" id="rew">⏪</button>
 <button class="ctrl-btn" id="playPause">⏯</button>
-
-<button class="ctrl-btn" id="next">⏭</button>
 <button class="ctrl-btn" id="ff">⏩</button>
+
+<button class="ctrl-btn" onclick="zoomVideo(-0.1)">−</button>
+<span id="zoomLevel">100%</span>
+<button class="ctrl-btn" onclick="zoomVideo(0.1)">+</button>
 
 <div></div>
 
