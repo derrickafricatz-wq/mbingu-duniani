@@ -37,7 +37,7 @@ html, body {
 #videoZoom {
   position: fixed;
   right: 20px;
-  bottom: 90px;
+  bottom: 180px;
   z-index: 40;
   display: flex;
   align-items: center;
@@ -689,7 +689,7 @@ function zoomVideo(amount) {
   videoZoom += amount;
 
   if (videoZoom < 1) videoZoom = 1;
-  if (videoZoom > 2) videoZoom = 2;
+  if (videoZoom > 4) videoZoom = 4;
 
   video.style.transform = `scale(${videoZoom})`;
 
