@@ -433,6 +433,12 @@ function getMedia(id){
 
 <video id="brandVideo" autoplay muted playsinline></video>
 
+  <div id="videoZoom">
+  <button onclick="zoomVideo(-0.1)">−</button>
+  <span id="zoomLevel">100%</span>
+  <button onclick="zoomVideo(0.1)">+</button>
+  </div>
+
 <div id="clockBox"></div>
 <button id="settingsBtn" style="
   position:fixed;
