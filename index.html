@@ -865,22 +865,38 @@ smartToggle.onclick=()=>{
 smartPanel.addEventListener("click",resetTimer);
 
 /* ================= CONTROLS ================= */
-const openControls=document.getElementById("openControls");
-const openHealth=document.getElementById("openHealth");
 
-const controls=document.getElementById("controls");
-const prev=document.getElementById("prev");
-const next=document.getElementById("next");
-const rew=document.getElementById("rew");
-const ff=document.getElementById("ff");
-const playPause=document.getElementById("playPause");
+const openControls = document.getElementById("openControls");
+const openHealth = document.getElementById("openHealth");
 
-openControls.onclick=()=>controls.classList.toggle("show");
-prev.onclick=()=>playVideo(index-1);
-next.onclick=()=>playVideo(index+1);
-rew.onclick=()=>video.currentTime-=10;
-ff.onclick=()=>video.currentTime+=10;
-playPause.onclick=()=>video.paused?video.play():video.pause();
+const controls = document.getElementById("controls");
+
+const rew = document.getElementById("rew");
+const ff = document.getElementById("ff");
+const playPause = document.getElementById("playPause");
+
+openControls.onclick = () => {
+  controls.classList.toggle("show");
+};
+
+rew.onclick = () => {
+  video.currentTime = Math.max(0, video.currentTime - 10);
+};
+
+ff.onclick = () => {
+  video.currentTime = Math.min(
+    video.duration || Infinity,
+    video.currentTime + 10
+  );
+};
+
+playPause.onclick = () => {
+  if (video.paused) {
+    video.play().catch(() => {});
+  } else {
+    video.pause();
+  }
+};
 
 let currentVersion = localStorage.getItem("app_version") || "1.0.0";
 
