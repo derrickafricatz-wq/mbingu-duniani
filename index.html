@@ -680,6 +680,23 @@ document.body.addEventListener("click", () => {
   video.muted = false; video.volume = 1; video.play().catch(()=>{});
 },{once:true});
 
+/* ================= VIDEO ZOOM ================= */
+
+let videoZoom = 1;
+
+function zoomVideo(amount) {
+
+  videoZoom += amount;
+
+  if (videoZoom < 1) videoZoom = 1;
+  if (videoZoom > 2) videoZoom = 2;
+
+  video.style.transform = `scale(${videoZoom})`;
+
+  document.getElementById("zoomLevel").innerText =
+    Math.round(videoZoom * 100) + "%";
+}
+
 /* ================= CLOCK ================= */
 
 const clockBox = document.getElementById("clockBox");
