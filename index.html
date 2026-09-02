@@ -45,10 +45,18 @@ body.portrait-mode #brandVideo {
 }
 
 body.landscape-mode #brandVideo {
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  width: 100vh;
+  height: 100vw;
+
   object-fit: contain;
-  object-position: center;
+  object-position: center center;
+
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center center;
 }
 
 /* CLOCK */
