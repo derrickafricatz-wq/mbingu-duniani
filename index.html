@@ -1065,8 +1065,26 @@ const playPause = document.getElementById("playPause");
   transcriptPanel.style.display = "block";
 };
 
-document.getElementById("startTranscript").onclick = () => {
+document.getElementById("startTranscript").onclick = async () => {
+  if (isListening) return;
+
   isListening = true;
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
+
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data.size > 0) {
+      audioChunks.push(event.data);
+    }
+  };
+
+  mediaRecorder.start();
+
   recognition.start();
 };
 
