@@ -1016,6 +1016,8 @@ const transcriptPanel = document.getElementById("transcriptPanel");
 
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
+
+  recognition.lang = "sw-TZ";
 }
 
 const closeTranscript = document.getElementById("closeTranscript");
