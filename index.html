@@ -1030,13 +1030,14 @@ if (SpeechRecognition) {
   recognition.interimResults = true;
 
   recognition.onresult = (event) => {
-    let text = "";
+   let text = "";
 
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      text += event.results[i][0].transcript;
-    }
+for (let i = event.resultIndex; i < event.results.length; i++) {
+  text += event.results[i][0].transcript;
+}
 
-    transcriptText.textContent = text;
+currentTranscript += " " + text;
+transcriptText.textContent = currentTranscript; 
   };
 
   recognition.onend = () => {
