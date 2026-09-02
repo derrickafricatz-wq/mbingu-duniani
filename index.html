@@ -1029,7 +1029,7 @@ if (SpeechRecognition) {
 
   recognition.continuous = true;
 
-  recognition.interimResults = true;
+  recognition.interimResults = false;
 
   recognition.onresult = (event) => {
    let text = "";
