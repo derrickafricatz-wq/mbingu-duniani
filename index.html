@@ -1038,6 +1038,12 @@ if (SpeechRecognition) {
 
     transcriptText.textContent = text;
   };
+
+  recognition.onend = () => {
+  if (isListening) {
+    recognition.start();
+  }
+};
 }
 
 const closeTranscript = document.getElementById("closeTranscript");
