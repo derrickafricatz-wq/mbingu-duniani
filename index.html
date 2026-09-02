@@ -1097,6 +1097,10 @@ document.getElementById("stopTranscript").onclick = () => {
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
     mediaRecorder.stop();
   }
+
+  if (mediaRecorder && mediaRecorder.stream) {
+  mediaRecorder.stream.getTracks().forEach(track => track.stop());
+  }
 };
 
 openControls.onclick = () => {
