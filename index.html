@@ -1043,6 +1043,8 @@ if (SpeechRecognition) {
 
   newText = newText.trim();
 
+   newText = newText.replace(/\b(\S+)(\s+\1\b)+/gi, "$1"); 
+
   if (newText && newText !== lastTranscript) {
     currentTranscript += newText + " ";
     lastTranscript = newText;
