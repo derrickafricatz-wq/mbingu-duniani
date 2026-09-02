@@ -1033,22 +1033,17 @@ if (SpeechRecognition) {
   recognition.interimResults = true;
 
   recognition.onresult = (event) => {
-  let newText = "";
-
-  for (let i = event.resultIndex; i < event.results.length; i++) {
+  for (let i = lastResultIndex; i < event.results.length; i++) {
     if (event.results[i].isFinal) {
-      newText += event.results[i][0].transcript.trim() + " ";
+      const text = event.results[i][0].transcript.trim();
+
+      if (text) {
+        currentTranscript += text + " ";
+        transcriptText.textContent = currentTranscript;
+      }
+
+      lastResultIndex = i + 1;
     }
-  }
-
-  newText = newText.trim();
-
-   newText = newText.replace(/\b(\S+)(\s+\1\b)+/gi, "$1"); 
-
-  if (newText && newText !== lastTranscript) {
-    currentTranscript += newText + " ";
-    lastTranscript = newText;
-    transcriptText.textContent = currentTranscript;
   }
 };
 
