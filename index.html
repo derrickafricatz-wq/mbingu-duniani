@@ -22,17 +22,6 @@ html, body {
   overflow: hidden;
 }
 
-  /* =========================
-   AUTO ROTATION SCREEN
-========================= */
-
-body {
-  position: fixed;
-  top: 0;
-  left: 0;
-  transform-origin: center center;
-}
-
 #brandVideo {
   position: fixed;
   inset: 0;
@@ -672,54 +661,7 @@ document.body.addEventListener("click", () => {
   video.muted = false; video.volume = 1; video.play().catch(()=>{});
 },{once:true});
 
-  /* =========================
-   AUTO ROTATE APP BY PHONE MOVEMENT
-========================= */
-
-let deviceAngle = 0;
-
-window.addEventListener("deviceorientation", function(event) {
-
-  const beta = event.beta;
-  const gamma = event.gamma;
-
-  if (beta === null || gamma === null) return;
-
-  let angle = 0;
-
-  // Phone upright
-  if (Math.abs(gamma) < 45) {
-    angle = 0;
-  }
-
-  // Phone turned sideways
-  else if (gamma >= 45) {
-    angle = 90;
-  }
-
-  else if (gamma <= -45) {
-    angle = -90;
-  }
-
-  if (angle !== deviceAngle) {
-    deviceAngle = angle;
-
-    document.body.style.transform =
-      `rotate(${deviceAngle}deg)`;
-
-    document.body.style.transformOrigin = "center center";
-
-    if (Math.abs(deviceAngle) === 90) {
-      document.body.style.width = "100vh";
-      document.body.style.height = "100vw";
-    } else {
-      document.body.style.width = "100vw";
-      document.body.style.height = "100vh";
-    }
-  }
-
-});
-
+  
  /* =========================
    SMART DEVICE ORIENTATION
 ========================= */
