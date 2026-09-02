@@ -1053,8 +1053,15 @@ const playPause = document.getElementById("playPause");
 
  openTranscript.onclick = () => {
   transcriptPanel.style.display = "block";
+};
+
+document.getElementById("startTranscript").onclick = () => {
   recognition.start();
-}; 
+};
+
+document.getElementById("stopTranscript").onclick = () => {
+  recognition.stop();
+};
 
 openControls.onclick = () => {
   controls.classList.toggle("show");
