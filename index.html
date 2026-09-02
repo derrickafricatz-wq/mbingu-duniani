@@ -1058,8 +1058,12 @@ if (SpeechRecognition) {
     const text = event.results[i][0].transcript;
 
     if (event.results[i].isFinal) {
-      currentTranscript += text + " ";
-    } else {
+  const cleanText = removeOverlap(currentTranscript, text);
+
+  if (cleanText) {
+    currentTranscript += cleanText + " ";
+  }
+} else {
       interimText += text;
     }
   }
@@ -1073,7 +1077,7 @@ if (SpeechRecognition) {
       if (isListening) {
         recognition.start();
       }
-    }, 5000);
+    }, 300);
   }
 };
 }
