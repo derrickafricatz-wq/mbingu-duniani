@@ -1068,13 +1068,7 @@ if (SpeechRecognition) {
 };
 
   recognition.onend = () => {
-  if (isListening) {
-    setTimeout(() => {
-      if (isListening) {
-        recognition.start();
-      }
-    }, 300);
-  }
+  console.log("Recognition ended");
 };
 }
 
