@@ -1032,19 +1032,20 @@ if (SpeechRecognition) {
   recognition.interimResults = true;
 
   recognition.onresult = (event) => {
-  let interimText = "";
+  let finalText = "";
 
   for (let i = event.resultIndex; i < event.results.length; i++) {
-    const text = event.results[i][0].transcript;
+    const text = event.results[i][0].transcript.trim();
 
-    if (event.results[i].isFinal) {
-      currentTranscript += text + " ";
-    } else {
-      interimText += text;
+    if (event.results[i].isFinal && text) {
+      finalText += text + " ";
     }
   }
 
-  transcriptText.textContent = currentTranscript + interimText;
+  if (finalText) {
+    currentTranscript += finalText;
+    transcriptText.textContent = currentTranscript;
+  }
 };
 
   recognition.onend = () => {
