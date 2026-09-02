@@ -1018,6 +1018,8 @@ if (SpeechRecognition) {
   recognition = new SpeechRecognition();
 
   recognition.lang = "sw-TZ";
+
+  recognition.continuous = true;
 }
 
 const closeTranscript = document.getElementById("closeTranscript");
