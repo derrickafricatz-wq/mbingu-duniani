@@ -1020,6 +1020,17 @@ if (SpeechRecognition) {
   recognition.lang = "sw-TZ";
 
   recognition.continuous = true;
+
+  recognition.onresult = (event) => {
+  let text = "";
+
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    text += event.results[i][0].transcript;
+  }
+
+  transcriptText.textContent = text;
+};
+  
   recognition.interimResults = true;
 }
 
