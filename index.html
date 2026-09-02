@@ -1021,7 +1021,9 @@ if (SpeechRecognition) {
 
   recognition.continuous = true;
 
-  recognition.onresult = (event) => {
+  recognition.interimResults = true;
+
+recognition.onresult = (event) => {
   let text = "";
 
   for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -1030,9 +1032,10 @@ if (SpeechRecognition) {
 
   transcriptText.textContent = text;
 };
-  
-  recognition.interimResults = true;
-}
+
+recognition.onend = () => {
+  recognition.start();
+};
 
 const closeTranscript = document.getElementById("closeTranscript");
 
