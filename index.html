@@ -1035,9 +1035,10 @@ const rew = document.getElementById("rew");
 const ff = document.getElementById("ff");
 const playPause = document.getElementById("playPause");
 
-  openTranscript.onclick = () => {
+ openTranscript.onclick = () => {
   transcriptPanel.style.display = "block";
-};
+  recognition.start();
+}; 
 
 openControls.onclick = () => {
   controls.classList.toggle("show");
