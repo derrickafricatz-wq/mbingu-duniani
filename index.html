@@ -661,21 +661,43 @@ document.body.addEventListener("click", () => {
   video.muted = false; video.volume = 1; video.play().catch(()=>{});
 },{once:true});
 
- /* ================= DEVICE ORIENTATION ================= */
+ /* =========================
+   SMART DEVICE ORIENTATION
+========================= */
 
 function updateAppOrientation() {
-  const isLandscape = window.innerWidth > window.innerHeight;
 
-  document.body.classList.toggle("landscape-mode", isLandscape);
-  document.body.classList.toggle("portrait-mode", !isLandscape);
+  const isLandscape =
+    window.matchMedia("(orientation: landscape)").matches;
+
+  document.body.classList.toggle(
+    "landscape-mode",
+    isLandscape
+  );
+
+  document.body.classList.toggle(
+    "portrait-mode",
+    !isLandscape
+  );
 
   console.log(
-    isLandscape ? "LANDSCAPE MODE" : "PORTRAIT MODE"
+    isLandscape
+      ? "LANDSCAPE MODE"
+      : "PORTRAIT MODE"
   );
 }
 
-window.addEventListener("resize", updateAppOrientation);
-window.addEventListener("orientationchange", updateAppOrientation);
+window.addEventListener(
+  "resize",
+  updateAppOrientation
+);
+
+window.addEventListener(
+  "orientationchange",
+  () => {
+    setTimeout(updateAppOrientation, 300);
+  }
+);
 
 updateAppOrientation();
 
