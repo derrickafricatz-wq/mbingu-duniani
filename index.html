@@ -1033,10 +1033,6 @@ recognition.onresult = (event) => {
   transcriptText.textContent = text;
 };
 
-recognition.onend = () => {
-  recognition.start();
-};
-
 const closeTranscript = document.getElementById("closeTranscript");
 
 closeTranscript.onclick = () => {
