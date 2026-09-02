@@ -1015,6 +1015,7 @@ const transcriptPanel = document.getElementById("transcriptPanel");
  const transcriptText = document.getElementById("transcriptText");
 
  let recognition = null;
+ let isListening = false;
 
   const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
