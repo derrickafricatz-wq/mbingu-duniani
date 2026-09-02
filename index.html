@@ -1063,10 +1063,12 @@ const playPause = document.getElementById("playPause");
 };
 
 document.getElementById("startTranscript").onclick = () => {
+  isListening = true;
   recognition.start();
 };
 
 document.getElementById("stopTranscript").onclick = () => {
+  isListening = false;
   recognition.stop();
 };
 
