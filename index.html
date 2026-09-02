@@ -1023,15 +1023,16 @@ if (SpeechRecognition) {
 
   recognition.interimResults = true;
 
-recognition.onresult = (event) => {
-  let text = "";
+  recognition.onresult = (event) => {
+    let text = "";
 
-  for (let i = event.resultIndex; i < event.results.length; i++) {
-    text += event.results[i][0].transcript;
-  }
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      text += event.results[i][0].transcript;
+    }
 
-  transcriptText.textContent = text;
-};
+    transcriptText.textContent = text;
+  };
+}
 
 const closeTranscript = document.getElementById("closeTranscript");
 
