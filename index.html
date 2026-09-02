@@ -1046,6 +1046,16 @@ if (SpeechRecognition) {
 
   transcriptText.textContent = currentTranscript + interimText;
 };
+
+  recognition.onend = () => {
+  if (isListening) {
+    setTimeout(() => {
+      if (isListening) {
+        recognition.start();
+      }
+    }, 300);
+  }
+};
 }
 
 const closeTranscript = document.getElementById("closeTranscript");
