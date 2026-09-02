@@ -1016,7 +1016,7 @@ const transcriptPanel = document.getElementById("transcriptPanel");
 
 let recognition = null;
 let isListening = false;
-let lastResultIndex = 0;
+let lastTranscript = "";
 let mediaRecorder = null;
 let audioChunks = [];
 
@@ -1033,18 +1033,19 @@ if (SpeechRecognition) {
   recognition.interimResults = true;
 
   recognition.onresult = (event) => {
-  for (let i = lastResultIndex; i < event.results.length; i++) {
+  let interimText = "";
+
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    const text = event.results[i][0].transcript;
+
     if (event.results[i].isFinal) {
-      const text = event.results[i][0].transcript.trim();
-
-      if (text) {
-        currentTranscript += text + " ";
-        transcriptText.textContent = currentTranscript;
-      }
-
-      lastResultIndex = i + 1;
+      currentTranscript += text + " ";
+    } else {
+      interimText += text;
     }
   }
+
+  transcriptText.textContent = currentTranscript + interimText;
 };
 
   recognition.onend = () => {
