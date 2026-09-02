@@ -1029,7 +1029,7 @@ if (SpeechRecognition) {
 
   recognition.continuous = true;
 
-  recognition.interimResults = false;
+  recognition.interimResults = true;
 
   recognition.onresult = (event) => {
    let text = "";
@@ -1084,7 +1084,14 @@ document.getElementById("startTranscript").onclick = async () => {
 
 document.getElementById("stopTranscript").onclick = () => {
   isListening = false;
-  recognition.stop();
+
+  if (recognition) {
+    recognition.stop();
+  }
+
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
 };
 
 openControls.onclick = () => {
