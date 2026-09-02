@@ -1011,11 +1011,12 @@ const transcriptPanel = document.getElementById("transcriptPanel");
 
  let recognition = null;
 
-  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-  console.log("Speech recognition is supported.");
-} else {
-  console.log("Speech recognition is NOT supported.");
-  }
+  const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+}
 
 const closeTranscript = document.getElementById("closeTranscript");
 
