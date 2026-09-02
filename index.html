@@ -1041,12 +1041,6 @@ for (let i = event.resultIndex; i < event.results.length; i++) {
 currentTranscript += " " + text;
 transcriptText.textContent = currentTranscript; 
   };
-
-  recognition.onend = () => {
-  if (isListening) {
-    recognition.start();
-  }
-};
 }
 
 const closeTranscript = document.getElementById("closeTranscript");
