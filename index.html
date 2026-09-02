@@ -1022,9 +1022,9 @@ function removeOverlap(oldText, newText) {
   const oldWords = oldText.trim().split(/\s+/);
   const newWords = newText.trim().split(/\s+/);
 
-  const max = Math.min(oldWords.length, newWords.length, 10);
+  const max = Math.min(oldWords.length, newWords.length, 20);
 
-  for (let n = max; n > 0; n--) {
+  for (let n = max; n >= 2; n--) {
     const oldPart = oldWords.slice(-n).join(" ").toLowerCase();
     const newPart = newWords.slice(0, n).join(" ").toLowerCase();
 
