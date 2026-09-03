@@ -1279,8 +1279,14 @@ selectBox.onchange = () => {
     }
   });
 
-  alert("Selected sermons: " + selected.length);
-};
+ if (selected.length === 0) {
+  alert("Please select at least one sermon.");
+  return;
+}
+
+screen.remove();
+
+alert("BOOK EDITOR OPENED"); 
 
   closeBtn.onclick = () => screen.remove();
 
