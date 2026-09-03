@@ -1286,7 +1286,27 @@ selectBox.onchange = () => {
 
 screen.remove();
 
-alert("BOOK EDITOR OPENED");
+const bookScreen = document.createElement("div");
+
+bookScreen.style.position = "fixed";
+bookScreen.style.inset = "0";
+bookScreen.style.background = "black";
+bookScreen.style.color = "white";
+bookScreen.style.zIndex = "400";
+bookScreen.style.padding = "20px";
+bookScreen.style.overflowY = "auto";
+
+bookScreen.innerHTML = `
+  <h2 style="
+    color:#00ffff;
+    text-align:center;
+    font-family:'Russo One';
+  ">
+    BOOK EDITOR
+  </h2>
+`;
+
+document.body.appendChild(bookScreen);
 
   };
 
