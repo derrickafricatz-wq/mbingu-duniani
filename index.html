@@ -1099,6 +1099,13 @@ const playPause = document.getElementById("playPause");
   transcriptPanel.style.display = "block";
 };
 
+  document.getElementById("videoTranscript").onclick = () => {
+  const videoStream = video.captureStream();
+  const audioTrack = videoStream.getAudioTracks()[0];
+
+  recognition.start(audioTrack);
+};
+
 document.getElementById("startTranscript").onclick = async () => {
   if (isListening) return;
 
