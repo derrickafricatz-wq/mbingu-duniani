@@ -1467,6 +1467,9 @@ if (contents) {
 
   contentLines.forEach((line) => {
 
+   pdf.addPage();
+      y = 20;
+
     if (y > 280) {
       pdf.addPage();
       y = 20;
