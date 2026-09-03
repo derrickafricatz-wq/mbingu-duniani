@@ -1269,6 +1269,10 @@ selectBox.onchange = () => {
   closeBtn.style.border = "1px solid #00ffff";
   closeBtn.style.borderRadius = "8px";
 
+    document.getElementById("createBookBtn").onclick = () => {
+  alert("CREATE BOOK clicked");
+};
+
   closeBtn.onclick = () => screen.remove();
 
   screen.appendChild(closeBtn);
