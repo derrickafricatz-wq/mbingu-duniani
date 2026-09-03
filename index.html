@@ -1220,6 +1220,10 @@ selectBox.style.marginRight = "10px";
 
 item.prepend(selectBox);
 
+selectBox.onclick = (e) => {
+  e.stopPropagation();
+};      
+
 selectBox.onchange = () => {
   if (selectBox.checked) {
     item.style.border = "2px solid #00ffff";
