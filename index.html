@@ -1128,7 +1128,7 @@ document.getElementById("startTranscript").onclick = async () => {
 
   mediaRecorder.start();
 
-  recognition.start();
+ recognition.start(recognitionAudioTrack); 
 };
 
 document.getElementById("stopTranscript").onclick = () => {
