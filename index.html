@@ -1121,7 +1121,21 @@ const playPause = document.getElementById("playPause");
 };
 
   document.getElementById("saveTranscript").onclick = () => {
-  localStorage.setItem("savedSermonTranscript", currentTranscript);
+
+  let savedSermons =
+    JSON.parse(localStorage.getItem("savedSermons") || "[]");
+
+  savedSermons.push({
+    title: "Sermon " + (savedSermons.length + 1),
+    text: currentTranscript,
+    date: new Date().toLocaleDateString()
+  });
+
+  localStorage.setItem(
+    "savedSermons",
+    JSON.stringify(savedSermons)
+  );
+
   alert("Sermon saved successfully.");
 };
 
