@@ -1412,7 +1412,17 @@ localStorage.setItem(
   JSON.stringify(savedBooks)
 );
 
-alert("BOOK SAVED SUCCESSFULLY");
+const { jsPDF } = window.jspdf;
+
+const pdf = new jsPDF();
+
+pdf.setFontSize(20);
+pdf.text(bookTitle || "Untitled Book", 20, 20);
+
+pdf.setFontSize(14);
+pdf.text("Book created in Mbingu Duniani", 20, 30);
+
+pdf.save((bookTitle || "Untitled Book") + ".pdf");
 };
 
 document.body.appendChild(bookScreen);
