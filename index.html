@@ -1211,6 +1211,12 @@ const playPause = document.getElementById("playPause");
         </div>
       `;
 
+      item.onclick = () => {
+  transcriptText.innerText = sermon.text;
+  currentTranscript = sermon.text;
+  screen.remove();
+};
+
       screen.appendChild(item);
     });
   }
