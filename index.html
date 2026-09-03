@@ -1335,9 +1335,22 @@ selected.forEach((sermon, index) => {
   chapter.style.borderRadius = "12px";
 
   chapter.innerHTML = `
-    <h3 style="color:#00ffff;">
-      Chapter ${index + 1}
-    </h3>
+    <input
+  type="text"
+  value="Chapter ${index + 1}"
+  style="
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    margin-bottom:12px;
+    background:#111;
+    color:#00ffff;
+    border:1px solid #00ffff;
+    border-radius:10px;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
 
     <div
       contenteditable="true"
