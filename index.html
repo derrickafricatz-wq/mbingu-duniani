@@ -1323,7 +1323,34 @@ bookScreen.innerHTML = `
       border-radius:10px;
       font-size:18px;
     "
-  >
+    >
+
+  <h3 style="
+    color:#00ffff;
+    margin-top:25px;
+  ">
+    TABLE OF CONTENTS
+  </h3>
+
+  <textarea
+    id="bookContents"
+    placeholder="Enter table of contents..."
+    style="
+      display:block;
+      width:100%;
+      min-height:150px;
+      box-sizing:border-box;
+      padding:14px;
+      margin:10px 0 20px;
+      background:#111;
+      color:white;
+      border:1px solid #00ffff;
+      border-radius:10px;
+      font-size:18px;
+      line-height:1.6;
+      resize:vertical;
+    "
+  ></textarea>
 `;
 
 selected.forEach((sermon, index) => {
