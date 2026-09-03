@@ -1385,7 +1385,21 @@ saveBookBtn.style.fontWeight = "bold";
 bookScreen.appendChild(saveBookBtn); 
 
       saveBookBtn.onclick = () => {
-  alert("SAVE BOOK CLICKED");
+  const bookTitle = document.getElementById("bookTitle").value.trim();
+
+const chapters = [];
+
+bookScreen.querySelectorAll('[contenteditable="true"]').forEach((chapterText, index) => {
+  chapters.push({
+    title: bookScreen.querySelectorAll('input[type="text"]')[index + 1].value.trim(),
+    text: chapterText.innerText.trim()
+  });
+});
+
+alert(
+  "Book: " + bookTitle +
+  "\nChapters: " + chapters.length
+);
 };
 
 document.body.appendChild(bookScreen);
