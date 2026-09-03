@@ -1416,11 +1416,50 @@ const { jsPDF } = window.jspdf;
 
 const pdf = new jsPDF();
 
+let y = 20;
+
 pdf.setFontSize(20);
-pdf.text(bookTitle || "Untitled Book", 20, 20);
+pdf.text(bookTitle || "Untitled Book", 20, y);
+
+y += 15;
 
 pdf.setFontSize(14);
-pdf.text("Book created in Mbingu Duniani", 20, 30);
+pdf.text("Book created in Mbingu Duniani", 20, y);
+
+y += 15;
+
+chapters.forEach((chapter, index) => {
+
+  if (y > 270) {
+    pdf.addPage();
+    y = 20;
+  }
+
+  pdf.setFontSize(17);
+  pdf.text(chapter.title || "Chapter " + (index + 1), 20, y);
+
+  y += 10;
+
+  pdf.setFontSize(12);
+
+  const lines = pdf.splitTextToSize(
+    chapter.text,
+    170
+  );
+
+  lines.forEach((line) => {
+
+    if (y > 280) {
+      pdf.addPage();
+      y = 20;
+    }
+
+    pdf.text(line, 20, y);
+    y += 7;
+  });
+
+  y += 10;
+});
 
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
 };
