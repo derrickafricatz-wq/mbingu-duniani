@@ -519,7 +519,7 @@ function getMedia(id){
   font-size:18px;
   z-index:200;
 ">
-⚙️
+
 </button>
 <div id="lessonLabel">powered by deka</div>
 
@@ -544,7 +544,7 @@ function getMedia(id){
   <button class="smart-item" id="openControls">⌨ SYSTEM KEYPAD</button>
  
   <button class="smart-item" id="openTranscript">
-    📝 SERMON TRANSCRIPT
+    SERMON TRANSCRIPT
   </button>
   
   <button class="smart-item" id="openHealth">
@@ -571,7 +571,6 @@ function getMedia(id){
 <div id="transcriptControls">
   <button id="startTranscript">START</button>
   <button id="stopTranscript">STOP</button>
-  <button id="videoTranscript">VIDEO</button>
 </div>
 
 <div id="transcriptText">
@@ -584,9 +583,9 @@ function getMedia(id){
 <div id="controlGrid">
 
   <!-- VIDEO CONTROLS -->
-<button class="ctrl-btn" id="rew">⏪</button>
+<button class="ctrl-btn" id="rew"></button>
 <button class="ctrl-btn" id="playPause">⏯</button>
-<button class="ctrl-btn" id="ff">⏩</button>
+<button class="ctrl-btn" id="ff"></button>
 
 <button class="ctrl-btn" onclick="zoomVideo(-0.1)">−</button>
 <span id="zoomLevel">100%</span>
@@ -676,9 +675,9 @@ const guideSteps = [
 
   { text: "Videos play automatically. Tap once for sound." },
 
-  { text: "⬆️ Swipe UP to show the smart menu." },
+  { text: "Swipe UP to show the smart menu." },
 
-  { text: "⬇️ Swipe DOWN to hide menus and panels." },
+  { text: "Swipe DOWN to hide menus and panels." },
 
   { text: "Tap the smart button to open system tools." },
 
@@ -688,25 +687,25 @@ const guideSteps = [
 
   { text: "REFRESH restores the main playlist." },
 
-  { text: "⏮ ⏪ ⏯ ⏭ ⏩ Control videos anytime." },
+  { text: "Control videos anytime." },
 
   { text: "TWENDE ZETU DARASANI opens deep health learning." },
 
   { text: "Select a topic to study health in depth." },
 
-  { text: "☰ SHOW / HIDE manages topic visibility." },
+  { text: "SHOW / HIDE manages topic visibility." },
 
   { text: "Tap lesson text or images to mark them." },
 
   { text: "PRINT exports marked lesson sections only." },
 
-  { text: "⏯ PLAY/PAUSE controls lesson scrolling." },
+  { text: "PLAY/PAUSE controls lesson scrolling." },
 
   { text: "ROTATE switches portrait and landscape view." },
 
   { text: "EXIT returns to the AFYA CARE home screen." },
 
-  { text: "⚙️ Settings reopens this guide anytime." },
+  { text: "Settings reopens this guide anytime." },
   
   { text: "THAT'S IT. ENJOY THE JOURNEY." }
   
@@ -1016,7 +1015,6 @@ const transcriptPanel = document.getElementById("transcriptPanel");
  const transcriptText = document.getElementById("transcriptText");
 
 let recognition = null;
-let recognitionAudioTrack = null;
 let isListening = false;
 let lastTranscript = "";
 
@@ -1100,14 +1098,6 @@ const playPause = document.getElementById("playPause");
   transcriptPanel.style.display = "block";
 };
 
-  document.getElementById("videoTranscript").onclick = () => {
-  const videoStream = video.captureStream();
-  const audioTrack = videoStream.getAudioTracks()[0];
-
-  recognitionAudioTrack = audioTrack;
-  recognition.start(audioTrack);
-};
-
 document.getElementById("startTranscript").onclick = async () => {
   if (isListening) return;
 
@@ -1128,7 +1118,7 @@ document.getElementById("startTranscript").onclick = async () => {
 
   mediaRecorder.start();
 
- recognition.start(recognitionAudioTrack); 
+  recognition.start();
 };
 
 document.getElementById("stopTranscript").onclick = () => {
@@ -1201,11 +1191,11 @@ function showUpdateNotification(msg, force) {
   text.innerText = msg;
   box.style.display = "block";
 
-  // 🔊 BEEP SOUND ALERT
+  // BEEP SOUND ALERT
   const beep = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
   beep.play().catch(()=>{});
 
-  // 🔥 FORCE UPDATE (AUTO RELOAD)
+  // FORCE UPDATE (AUTO RELOAD)
   if (force) {
     setTimeout(() => {
       location.reload();
@@ -1228,7 +1218,7 @@ async function checkLicense(){
 
     console.log("LICENSE:", data);
 
-    // // ❌ BLOCK if invalid
+    // // BLOCK if invalid
 if(!data.active){
 
   document.body.innerHTML = `
@@ -1296,7 +1286,7 @@ if(!data.active){
         text-align:center;
         padding:20px;
       ">
-        ⚠️ Cannot verify license
+        Cannot verify license
       </div>
     `;
   }
@@ -1379,12 +1369,12 @@ topBar.style.gap = "10px";
 
 // TOGGLE BUTTON
 const toggle = document.createElement("button");
-toggle.innerText = "☰ HIDE";
+toggle.innerText = "HIDE";
 toggle.onclick = () => toggleTopics(toggle);
 
 // EXIT BUTTON
 const exitBtn = document.createElement("button");
-exitBtn.innerText = "✖ EXIT";
+exitBtn.innerText = "EXIT";
 exitBtn.style.background = "red";
 exitBtn.style.color = "white";
 
@@ -1433,7 +1423,7 @@ const controls=document.createElement("div"); controls.id="healthyControls";
 let rotated = false;
 
 const rotateBtn = document.createElement("button");
-rotateBtn.innerText = "🔃 ROTATE";
+rotateBtn.innerText = "ROTATE";
 
 rotateBtn.onclick = () => {
     rotated = !rotated;
@@ -1474,7 +1464,7 @@ const playBtn=document.createElement("button"); playBtn.innerText="⏯ PLAY/PAUS
 playBtn.onclick=toggleScroll;
 
 const printBtn = document.createElement("button");
-printBtn.innerText = "🖨 PRINT";
+printBtn.innerText = "PRINT";
 printBtn.onclick = () => {
     // Get all marked elements
     const markedElements = _inner.querySelectorAll(".marked");
