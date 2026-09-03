@@ -1430,7 +1430,7 @@ y += 15;
 
 chapters.forEach((chapter, index) => {
 
-  if (y > 270) {
+  if (index > 0) {
     pdf.addPage();
     y = 20;
   }
