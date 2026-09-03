@@ -1105,6 +1105,11 @@ const playPause = document.getElementById("playPause");
   alert("Sermon saved successfully.");
 };
 
+ document.getElementById("clearTranscript").onclick = () => {
+  currentTranscript = "";
+  transcriptText.innerText = "";
+}; 
+
 document.getElementById("startTranscript").onclick = async () => {
   if (isListening) return;
 
