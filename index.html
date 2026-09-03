@@ -1145,6 +1145,96 @@ const playPause = document.getElementById("playPause");
   transcriptText.innerText = "";
 }; 
 
+  document.getElementById("savedSermons").onclick = () => {
+
+  const savedSermons =
+    JSON.parse(localStorage.getItem("savedSermons") || "[]");
+
+  const screen = document.createElement("div");
+
+  screen.style.position = "fixed";
+  screen.style.inset = "0";
+  screen.style.background = "black";
+  screen.style.color = "white";
+  screen.style.zIndex = "300";
+  screen.style.padding = "20px";
+  screen.style.overflowY = "auto";
+
+  screen.innerHTML = `
+    <h2 style="
+      color:#00ffff;
+      text-align:center;
+      font-family:'Russo One';
+    ">
+      SAVED SERMONS
+    </h2>
+  `;
+
+  if (savedSermons.length === 0) {
+
+    screen.innerHTML += `
+      <p style="
+        text-align:center;
+        margin-top:50px;
+        color:#aaa;
+      ">
+        No saved sermons yet.
+      </p>
+    `;
+
+  } else {
+
+    savedSermons.forEach((sermon, index) => {
+
+      const item = document.createElement("div");
+
+      item.style.background = "#111";
+      item.style.border = "1px solid #00ffff";
+      item.style.borderRadius = "12px";
+      item.style.padding = "15px";
+      item.style.marginBottom = "12px";
+
+      item.innerHTML = `
+        <div style="
+          color:#00ffff;
+          font-size:20px;
+          font-weight:bold;
+        ">
+          ${sermon.title}
+        </div>
+
+        <div style="
+          color:#aaa;
+          margin-top:5px;
+        ">
+          Saved: ${sermon.date}
+        </div>
+      `;
+
+      screen.appendChild(item);
+    });
+  }
+
+  const closeBtn = document.createElement("button");
+
+  closeBtn.innerText = "CLOSE";
+
+  closeBtn.style.position = "fixed";
+  closeBtn.style.top = "15px";
+  closeBtn.style.right = "15px";
+  closeBtn.style.padding = "10px 16px";
+  closeBtn.style.background = "#111";
+  closeBtn.style.color = "white";
+  closeBtn.style.border = "1px solid #00ffff";
+  closeBtn.style.borderRadius = "8px";
+
+  closeBtn.onclick = () => screen.remove();
+
+  screen.appendChild(closeBtn);
+
+  document.body.appendChild(screen);
+};
+
 document.getElementById("startTranscript").onclick = async () => {
   if (isListening) return;
 
