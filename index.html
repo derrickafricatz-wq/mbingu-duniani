@@ -1396,10 +1396,21 @@ bookScreen.querySelectorAll('[contenteditable="true"]').forEach((chapterText, in
   });
 });
 
-alert(
-  "Book: " + bookTitle +
-  "\nChapters: " + chapters.length
+const savedBooks =
+  JSON.parse(localStorage.getItem("savedBooks") || "[]");
+
+savedBooks.push({
+  title: bookTitle || "Untitled Book",
+  chapters: chapters,
+  date: new Date().toLocaleDateString()
+});
+
+localStorage.setItem(
+  "savedBooks",
+  JSON.stringify(savedBooks)
 );
+
+alert("BOOK SAVED SUCCESSFULLY");
 };
 
 document.body.appendChild(bookScreen);
