@@ -1270,7 +1270,16 @@ selectBox.onchange = () => {
   closeBtn.style.borderRadius = "8px";
 
     screen.querySelector("#createBookBtn").onclick = () => {
-  alert("CREATE BOOK clicked");
+
+  const selected = [];
+
+  screen.querySelectorAll('input[type="checkbox"]').forEach((box, index) => {
+    if (box.checked) {
+      selected.push(savedSermons[index]);
+    }
+  });
+
+  alert("Selected sermons: " + selected.length);
 };
 
   closeBtn.onclick = () => screen.remove();
