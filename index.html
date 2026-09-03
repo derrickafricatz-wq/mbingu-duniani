@@ -1367,6 +1367,23 @@ selected.forEach((sermon, index) => {
   bookScreen.appendChild(chapter);
 });
 
+     const saveBookBtn = document.createElement("button");
+
+saveBookBtn.innerText = "SAVE BOOK";
+
+saveBookBtn.style.display = "block";
+saveBookBtn.style.width = "100%";
+saveBookBtn.style.padding = "14px";
+saveBookBtn.style.marginTop = "25px";
+saveBookBtn.style.background = "#00ffff";
+saveBookBtn.style.color = "black";
+saveBookBtn.style.border = "none";
+saveBookBtn.style.borderRadius = "12px";
+saveBookBtn.style.fontSize = "18px";
+saveBookBtn.style.fontWeight = "bold";
+
+bookScreen.appendChild(saveBookBtn); 
+
 document.body.appendChild(bookScreen);
 
   };
