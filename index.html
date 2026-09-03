@@ -1194,6 +1194,15 @@ const playPause = document.getElementById("playPause");
       item.style.padding = "15px";
       item.style.marginBottom = "12px";
 
+      const selectBox = document.createElement("input");
+
+selectBox.type = "checkbox";
+selectBox.style.width = "22px";
+selectBox.style.height = "22px";
+selectBox.style.marginRight = "10px";
+
+item.prepend(selectBox);
+
       item.innerHTML = `
         <div style="
           color:#00ffff;
