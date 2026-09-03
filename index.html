@@ -1192,24 +1192,7 @@ const playPause = document.getElementById("playPause");
       item.style.border = "1px solid #00ffff";
       item.style.borderRadius = "12px";
       item.style.padding = "15px";
-      item.style.marginBottom = "12px";
-
-      const selectBox = document.createElement("input");
-
-selectBox.type = "checkbox";
-selectBox.style.width = "22px";
-selectBox.style.height = "22px";
-selectBox.style.marginRight = "10px";
-
-item.prepend(selectBox);
-
-   selectBox.onchange = () => {
-  if (selectBox.checked) {
-    item.style.border = "2px solid #00ffff";
-  } else {
-    item.style.border = "1px solid #00ffff";
-  }
-};   
+      item.style.marginBottom = "12px"; 
 
       item.innerHTML = `
         <div style="
@@ -1227,6 +1210,23 @@ item.prepend(selectBox);
           Saved: ${sermon.date}
         </div>
       `;
+
+     const selectBox = document.createElement("input");
+
+selectBox.type = "checkbox";
+selectBox.style.width = "22px";
+selectBox.style.height = "22px";
+selectBox.style.marginRight = "10px";
+
+item.prepend(selectBox);
+
+selectBox.onchange = () => {
+  if (selectBox.checked) {
+    item.style.border = "2px solid #00ffff";
+  } else {
+    item.style.border = "1px solid #00ffff";
+  }
+}; 
 
       item.onclick = () => {
   transcriptText.innerText = sermon.text;
