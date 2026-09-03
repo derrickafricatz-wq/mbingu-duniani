@@ -1017,7 +1017,6 @@ const transcriptPanel = document.getElementById("transcriptPanel");
 let recognition = null;
 let isListening = false;
 let lastTranscript = "";
-let lastFinalText = "";
 
 function removeOverlap(oldText, newText) {
   const oldWords = oldText.trim().split(/\s+/);
@@ -1059,14 +1058,8 @@ if (SpeechRecognition) {
     const text = event.results[i][0].transcript;
 
     if (event.results[i].isFinal) {
-
-  if (text.trim() === lastFinalText.trim()) {
-    continue;
-  }
-
-  currentTranscript += text + " ";
-  lastFinalText = text;
-    } else {
+   currentTranscript += text + " ";
+  } else {
       interimText += text;
     }
   }
