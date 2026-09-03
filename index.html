@@ -1324,6 +1324,36 @@ bookScreen.innerHTML = `
   >
 `;
 
+selected.forEach((sermon, index) => {
+
+  const chapter = document.createElement("div");
+
+  chapter.style.marginTop = "25px";
+  chapter.style.padding = "15px";
+  chapter.style.background = "#111";
+  chapter.style.border = "1px solid #333";
+  chapter.style.borderRadius = "12px";
+
+  chapter.innerHTML = `
+    <h3 style="color:#00ffff;">
+      Chapter ${index + 1}
+    </h3>
+
+    <div
+      contenteditable="true"
+      style="
+        color:white;
+        font-size:18px;
+        line-height:1.8;
+        min-height:150px;
+        outline:none;
+      "
+    >${sermon.text}</div>
+  `;
+
+  bookScreen.appendChild(chapter);
+});
+
 document.body.appendChild(bookScreen);
 
   };
