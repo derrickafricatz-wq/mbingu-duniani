@@ -1411,6 +1411,23 @@ saveBookBtn.style.borderRadius = "12px";
 saveBookBtn.style.fontSize = "18px";
 saveBookBtn.style.fontWeight = "bold";
 
+   const toolsBtn = document.createElement("button");
+
+toolsBtn.innerText = "TOOLS";
+
+toolsBtn.style.display = "block";
+toolsBtn.style.width = "100%";
+toolsBtn.style.padding = "14px";
+toolsBtn.style.marginTop = "20px";
+toolsBtn.style.background = "#111";
+toolsBtn.style.color = "#00ffff";
+toolsBtn.style.border = "1px solid #00ffff";
+toolsBtn.style.borderRadius = "12px";
+toolsBtn.style.fontSize = "18px";
+toolsBtn.style.fontWeight = "bold";
+
+bookScreen.appendChild(toolsBtn);  
+
 bookScreen.appendChild(saveBookBtn); 
 
       saveBookBtn.onclick = () => {
