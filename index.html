@@ -579,7 +579,7 @@ function getMedia(id){
   <button id="clearTranscript">NEW</button>
 </div>
 
-<div id="transcriptText" contenteditable="true" onfocus="this.scrollIntoView({behavior:'smooth', block:'center'})">
+<div id="transcriptText" contenteditable="true">
   Transcript will appear here...
 </div>
 
@@ -1019,6 +1019,22 @@ const transcriptPanel = document.getElementById("transcriptPanel");
  let currentTranscript = localStorage.getItem("savedSermonTranscript") || "";
 
  const transcriptText = document.getElementById("transcriptText");
+
+  transcriptText.addEventListener("keyup", () => {
+  const selection = window.getSelection();
+
+  if (!selection.rangeCount) return;
+
+  const range = selection.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+
+  if (rect.bottom > window.innerHeight - 180) {
+    window.scrollBy({
+      top: rect.bottom - (window.innerHeight - 180),
+      behavior: "smooth"
+    });
+  }
+});
 
 let recognition = null;
 let isListening = false;
