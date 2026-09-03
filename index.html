@@ -1099,6 +1099,11 @@ const playPause = document.getElementById("playPause");
   transcriptPanel.style.display = "block";
 };
 
+  document.getElementById("saveTranscript").onclick = () => {
+  localStorage.setItem("savedSermonTranscript", currentTranscript);
+  alert("Sermon saved successfully.");
+};
+
 document.getElementById("startTranscript").onclick = async () => {
   if (isListening) return;
 
