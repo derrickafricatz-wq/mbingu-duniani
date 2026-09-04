@@ -1671,22 +1671,6 @@ pdf.addImage(
   (contentsCanvas.height * 180) / contentsCanvas.width
 );
 
-if (contents) {
-
-  const contentLines = pdf.splitTextToSize(contents, 170);
-
-  contentLines.forEach((line) => {
-
-    if (y > 280) {
-      pdf.addPage();
-      y = 20;
-    }
-
-    pdf.text(line, 20, y);
-    y += 7;
-  });
-}
-
 // START CHAPTERS
 chapters.forEach((chapter, index) => {
 
