@@ -1358,6 +1358,39 @@ bookScreen.innerHTML = `
 ></div>
 `;
 
+       const coverInput = document.createElement("input");
+
+  coverInput.type = "file";
+  coverInput.accept = "image/*";
+  coverInput.style.display = "block";
+  coverInput.style.width = "100%";
+  coverInput.style.margin = "15px 0";
+  coverInput.style.padding = "12px";
+  coverInput.style.boxSizing = "border-box";
+  coverInput.style.background = "#111";
+  coverInput.style.color = "white";
+  coverInput.style.border = "1px solid #00ffff";
+  coverInput.style.borderRadius = "10px";
+
+  bookScreen.appendChild(coverInput);
+
+  let coverImage = null;
+
+  coverInput.onchange = () => {
+
+    const file = coverInput.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      coverImage = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  };
+
 selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
