@@ -1606,7 +1606,7 @@ bookScreen.appendChild(saveBookBtn);
 
 const chapters = [];
 
-bookScreen.querySelectorAll('[contenteditable="true"]').forEach((chapterText, index) => {
+bookScreen.querySelectorAll('div[contenteditable="true"]:not(#bookTitle):not(#bookContents)').forEach((chapterText, index) => {
   chapters.push({
     title: bookScreen.querySelectorAll('input[type="text"]')[index + 1].value.trim(),
     text: chapterText.innerText.trim()
