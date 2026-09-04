@@ -1894,6 +1894,52 @@ for (let index = 0; index < chapterBodies.length; index++) {
   );
 }
 
+  /* ADD BACK COVER AS FINAL PDF PAGE */
+
+if (backCoverImage) {
+
+  const backCoverPage = document.createElement("div");
+
+  backCoverPage.style.width = "794px";
+  backCoverPage.style.height = "1123px";
+  backCoverPage.style.position = "absolute";
+  backCoverPage.style.left = "-9999px";
+  backCoverPage.style.top = "0";
+  backCoverPage.style.background = "white";
+
+  const backCoverImg = document.createElement("img");
+
+  backCoverImg.src = backCoverImage;
+
+  backCoverImg.style.width = "100%";
+  backCoverImg.style.height = "100%";
+  backCoverImg.style.objectFit = "cover";
+
+  backCoverPage.appendChild(backCoverImg);
+
+  document.body.appendChild(backCoverPage);
+
+  const backCanvas = await html2canvas(backCoverPage, {
+    scale: 2,
+    useCORS: true
+  });
+
+  const backImgData = backCanvas.toDataURL("image/jpeg", 0.95);
+
+  pdf.addPage();
+
+  pdf.addImage(
+    backImgData,
+    "JPEG",
+    0,
+    0,
+    210,
+    297
+  );
+
+  document.body.removeChild(backCoverPage);
+}     
+
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
 };
 
