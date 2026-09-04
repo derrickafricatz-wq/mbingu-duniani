@@ -1430,6 +1430,8 @@ toolsBtn.style.fontWeight = "bold";
 
 toolsBtn.onclick = () => {
 
+  let savedRange = null;
+
   const selection = window.getSelection();
 
   if (!selection.rangeCount || selection.isCollapsed) {
@@ -1437,7 +1439,7 @@ toolsBtn.onclick = () => {
     return;
   }
 
-  const savedRange = selection.getRangeAt(0).cloneRange();
+  savedRange = selection.getRangeAt(0).cloneRange();
 
   const toolsPanel = document.createElement("div");
 
@@ -1474,9 +1476,9 @@ toolsBtn.onclick = () => {
         <option value="7">Extra Large</option>
       </select>
 
-      <input id="colorTool" type="color" title="Text Color">
+      <input id="colorTool" type="color" value="#ffffff">
 
-      <input id="highlightTool" type="color" title="Highlight">
+      <input id="highlightTool" type="color" value="#ffff00">
 
       <button data-command="justifyLeft">LEFT</button>
       <button data-command="justifyCenter">CENTER</button>
@@ -1484,6 +1486,35 @@ toolsBtn.onclick = () => {
 
     </div>
   `;
+
+  document.addEventListener("selectionchange", () => {
+
+    const currentSelection = window.getSelection();
+
+    if (!currentSelection.rangeCount) return;
+    if (currentSelection.isCollapsed) return;
+
+    const range = currentSelection.getRangeAt(0);
+
+    if (
+      bookScreen.contains(range.commonAncestorContainer) &&
+      !toolsPanel.contains(range.commonAncestorContainer)
+    ) {
+      savedRange = range.cloneRange();
+    }
+
+  });
+
+  const restoreSelection = () => {
+
+    if (!savedRange) return;
+
+    const currentSelection = window.getSelection();
+
+    currentSelection.removeAllRanges();
+    currentSelection.addRange(savedRange);
+
+  };
 
   toolsPanel.querySelectorAll("button").forEach(button => {
 
@@ -1494,65 +1525,78 @@ toolsBtn.onclick = () => {
     button.style.borderRadius = "8px";
     button.style.fontWeight = "bold";
 
+    button.onmousedown = (e) => {
+      e.preventDefault();
+    };
+
     button.onclick = () => {
 
-      selection.removeAllRanges();
-      selection.addRange(savedRange);
+      restoreSelection();
 
       document.execCommand(
         button.dataset.command,
         false,
         null
       );
+
     };
+
   });
+
+  toolsPanel.querySelector("#fontTool").onmousedown = (e) => {
+    e.preventDefault();
+  };
 
   toolsPanel.querySelector("#fontTool").onchange = (event) => {
 
-    selection.removeAllRanges();
-    selection.addRange(savedRange);
+    restoreSelection();
 
     document.execCommand(
       "fontName",
       false,
       event.target.value
     );
+
+  };
+
+  toolsPanel.querySelector("#sizeTool").onmousedown = (e) => {
+    e.preventDefault();
   };
 
   toolsPanel.querySelector("#sizeTool").onchange = (event) => {
 
-    selection.removeAllRanges();
-    selection.addRange(savedRange);
+    restoreSelection();
 
     document.execCommand(
       "fontSize",
       false,
       event.target.value
     );
+
   };
 
   toolsPanel.querySelector("#colorTool").onchange = (event) => {
 
-    selection.removeAllRanges();
-    selection.addRange(savedRange);
+    restoreSelection();
 
     document.execCommand(
       "foreColor",
       false,
       event.target.value
     );
+
   };
 
   toolsPanel.querySelector("#highlightTool").onchange = (event) => {
 
-    selection.removeAllRanges();
-    selection.addRange(savedRange);
+    restoreSelection();
 
     document.execCommand(
       "hiliteColor",
       false,
       event.target.value
     );
+
   };
 
   bookScreen.appendChild(toolsPanel);
