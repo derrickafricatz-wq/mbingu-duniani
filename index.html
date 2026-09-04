@@ -1334,25 +1334,26 @@ bookScreen.innerHTML = `
     TABLE OF CONTENTS
   </h3>
 
-  <textarea
-    id="bookContents"
-    placeholder="Enter table of contents..."
-    style="
-      display:block;
-      width:100%;
-      min-height:150px;
-      box-sizing:border-box;
-      padding:14px;
-      margin:10px 0 20px;
-      background:#111;
-      color:white;
-      border:1px solid #00ffff;
-      border-radius:10px;
-      font-size:18px;
-      line-height:1.6;
-      resize:vertical;
-    "
-  ></textarea>
+  <div
+  id="bookContents"
+  contenteditable="true"
+  data-placeholder="Enter table of contents..."
+  style="
+    display:block;
+    width:100%;
+    min-height:150px;
+    box-sizing:border-box;
+    padding:14px;
+    margin:10px 0 20px;
+    background:#111;
+    color:white;
+    border:1px solid #00ffff;
+    border-radius:10px;
+    font-size:18px;
+    line-height:1.6;
+    outline:none;
+  "
+></div>
 `;
 
 selected.forEach((sermon, index) => {
