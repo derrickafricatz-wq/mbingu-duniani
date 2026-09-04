@@ -1608,7 +1608,7 @@ const chapters = [];
 
 bookScreen.querySelectorAll('div[contenteditable="true"]:not(#bookTitle):not(#bookContents)').forEach((chapterText, index) => {
   chapters.push({
-    title: bookScreen.querySelectorAll('input[type="text"]')[index + 1].value.trim(),
+    title: bookScreen.querySelectorAll('input[type="text"]')[index].value.trim(),
     text: chapterText.innerText.trim()
   });
 });
