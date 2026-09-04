@@ -1426,7 +1426,11 @@ toolsBtn.style.borderRadius = "12px";
 toolsBtn.style.fontSize = "18px";
 toolsBtn.style.fontWeight = "bold";
 
-bookScreen.appendChild(toolsBtn);  
+ bookScreen.appendChild(toolsBtn);
+
+toolsBtn.onclick = () => {
+  alert("TOOLS OPENED");
+};
 
 bookScreen.appendChild(saveBookBtn); 
 
