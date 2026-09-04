@@ -1602,7 +1602,7 @@ toolsBtn.onclick = () => {
 bookScreen.appendChild(saveBookBtn); 
 
       saveBookBtn.onclick = async () => {
-  const bookTitle = document.getElementById("bookTitle").value.trim();
+  const bookTitle = document.getElementById("bookTitle").innerText.trim();
 
 const chapters = [];
 
