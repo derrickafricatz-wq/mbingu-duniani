@@ -1672,36 +1672,73 @@ pdf.addImage(
 );
 
 // START CHAPTERS
-chapters.forEach((chapter, index) => {
+const chapterBodies = bookScreen.querySelectorAll(
+  'div[contenteditable="true"]:not(#bookTitle):not(#bookContents)'
+);
 
-  pdf.addPage();
-  y = 20;
+for (let index = 0; index < chapterBodies.length; index++) {
 
-  pdf.setFontSize(17);
-  pdf.text(chapter.title || "Chapter " + (index + 1), 20, y);
+  const chapterBody = chapterBodies[index];
 
-  y += 10;
+  const chapterTitle =
+    bookScreen.querySelectorAll('input[type="text"]')[index].value.trim();
 
-  pdf.setFontSize(12);
+  const page = document.createElement("div");
 
-  const lines = pdf.splitTextToSize(
-    chapter.text,
-    170
-  );
+  page.style.position = "fixed";
+  page.style.left = "-10000px";
+  page.style.top = "0";
+  page.style.width = "794px";
+  page.style.minHeight = "1123px";
+  page.style.padding = "60px";
+  page.style.boxSizing = "border-box";
+  page.style.background = "white";
+  page.style.color = "black";
+  page.style.fontFamily = "Arial";
+  page.style.fontSize = "18px";
+  page.style.lineHeight = "1.8";
 
-  lines.forEach((line) => {
+  page.innerHTML = `
+    <div style="
+      font-size:30px;
+      font-weight:bold;
+      margin-bottom:30px;
+      color:black;
+    ">
+      ${chapterTitle || "Chapter " + (index + 1)}
+    </div>
 
-    if (y > 280) {
-      pdf.addPage();
-      y = 20;
-    }
+    <div>
+      ${chapterBody.innerHTML}
+    </div>
+  `;
 
-    pdf.text(line, 20, y);
-    y += 7;
+  document.body.appendChild(page);
+
+  const canvas = await html2canvas(page, {
+    backgroundColor: "#ffffff",
+    scale: 1.5
   });
 
-  y += 10;
-});
+  document.body.removeChild(page);
+
+  const image = canvas.toDataURL("image/png");
+
+  pdf.addPage();
+
+  const pageWidth = 180;
+  const pageHeight =
+    (canvas.height * pageWidth) / canvas.width;
+
+  pdf.addImage(
+    image,
+    "PNG",
+    15,
+    15,
+    pageWidth,
+    pageHeight
+  );
+}
 
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
 };
