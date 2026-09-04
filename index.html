@@ -1543,10 +1543,6 @@ toolsBtn.onclick = () => {
 
   });
 
-  toolsPanel.querySelector("#fontTool").onmousedown = (e) => {
-    e.preventDefault();
-  };
-
   toolsPanel.querySelector("#fontTool").onchange = (event) => {
 
     restoreSelection();
@@ -1557,10 +1553,6 @@ toolsBtn.onclick = () => {
       event.target.value
     );
 
-  };
-
-  toolsPanel.querySelector("#sizeTool").onmousedown = (e) => {
-    e.preventDefault();
   };
 
   toolsPanel.querySelector("#sizeTool").onchange = (event) => {
