@@ -1429,7 +1429,15 @@ toolsBtn.style.fontWeight = "bold";
  bookScreen.appendChild(toolsBtn);
 
 toolsBtn.onclick = () => {
-  alert("TOOLS OPENED");
+
+  const selection = window.getSelection();
+
+  if (!selection.rangeCount || selection.isCollapsed) {
+    alert("Please select the text you want to edit.");
+    return;
+  }
+
+  alert("Text selected and ready for formatting.");
 };
 
 bookScreen.appendChild(saveBookBtn); 
