@@ -1392,6 +1392,42 @@ bookScreen.innerHTML = `
     reader.readAsDataURL(file);
   };
 
+     /* BACK COVER UPLOAD */
+
+const backCoverInput = document.createElement("input");
+
+backCoverInput.type = "file";
+backCoverInput.accept = "image/*";
+
+backCoverInput.style.display = "block";
+backCoverInput.style.width = "100%";
+backCoverInput.style.margin = "0 0 25px";
+backCoverInput.style.padding = "12px";
+backCoverInput.style.boxSizing = "border-box";
+backCoverInput.style.background = "#111";
+backCoverInput.style.color = "white";
+backCoverInput.style.border = "1px solid #00ffff";
+backCoverInput.style.borderRadius = "10px";
+
+bookScreen.appendChild(backCoverInput);
+
+let backCoverImage = null;
+
+backCoverInput.onchange = () => {
+
+  const file = backCoverInput.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    backCoverImage = reader.result;
+  };
+
+  reader.readAsDataURL(file);
+};
+
 selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
