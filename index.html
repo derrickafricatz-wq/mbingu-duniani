@@ -1409,6 +1409,17 @@ backCoverInput.style.color = "white";
 backCoverInput.style.border = "1px solid #00ffff";
 backCoverInput.style.borderRadius = "10px";
 
+const backCoverLabel = document.createElement("div");
+
+backCoverLabel.innerText = "BACK COVER / LAST PAGE";
+
+backCoverLabel.style.color = "#00ffff";
+backCoverLabel.style.fontFamily = "'Russo One'";
+backCoverLabel.style.fontSize = "18px";
+backCoverLabel.style.margin = "10px 0";
+
+bookScreen.appendChild(backCoverLabel);     
+
 bookScreen.appendChild(backCoverInput);
 
 let backCoverImage = null;
