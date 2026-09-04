@@ -1437,7 +1437,125 @@ toolsBtn.onclick = () => {
     return;
   }
 
-  alert("Text selected and ready for formatting.");
+  const savedRange = selection.getRangeAt(0).cloneRange();
+
+  const toolsPanel = document.createElement("div");
+
+  toolsPanel.style.marginTop = "15px";
+  toolsPanel.style.padding = "15px";
+  toolsPanel.style.background = "#111";
+  toolsPanel.style.border = "1px solid #333";
+  toolsPanel.style.borderRadius = "12px";
+
+  toolsPanel.innerHTML = `
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    ">
+
+      <button data-command="bold">BOLD</button>
+      <button data-command="italic">ITALIC</button>
+      <button data-command="underline">UNDERLINE</button>
+
+      <select id="fontTool">
+        <option value="">FONT</option>
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Verdana">Verdana</option>
+      </select>
+
+      <select id="sizeTool">
+        <option value="">SIZE</option>
+        <option value="1">Small</option>
+        <option value="3">Normal</option>
+        <option value="5">Large</option>
+        <option value="7">Extra Large</option>
+      </select>
+
+      <input id="colorTool" type="color" title="Text Color">
+
+      <input id="highlightTool" type="color" title="Highlight">
+
+      <button data-command="justifyLeft">LEFT</button>
+      <button data-command="justifyCenter">CENTER</button>
+      <button data-command="justifyRight">RIGHT</button>
+
+    </div>
+  `;
+
+  toolsPanel.querySelectorAll("button").forEach(button => {
+
+    button.style.padding = "10px 12px";
+    button.style.background = "#222";
+    button.style.color = "#00ffff";
+    button.style.border = "1px solid #00ffff";
+    button.style.borderRadius = "8px";
+    button.style.fontWeight = "bold";
+
+    button.onclick = () => {
+
+      selection.removeAllRanges();
+      selection.addRange(savedRange);
+
+      document.execCommand(
+        button.dataset.command,
+        false,
+        null
+      );
+    };
+  });
+
+  toolsPanel.querySelector("#fontTool").onchange = (event) => {
+
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+
+    document.execCommand(
+      "fontName",
+      false,
+      event.target.value
+    );
+  };
+
+  toolsPanel.querySelector("#sizeTool").onchange = (event) => {
+
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+
+    document.execCommand(
+      "fontSize",
+      false,
+      event.target.value
+    );
+  };
+
+  toolsPanel.querySelector("#colorTool").onchange = (event) => {
+
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+
+    document.execCommand(
+      "foreColor",
+      false,
+      event.target.value
+    );
+  };
+
+  toolsPanel.querySelector("#highlightTool").onchange = (event) => {
+
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+
+    document.execCommand(
+      "hiliteColor",
+      false,
+      event.target.value
+    );
+  };
+
+  bookScreen.appendChild(toolsPanel);
 };
 
 bookScreen.appendChild(saveBookBtn); 
