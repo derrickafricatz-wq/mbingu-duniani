@@ -1631,23 +1631,45 @@ const { jsPDF } = window.jspdf;
 
 const pdf = new jsPDF();
 
-let y = 20;
+const titleElement = document.getElementById("bookTitle");
+const contentsElement = document.getElementById("bookContents");
 
-// BOOK TITLE
-pdf.setFontSize(20);
-pdf.text(bookTitle || "Untitled Book", 20, y);
+const titleCanvas = await html2canvas(titleElement, {
+  backgroundColor: "#ffffff",
+  scale: 2
+});
 
-// TABLE OF CONTENTS
-y += 25;
+const titleImage = titleCanvas.toDataURL("image/png");
+
+pdf.addImage(
+  titleImage,
+  "PNG",
+  15,
+  15,
+  180,
+  (titleCanvas.height * 180) / titleCanvas.width
+);
+
+const contentsCanvas = await html2canvas(contentsElement, {
+  backgroundColor: "#ffffff",
+  scale: 2
+});
+
+const contentsImage = contentsCanvas.toDataURL("image/png");
+
+pdf.addPage();
 
 pdf.setFontSize(18);
-pdf.text("TABLE OF CONTENTS", 20, y);
+pdf.text("TABLE OF CONTENTS", 20, 20);
 
-y += 12;
-
-pdf.setFontSize(12);
-
-const contents = document.getElementById("bookContents").value.trim();
+pdf.addImage(
+  contentsImage,
+  "PNG",
+  15,
+  30,
+  180,
+  (contentsCanvas.height * 180) / contentsCanvas.width
+);
 
 if (contents) {
 
