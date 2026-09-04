@@ -1669,25 +1669,71 @@ const titleElement = document.getElementById("bookTitle");
 titleElement.style.background = "#ffffff";
 titleElement.style.color = "#000000";    
        
-const contentsElement = document.getElementById("bookContents");
+const coverPage = document.createElement("div");
 
-contentsElement.style.background = "#ffffff";
-contentsElement.style.color = "#000000";     
+coverPage.style.position = "fixed";
+coverPage.style.left = "-10000px";
+coverPage.style.top = "0";
+coverPage.style.width = "794px";
+coverPage.style.height = "1123px";
+coverPage.style.background = "white";
+coverPage.style.overflow = "hidden";
 
-const titleCanvas = await html2canvas(titleElement, {
+if (coverImage) {
+
+  coverPage.innerHTML = `
+    <img
+      src="${coverImage}"
+      style="
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+      "
+    >
+  `;
+
+} else {
+
+  coverPage.innerHTML = `
+    <div style="
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:white;
+      color:black;
+      font-size:40px;
+      font-weight:bold;
+      text-align:center;
+      padding:60px;
+      box-sizing:border-box;
+    ">
+      ${bookTitle || "Untitled Book"}
+    </div>
+  `;
+
+}
+
+document.body.appendChild(coverPage);
+
+const coverCanvas = await html2canvas(coverPage, {
   backgroundColor: "#ffffff",
-  scale: 2
+  scale: 1.5
 });
 
-const titleImage = titleCanvas.toDataURL("image/png");
+document.body.removeChild(coverPage);
+
+const coverImageData = coverCanvas.toDataURL("image/png");
 
 pdf.addImage(
-  titleImage,
+  coverImageData,
   "PNG",
-  15,
-  15,
-  180,
-  (titleCanvas.height * 180) / titleCanvas.width
+  0,
+  0,
+  210,
+  297
 );
 
 const contentsCanvas = await html2canvas(contentsElement, {
