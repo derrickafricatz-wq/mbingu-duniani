@@ -1307,23 +1307,25 @@ bookScreen.innerHTML = `
     BOOK EDITOR
   </h2>
 
-  <input
-    id="bookTitle"
-    type="text"
-    placeholder="Enter book title"
-    style="
-      display:block;
-      width:100%;
-      box-sizing:border-box;
-      padding:14px;
-      margin:20px 0;
-      background:#111;
-      color:white;
-      border:1px solid #00ffff;
-      border-radius:10px;
-      font-size:18px;
-    "
-    >
+  <div
+  id="bookTitle"
+  contenteditable="true"
+  data-placeholder="Enter book title"
+  style="
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    margin:20px 0;
+    background:#111;
+    color:white;
+    border:1px solid #00ffff;
+    border-radius:10px;
+    font-size:18px;
+    min-height:24px;
+    outline:none;
+  "
+></div>
 
   <h3 style="
     color:#00ffff;
