@@ -1485,6 +1485,105 @@ chapter.style.minHeight = "600px";
 >${sermon.text}</div>
   `;
 
+ /* =========================
+   FREE CHAPTER CURSOR
+========================= */
+
+const chapterWritingArea =
+  chapter.querySelector(".chapter-writing-area");
+
+chapterWritingArea.addEventListener("click", (e) => {
+
+  /* Let the browser handle clicks on existing text normally */
+  const selection = window.getSelection();
+
+  if (!selection) return;
+
+  /* If the click is inside actual text, keep normal cursor behavior */
+  const range = document.caretRangeFromPoint
+    ? document.caretRangeFromPoint(e.clientX, e.clientY)
+    : null;
+
+  if (range && range.startContainer) {
+
+    const rects = range.getClientRects();
+
+    if (rects.length > 0) {
+      return;
+    }
+  }
+
+  /* =========================
+     EMPTY AREA CLICK
+  ========================= */
+
+  const areaRect =
+    chapterWritingArea.getBoundingClientRect();
+
+  const zoom =
+    parseFloat(bookScreen.style.zoom || "1") || 1;
+
+  const clickY =
+    (e.clientY - areaRect.top) / zoom;
+
+  const lineHeight = 18 * 1.8;
+
+  let targetLine =
+    Math.floor(clickY / lineHeight);
+
+  if (targetLine < 0) {
+    targetLine = 0;
+  }
+
+  /*
+     Put cursor at the end of the existing text
+     and create enough empty lines to reach
+     exactly where the author touched.
+  */
+
+  chapterWritingArea.focus();
+
+  const newRange =
+    document.createRange();
+
+  newRange.selectNodeContents(
+    chapterWritingArea
+  );
+
+  newRange.collapse(false);
+
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+
+  const currentText =
+    chapterWritingArea.innerText || "";
+
+  const existingLines =
+    currentText.split("\n").length;
+
+  const linesNeeded =
+    targetLine - existingLines + 1;
+
+  if (linesNeeded > 0) {
+
+    chapterWritingArea.appendChild(
+      document.createTextNode(
+        "\n".repeat(linesNeeded)
+      )
+    );
+
+    newRange.selectNodeContents(
+      chapterWritingArea
+    );
+
+    newRange.collapse(false);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+
+});
+
 
     /* OPTIONAL CHAPTER IMAGE */
 
