@@ -1738,27 +1738,25 @@ chapter.style.minHeight = "600px";
 
       resizeHandle.addEventListener("pointermove", (e) => {
 
-        if (!resizing) return;
+  if (!resizing) return;
 
-        e.preventDefault();
+  e.preventDefault();
 
-        const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
+  const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
 
+  let newWidth =
+    resizeStartWidth +
+    (e.clientX - resizeStartX) / zoom;
 
-        let newWidth =
-          resizeStartWidth +
-          (e.clientX - resizeStartX) / zoom;
+  /* ALLOW BOTH SHRINKING AND EXPANDING */
 
+  newWidth = Math.max(80, newWidth);
 
-        newWidth = Math.max(80, newWidth);
+  chapter._imageWidth = newWidth;
 
+  imageBox.style.width = newWidth + "px";
 
-        chapter._imageWidth = newWidth;
-
-        imageBox.style.width =
-          newWidth + "px";
-
-      });
+});
 
 
       resizeHandle.addEventListener("pointerup", (e) => {
