@@ -1451,21 +1451,21 @@ selected.forEach((sermon, index) => {
 
   chapter.innerHTML = `
     <input
-  type="text"
-  value="Chapter ${index + 1}"
-  style="
-    width:100%;
-    box-sizing:border-box;
-    padding:12px;
-    margin-bottom:12px;
-    background:#111;
-    color:#00ffff;
-    border:1px solid #00ffff;
-    border-radius:10px;
-    font-size:20px;
-    font-weight:bold;
-  "
->
+      type="text"
+      value="Chapter ${index + 1}"
+      style="
+        width:100%;
+        box-sizing:border-box;
+        padding:12px;
+        margin-bottom:12px;
+        background:#111;
+        color:#00ffff;
+        border:1px solid #00ffff;
+        border-radius:10px;
+        font-size:20px;
+        font-weight:bold;
+      "
+    >
 
     <div
       contenteditable="true"
@@ -1479,9 +1479,105 @@ selected.forEach((sermon, index) => {
     >${sermon.text}</div>
   `;
 
+
+  /* OPTIONAL CHAPTER IMAGE */
+
+  const imageLabel = document.createElement("div");
+
+  imageLabel.innerText = "OPTIONAL IMAGE / ILLUSTRATION";
+
+  imageLabel.style.color = "#00ffff";
+  imageLabel.style.fontFamily = "'Russo One'";
+  imageLabel.style.fontSize = "16px";
+  imageLabel.style.marginTop = "20px";
+  imageLabel.style.marginBottom = "8px";
+
+
+  const imageInput = document.createElement("input");
+
+  imageInput.type = "file";
+  imageInput.accept = "image/*";
+
+  imageInput.style.display = "block";
+  imageInput.style.width = "100%";
+  imageInput.style.boxSizing = "border-box";
+  imageInput.style.padding = "10px";
+  imageInput.style.background = "#111";
+  imageInput.style.color = "white";
+  imageInput.style.border = "1px solid #00ffff";
+  imageInput.style.borderRadius = "10px";
+
+
+  const imageArea = document.createElement("div");
+
+  imageArea.style.position = "relative";
+  imageArea.style.width = "100%";
+  imageArea.style.minHeight = "180px";
+  imageArea.style.marginTop = "12px";
+  imageArea.style.background = "#0b0b0b";
+  imageArea.style.border = "1px dashed #00ffff";
+  imageArea.style.borderRadius = "10px";
+  imageArea.style.display = "flex";
+  imageArea.style.alignItems = "center";
+  imageArea.style.justifyContent = "center";
+  imageArea.style.overflow = "hidden";
+
+
+  const imageHint = document.createElement("div");
+
+  imageHint.innerText = "No image selected";
+
+  imageHint.style.color = "#777";
+  imageHint.style.fontSize = "14px";
+
+  imageArea.appendChild(imageHint);
+
+
+  chapter.appendChild(imageLabel);
+  chapter.appendChild(imageInput);
+  chapter.appendChild(imageArea);
+
+
+  /* STORE IMAGE FOR LATER PDF WORK */
+
+  chapter._chapterImage = null;
+
+
+  imageInput.onchange = () => {
+
+    const file = imageInput.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+      chapter._chapterImage = reader.result;
+
+      imageArea.innerHTML = "";
+
+      const img = document.createElement("img");
+
+      img.src = reader.result;
+
+      img.style.width = "220px";
+      img.style.maxWidth = "60%";
+      img.style.maxHeight = "250px";
+      img.style.height = "auto";
+      img.style.objectFit = "contain";
+      img.style.display = "block";
+
+      imageArea.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+
   bookScreen.appendChild(chapter);
 });
-
+     
      const saveBookBtn = document.createElement("button");
 
 saveBookBtn.innerText = "SAVE BOOK";
