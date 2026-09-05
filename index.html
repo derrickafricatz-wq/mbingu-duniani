@@ -1443,11 +1443,16 @@ selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
 
-  chapter.style.marginTop = "25px";
-  chapter.style.padding = "15px";
-  chapter.style.background = "#111";
-  chapter.style.border = "1px solid #333";
-  chapter.style.borderRadius = "12px";
+chapter.className = "book-chapter";
+chapter.style.position = "relative";
+chapter.style.marginTop = "25px";
+chapter.style.padding = "15px";
+chapter.style.background = "#111";
+chapter.style.border = "1px solid #333";
+chapter.style.borderRadius = "12px";
+chapter.style.boxSizing = "border-box";
+chapter.style.overflow = "hidden";
+chapter.style.minHeight = "600px";
 
   chapter.innerHTML = `
     <input
