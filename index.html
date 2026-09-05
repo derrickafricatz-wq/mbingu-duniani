@@ -1485,7 +1485,7 @@ chapter.style.minHeight = "600px";
   `;
 
 
-  /* OPTIONAL CHAPTER IMAGE */
+    /* OPTIONAL CHAPTER IMAGE */
 
   const imageLabel = document.createElement("div");
 
@@ -1513,39 +1513,17 @@ chapter.style.minHeight = "600px";
   imageInput.style.borderRadius = "10px";
 
 
-  const imageArea = document.createElement("div");
-
-  imageArea.style.position = "relative";
-  imageArea.style.width = "100%";
-  imageArea.style.minHeight = "180px";
-  imageArea.style.marginTop = "12px";
-  imageArea.style.background = "#0b0b0b";
-  imageArea.style.border = "1px dashed #00ffff";
-  imageArea.style.borderRadius = "10px";
-  imageArea.style.display = "flex";
-  imageArea.style.alignItems = "center";
-  imageArea.style.justifyContent = "center";
-  imageArea.style.overflow = "hidden";
-
-
-  const imageHint = document.createElement("div");
-
-  imageHint.innerText = "No image selected";
-
-  imageHint.style.color = "#777";
-  imageHint.style.fontSize = "14px";
-
-  imageArea.appendChild(imageHint);
-
-
   chapter.appendChild(imageLabel);
   chapter.appendChild(imageInput);
-  chapter.appendChild(imageArea);
 
 
-  /* STORE IMAGE FOR LATER PDF WORK */
+  /* IMAGE DATA */
 
   chapter._chapterImage = null;
+  chapter._imageX = 20;
+  chapter._imageY = 250;
+  chapter._imageWidth = 220;
+  chapter._imageBox = null;
 
 
   imageInput.onchange = () => {
@@ -1558,201 +1536,252 @@ chapter.style.minHeight = "600px";
 
     reader.onload = () => {
 
-  chapter._chapterImage = reader.result;
+      chapter._chapterImage = reader.result;
 
-  imageArea.innerHTML = "";
 
-  /* IMAGE BOX */
+      /* REMOVE PREVIOUS IMAGE */
 
-  const imageBox = document.createElement("div");
+      if (chapter._imageBox) {
+        chapter._imageBox.remove();
+      }
 
-  imageBox.style.position = "absolute";
-  imageBox.style.left = "20px";
-  imageBox.style.top = "20px";
-  imageBox.style.width = "220px";
-  imageBox.style.touchAction = "none";
-  imageBox.style.userSelect = "none";
 
+      /* IMAGE CONTAINER */
 
-  /* IMAGE */
+      const imageBox = document.createElement("div");
 
-  const img = document.createElement("img");
+      chapter._imageBox = imageBox;
 
-  img.src = reader.result;
+      imageBox.style.position = "absolute";
+      imageBox.style.left = chapter._imageX + "px";
+      imageBox.style.top = chapter._imageY + "px";
+      imageBox.style.width = chapter._imageWidth + "px";
 
-  img.style.width = "100%";
-  img.style.height = "auto";
-  img.style.display = "block";
-  img.style.objectFit = "contain";
-  img.style.pointerEvents = "none";
-  img.style.userSelect = "none";
+      imageBox.style.zIndex = "20";
 
+      imageBox.style.cursor = "move";
 
-  /* RESIZE HANDLE */
+      imageBox.style.touchAction = "none";
 
-  const resizeHandle = document.createElement("div");
+      imageBox.style.userSelect = "none";
 
-  resizeHandle.style.position = "absolute";
-  resizeHandle.style.right = "-6px";
-  resizeHandle.style.bottom = "-6px";
-  resizeHandle.style.width = "18px";
-  resizeHandle.style.height = "18px";
-  resizeHandle.style.background = "#00ffff";
-  resizeHandle.style.border = "2px solid black";
-  resizeHandle.style.borderRadius = "5px";
-  resizeHandle.style.cursor = "nwse-resize";
-  resizeHandle.style.touchAction = "none";
 
+      /* IMAGE */
 
-  imageBox.appendChild(img);
-  imageBox.appendChild(resizeHandle);
+      const img = document.createElement("img");
 
-  imageArea.appendChild(imageBox);
+      img.src = reader.result;
 
+      img.style.display = "block";
+      img.style.width = "100%";
+      img.style.height = "auto";
 
-  /* STORE IMAGE POSITION AND SIZE */
+      img.style.maxWidth = "none";
+      img.style.maxHeight = "none";
 
-  chapter._imageX = 20;
-  chapter._imageY = 20;
-  chapter._imageWidth = 220;
+      img.style.objectFit = "contain";
 
+      img.style.pointerEvents = "none";
 
-  /* MOVE IMAGE */
+      img.draggable = false;
 
-  let moving = false;
-  let startX = 0;
-  let startY = 0;
-  let startLeft = 0;
-  let startTop = 0;
 
+      imageBox.appendChild(img);
 
-  imageBox.addEventListener("pointerdown", (e) => {
 
-    if (e.target === resizeHandle) return;
+      /* RESIZE HANDLE */
 
-    moving = true;
+      const resizeHandle = document.createElement("div");
 
-    imageBox.setPointerCapture(e.pointerId);
+      resizeHandle.style.position = "absolute";
+      resizeHandle.style.right = "-8px";
+      resizeHandle.style.bottom = "-8px";
 
-    startX = e.clientX;
-    startY = e.clientY;
+      resizeHandle.style.width = "18px";
+      resizeHandle.style.height = "18px";
 
-    startLeft = parseFloat(imageBox.style.left);
-    startTop = parseFloat(imageBox.style.top);
+      resizeHandle.style.background = "#00ffff";
+      resizeHandle.style.borderRadius = "50%";
 
-  });
+      resizeHandle.style.cursor = "nwse-resize";
 
+      resizeHandle.style.touchAction = "none";
 
-  imageBox.addEventListener("pointermove", (e) => {
+      resizeHandle.style.zIndex = "30";
 
-    if (!moving) return;
 
-    const zoom = parseFloat(bookScreen.style.zoom) || 1;
+      imageBox.appendChild(resizeHandle);
 
-    let newLeft =
-      startLeft + ((e.clientX - startX) / zoom);
 
-    let newTop =
-      startTop + ((e.clientY - startY) / zoom);
+      /* PUT IMAGE DIRECTLY INSIDE CHAPTER */
 
+      chapter.appendChild(imageBox);
 
-    const maxLeft =
-      imageArea.clientWidth - imageBox.offsetWidth;
 
-    const maxTop =
-      imageArea.clientHeight - imageBox.offsetHeight;
+      /* =========================
+         MOVE IMAGE
+      ========================= */
 
+      let moving = false;
+      let startX = 0;
+      let startY = 0;
+      let originalX = 0;
+      let originalY = 0;
 
-    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
 
-    newTop = Math.max(0, Math.min(newTop, maxTop));
+      imageBox.addEventListener("pointerdown", (e) => {
 
+        if (e.target === resizeHandle) return;
 
-    imageBox.style.left = newLeft + "px";
-    imageBox.style.top = newTop + "px";
+        e.preventDefault();
 
+        moving = true;
 
-    chapter._imageX = newLeft;
-    chapter._imageY = newTop;
+        imageBox.setPointerCapture(e.pointerId);
 
-  });
+        startX = e.clientX;
+        startY = e.clientY;
 
+        originalX = chapter._imageX;
+        originalY = chapter._imageY;
 
-  imageBox.addEventListener("pointerup", () => {
+      });
 
-    moving = false;
 
-  });
+      imageBox.addEventListener("pointermove", (e) => {
 
+        if (!moving) return;
 
-  /* RESIZE IMAGE */
+        e.preventDefault();
 
-  let resizing = false;
-  let resizeStartX = 0;
-  let resizeStartWidth = 0;
+        const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
 
+        let newX =
+          originalX +
+          (e.clientX - startX) / zoom;
 
-  resizeHandle.addEventListener("pointerdown", (e) => {
+        let newY =
+          originalY +
+          (e.clientY - startY) / zoom;
 
-    e.stopPropagation();
 
-    resizing = true;
+        /* KEEP IMAGE INSIDE CHAPTER */
 
-    resizeHandle.setPointerCapture(e.pointerId);
+        const maxX =
+          chapter.clientWidth -
+          imageBox.offsetWidth -
+          5;
 
-    resizeStartX = e.clientX;
+        const maxY =
+          chapter.clientHeight -
+          imageBox.offsetHeight -
+          5;
 
-    resizeStartWidth =
-      imageBox.offsetWidth;
 
-  });
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
 
 
-  resizeHandle.addEventListener("pointermove", (e) => {
+        chapter._imageX = newX;
+        chapter._imageY = newY;
 
-    if (!resizing) return;
 
-    const zoom = parseFloat(bookScreen.style.zoom) || 1;
+        imageBox.style.left = newX + "px";
+        imageBox.style.top = newY + "px";
 
-    const difference =
-      (e.clientX - resizeStartX) / zoom;
+      });
 
-    let newWidth =
-      resizeStartWidth + difference;
 
+      imageBox.addEventListener("pointerup", (e) => {
 
-    newWidth = Math.max(80, newWidth);
+        moving = false;
 
+        try {
+          imageBox.releasePointerCapture(e.pointerId);
+        } catch (err) {}
 
-    const maxWidth =
-      imageArea.clientWidth -
-      parseFloat(imageBox.style.left) -
-      5;
+      });
 
 
-    newWidth =
-      Math.min(newWidth, maxWidth);
+      imageBox.addEventListener("pointercancel", () => {
 
+        moving = false;
 
-    imageBox.style.width =
-      newWidth + "px";
+      });
 
 
-    chapter._imageWidth =
-      newWidth;
+      /* =========================
+         RESIZE IMAGE
+      ========================= */
 
-  });
+      let resizing = false;
+      let resizeStartX = 0;
+      let resizeStartWidth = 0;
 
 
-  resizeHandle.addEventListener("pointerup", () => {
+      resizeHandle.addEventListener("pointerdown", (e) => {
 
-    resizing = false;
+        e.preventDefault();
 
-  });
+        e.stopPropagation();
 
-};
+        resizing = true;
+
+        resizeHandle.setPointerCapture(e.pointerId);
+
+        resizeStartX = e.clientX;
+
+        resizeStartWidth = chapter._imageWidth;
+
+      });
+
+
+      resizeHandle.addEventListener("pointermove", (e) => {
+
+        if (!resizing) return;
+
+        e.preventDefault();
+
+        const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
+
+
+        let newWidth =
+          resizeStartWidth +
+          (e.clientX - resizeStartX) / zoom;
+
+
+        newWidth = Math.max(80, newWidth);
+
+
+        chapter._imageWidth = newWidth;
+
+        imageBox.style.width =
+          newWidth + "px";
+
+      });
+
+
+      resizeHandle.addEventListener("pointerup", (e) => {
+
+        resizing = false;
+
+        try {
+          resizeHandle.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+
+      });
+
+
+      resizeHandle.addEventListener("pointercancel", () => {
+
+        resizing = false;
+
+      });
+
+    };
 
     reader.readAsDataURL(file);
+
   };
 
 
