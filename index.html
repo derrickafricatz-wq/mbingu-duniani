@@ -1513,8 +1513,37 @@ chapter.style.minHeight = "600px";
   imageInput.style.borderRadius = "10px";
 
 
-  chapter.appendChild(imageLabel);
-  chapter.appendChild(imageInput);
+  /* CLEAN IMAGE UPLOAD CONTROLS AT BOTTOM */
+
+const uploadArea = document.createElement("div");
+
+uploadArea.style.position = "absolute";
+uploadArea.style.left = "15px";
+uploadArea.style.right = "15px";
+uploadArea.style.bottom = "15px";
+
+uploadArea.style.display = "flex";
+uploadArea.style.alignItems = "center";
+uploadArea.style.gap = "10px";
+
+uploadArea.style.opacity = "0.75";
+
+
+imageLabel.style.margin = "0";
+imageLabel.style.fontSize = "13px";
+imageLabel.style.whiteSpace = "nowrap";
+
+
+imageInput.style.width = "auto";
+imageInput.style.flex = "1";
+imageInput.style.padding = "6px";
+imageInput.style.fontSize = "12px";
+
+
+uploadArea.appendChild(imageLabel);
+uploadArea.appendChild(imageInput);
+
+chapter.appendChild(uploadArea);
 
 
   /* IMAGE DATA */
