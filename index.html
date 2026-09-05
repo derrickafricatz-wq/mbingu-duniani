@@ -1553,23 +1553,199 @@ selected.forEach((sermon, index) => {
 
     reader.onload = () => {
 
-      chapter._chapterImage = reader.result;
+  chapter._chapterImage = reader.result;
 
-      imageArea.innerHTML = "";
+  imageArea.innerHTML = "";
 
-      const img = document.createElement("img");
+  /* IMAGE BOX */
 
-      img.src = reader.result;
+  const imageBox = document.createElement("div");
 
-      img.style.width = "220px";
-      img.style.maxWidth = "60%";
-      img.style.maxHeight = "250px";
-      img.style.height = "auto";
-      img.style.objectFit = "contain";
-      img.style.display = "block";
+  imageBox.style.position = "absolute";
+  imageBox.style.left = "20px";
+  imageBox.style.top = "20px";
+  imageBox.style.width = "220px";
+  imageBox.style.touchAction = "none";
+  imageBox.style.userSelect = "none";
 
-      imageArea.appendChild(img);
-    };
+
+  /* IMAGE */
+
+  const img = document.createElement("img");
+
+  img.src = reader.result;
+
+  img.style.width = "100%";
+  img.style.height = "auto";
+  img.style.display = "block";
+  img.style.objectFit = "contain";
+  img.style.pointerEvents = "none";
+  img.style.userSelect = "none";
+
+
+  /* RESIZE HANDLE */
+
+  const resizeHandle = document.createElement("div");
+
+  resizeHandle.style.position = "absolute";
+  resizeHandle.style.right = "-6px";
+  resizeHandle.style.bottom = "-6px";
+  resizeHandle.style.width = "18px";
+  resizeHandle.style.height = "18px";
+  resizeHandle.style.background = "#00ffff";
+  resizeHandle.style.border = "2px solid black";
+  resizeHandle.style.borderRadius = "5px";
+  resizeHandle.style.cursor = "nwse-resize";
+  resizeHandle.style.touchAction = "none";
+
+
+  imageBox.appendChild(img);
+  imageBox.appendChild(resizeHandle);
+
+  imageArea.appendChild(imageBox);
+
+
+  /* STORE IMAGE POSITION AND SIZE */
+
+  chapter._imageX = 20;
+  chapter._imageY = 20;
+  chapter._imageWidth = 220;
+
+
+  /* MOVE IMAGE */
+
+  let moving = false;
+  let startX = 0;
+  let startY = 0;
+  let startLeft = 0;
+  let startTop = 0;
+
+
+  imageBox.addEventListener("pointerdown", (e) => {
+
+    if (e.target === resizeHandle) return;
+
+    moving = true;
+
+    imageBox.setPointerCapture(e.pointerId);
+
+    startX = e.clientX;
+    startY = e.clientY;
+
+    startLeft = parseFloat(imageBox.style.left);
+    startTop = parseFloat(imageBox.style.top);
+
+  });
+
+
+  imageBox.addEventListener("pointermove", (e) => {
+
+    if (!moving) return;
+
+    const zoom = parseFloat(bookScreen.style.zoom) || 1;
+
+    let newLeft =
+      startLeft + ((e.clientX - startX) / zoom);
+
+    let newTop =
+      startTop + ((e.clientY - startY) / zoom);
+
+
+    const maxLeft =
+      imageArea.clientWidth - imageBox.offsetWidth;
+
+    const maxTop =
+      imageArea.clientHeight - imageBox.offsetHeight;
+
+
+    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+
+    newTop = Math.max(0, Math.min(newTop, maxTop));
+
+
+    imageBox.style.left = newLeft + "px";
+    imageBox.style.top = newTop + "px";
+
+
+    chapter._imageX = newLeft;
+    chapter._imageY = newTop;
+
+  });
+
+
+  imageBox.addEventListener("pointerup", () => {
+
+    moving = false;
+
+  });
+
+
+  /* RESIZE IMAGE */
+
+  let resizing = false;
+  let resizeStartX = 0;
+  let resizeStartWidth = 0;
+
+
+  resizeHandle.addEventListener("pointerdown", (e) => {
+
+    e.stopPropagation();
+
+    resizing = true;
+
+    resizeHandle.setPointerCapture(e.pointerId);
+
+    resizeStartX = e.clientX;
+
+    resizeStartWidth =
+      imageBox.offsetWidth;
+
+  });
+
+
+  resizeHandle.addEventListener("pointermove", (e) => {
+
+    if (!resizing) return;
+
+    const zoom = parseFloat(bookScreen.style.zoom) || 1;
+
+    const difference =
+      (e.clientX - resizeStartX) / zoom;
+
+    let newWidth =
+      resizeStartWidth + difference;
+
+
+    newWidth = Math.max(80, newWidth);
+
+
+    const maxWidth =
+      imageArea.clientWidth -
+      parseFloat(imageBox.style.left) -
+      5;
+
+
+    newWidth =
+      Math.min(newWidth, maxWidth);
+
+
+    imageBox.style.width =
+      newWidth + "px";
+
+
+    chapter._imageWidth =
+      newWidth;
+
+  });
+
+
+  resizeHandle.addEventListener("pointerup", () => {
+
+    resizing = false;
+
+  });
+
+};
 
     reader.readAsDataURL(file);
   };
