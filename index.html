@@ -1472,130 +1472,232 @@ chapter.style.minHeight = "600px";
       "
     >
 
+
     <div
-  class="chapter-writing-area"
-  contenteditable="true"
-  style="
-    position:absolute;
-    left:15px;
-    right:15px;
-    top:75px;
-    bottom:75px;
+      class="chapter-writing-area"
+      contenteditable="true"
+      spellcheck="false"
+      style="
+        position:absolute;
+        left:15px;
+        right:15px;
+        top:75px;
+        bottom:75px;
 
-    color:white;
-    font-size:18px;
-    line-height:1.8;
+        color:white;
+        font-size:18px;
+        line-height:1.8;
 
-    outline:none;
-    box-sizing:border-box;
+        outline:none;
+        box-sizing:border-box;
 
-    white-space:pre-wrap;
-    overflow:hidden;
+        white-space:pre-wrap;
+        overflow:hidden;
 
-    z-index:10;
-  "
->${sermon.text}</div>
+        z-index:10;
+      "
+    >${sermon.text}</div>
   `;
 
- /* =========================
-   FREE CHAPTER CURSOR
-========================= */
-
-const chapterWritingArea =
-  chapter.querySelector(".chapter-writing-area");
-
-chapterWritingArea.addEventListener("click", (e) => {
-
-  /* Let the browser handle clicks on existing text normally */
-  const selection = window.getSelection();
-
-  if (!selection) return;
-
-  /* If the click is inside actual text, keep normal cursor behavior */
-  const range = document.caretRangeFromPoint
-    ? document.caretRangeFromPoint(e.clientX, e.clientY)
-    : null;
-
-  if (range && range.startContainer) {
-
-    const rects = range.getClientRects();
-
-    if (rects.length > 0) {
-      return;
-    }
-  }
-
   /* =========================
-     EMPTY AREA CLICK
+     FREE CLICK-TO-CURSOR
   ========================= */
 
-  const areaRect =
-    chapterWritingArea.getBoundingClientRect();
+  const chapterWritingArea =
+    chapter.querySelector(".chapter-writing-area");
 
-  const zoom =
-    parseFloat(bookScreen.style.zoom || "1") || 1;
+  chapterWritingArea.addEventListener("pointerdown", (e) => {
 
-  const clickY =
-    (e.clientY - areaRect.top) / zoom;
+    /* Only handle the empty writing space */
+    if (e.target !== chapterWritingArea) return;
 
-  const lineHeight = 18 * 1.8;
+    e.preventDefault();
 
-  let targetLine =
-    Math.floor(clickY / lineHeight);
+    chapterWritingArea.focus();
 
-  if (targetLine < 0) {
-    targetLine = 0;
-  }
+    const rect =
+      chapterWritingArea.getBoundingClientRect();
 
-  /*
-     Put cursor at the end of the existing text
-     and create enough empty lines to reach
-     exactly where the author touched.
-  */
+    const zoom =
+      parseFloat(bookScreen.style.zoom || "1") || 1;
 
-  chapterWritingArea.focus();
+    /* Convert screen position to editor position */
+    const x =
+      (e.clientX - rect.left) / zoom;
 
-  const newRange =
-    document.createRange();
+    const y =
+      (e.clientY - rect.top) / zoom;
 
-  newRange.selectNodeContents(
-    chapterWritingArea
-  );
+    const lineHeight =
+      18 * 1.8;
 
-  newRange.collapse(false);
+    /* Which line did the author touch? */
+    let lineNumber =
+      Math.floor(y / lineHeight);
 
-  selection.removeAllRanges();
-  selection.addRange(newRange);
+    if (lineNumber < 0) {
+      lineNumber = 0;
+    }
 
-  const currentText =
-    chapterWritingArea.innerText || "";
+    /* How far from the left? */
+    let spaces =
+      Math.floor(x / 10);
 
-  const existingLines =
-    currentText.split("\n").length;
+    if (spaces < 0) {
+      spaces = 0;
+    }
 
-  const linesNeeded =
-    targetLine - existingLines + 1;
+    /*
+       Get current text.
+       We deliberately work with plain text here
+       so the cursor can exist in empty space.
+    */
 
-  if (linesNeeded > 0) {
+    let text =
+      chapterWritingArea.innerText || "";
 
-    chapterWritingArea.appendChild(
-      document.createTextNode(
-        "\n".repeat(linesNeeded)
-      )
+    let lines =
+      text.split("\n");
+
+    /*
+       Make enough lines to reach
+       the exact vertical area touched.
+    */
+
+    while (lines.length <= lineNumber) {
+      lines.push("");
+    }
+
+    /*
+       Put the cursor on the line touched.
+       Add horizontal spacing so typing begins
+       approximately where the author touched.
+    */
+
+    let targetLine =
+      lines[lineNumber] || "";
+
+    if (targetLine.trim() === "") {
+
+      lines[lineNumber] =
+        " ".repeat(spaces);
+
+    }
+
+    text = lines.join("\n");
+
+    /*
+       Replace the editor contents only when
+       we need to create empty space.
+    */
+
+    chapterWritingArea.innerText = text;
+
+    /*
+       Put the cursor EXACTLY on the created line.
+    */
+
+    const selection =
+      window.getSelection();
+
+    const range =
+      document.createRange();
+
+    const walker =
+      document.createTreeWalker(
+        chapterWritingArea,
+        NodeFilter.SHOW_TEXT
+      );
+
+    let textNode = null;
+    let currentLine = 0;
+
+    while (walker.nextNode()) {
+
+      const node = walker.currentNode;
+
+      const value = node.nodeValue || "";
+
+      const lineBreaks =
+        (value.match(/\n/g) || []).length;
+
+      if (
+        currentLine <= lineNumber &&
+        currentLine + lineBreaks >= lineNumber
+      ) {
+
+        textNode = node;
+        break;
+      }
+
+      currentLine += lineBreaks;
+    }
+
+    /*
+       If no text node exists, create one.
+    */
+
+    if (!textNode) {
+
+      textNode =
+        document.createTextNode("");
+
+      chapterWritingArea.appendChild(
+        textNode
+      );
+    }
+
+    /*
+       Find the beginning of the
+       requested line inside the text node.
+    */
+
+    const value =
+      textNode.nodeValue || "";
+
+    let offset = 0;
+
+    if (lineNumber > 0) {
+
+      let found = 0;
+
+      for (let i = 0; i < value.length; i++) {
+
+        if (value[i] === "\n") {
+
+          found++;
+
+          if (found === lineNumber) {
+
+            offset = i + 1;
+            break;
+          }
+        }
+      }
+    }
+
+    /*
+       Move horizontally according
+       to the user's touch.
+    */
+
+    offset += Math.min(
+      spaces,
+      value.length - offset
     );
 
-    newRange.selectNodeContents(
-      chapterWritingArea
+    range.setStart(
+      textNode,
+      offset
     );
 
-    newRange.collapse(false);
+    range.collapse(true);
 
     selection.removeAllRanges();
-    selection.addRange(newRange);
-  }
+    selection.addRange(range);
 
-});
-
+  });
+    
 
     /* OPTIONAL CHAPTER IMAGE */
 
