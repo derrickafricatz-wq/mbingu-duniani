@@ -1473,14 +1473,26 @@ chapter.style.minHeight = "600px";
     >
 
     <div
+  class="chapter-writing-area"
   contenteditable="true"
   style="
+    position:absolute;
+    left:15px;
+    right:15px;
+    top:75px;
+    bottom:75px;
+
     color:white;
     font-size:18px;
     line-height:1.8;
-    min-height:700px;
-    padding-bottom:100px;
+
     outline:none;
+    box-sizing:border-box;
+
+    white-space:pre-wrap;
+    overflow:hidden;
+
+    z-index:10;
   "
 >${sermon.text}</div>
   `;
