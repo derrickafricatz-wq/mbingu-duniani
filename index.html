@@ -1433,143 +1433,262 @@ bookScreen.style.color = "white";
 bookScreen.style.zIndex = "400";
 bookScreen.style.padding = "20px";
 bookScreen.style.overflowY = "auto";
-bookScreen.style.zoom = "1.5";
+bookScreen.style.zoom = "1";
 
 bookScreen.innerHTML = `
-  <h2 style="
-    color:#00ffff;
-    text-align:center;
-    font-family:'Russo One';
-  ">
-    BOOK EDITOR
-  </h2>
+  <style>
+    #bookEditorInner{
+      width:100%;
+      max-width:920px;
+      margin:0 auto;
+      box-sizing:border-box;
+    }
+    .book-editor-heading{
+      color:#00ffff;
+      text-align:center;
+      font-family:'Russo One',sans-serif;
+      font-size:clamp(24px,6vw,34px);
+      margin:0 0 18px;
+      letter-spacing:1px;
+    }
+    .book-section{
+      width:100%;
+      box-sizing:border-box;
+      background:linear-gradient(145deg,#151515,#090909);
+      border:1px solid #00ffff;
+      border-radius:16px;
+      padding:16px;
+      margin:0 0 18px;
+      box-shadow:0 10px 24px rgba(0,0,0,.45);
+    }
+    .book-section-title{
+      display:block;
+      color:#00ffff;
+      font-family:'Russo One',sans-serif;
+      font-size:18px;
+      margin:0 0 10px;
+      letter-spacing:.5px;
+    }
+    .book-title-editor{
+      width:100%;
+      min-height:56px;
+      box-sizing:border-box;
+      padding:14px 16px;
+      background:#111;
+      color:white;
+      border:1px solid #00ffff;
+      border-radius:12px;
+      font-size:clamp(19px,4.5vw,25px);
+      font-weight:bold;
+      line-height:1.35;
+      outline:none;
+      display:block;
+    }
+    .book-title-editor:empty:before,
+    #bookContents:empty:before{
+      content:attr(data-placeholder);
+      color:#777;
+    }
+    .book-input{
+      display:block;
+      width:100%;
+      min-height:50px;
+      box-sizing:border-box;
+      padding:10px;
+      background:#111;
+      color:white;
+      border:1px solid #00ffff;
+      border-radius:12px;
+      font-size:16px;
+    }
+    .cover-preview{
+      width:100%;
+      min-height:20px;
+      max-height:240px;
+      margin-top:12px;
+      border:1px dashed #555;
+      border-radius:12px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#050505;
+      box-sizing:border-box;
+    }
+    .cover-preview img{
+      display:block;
+      width:100%;
+      max-height:240px;
+      object-fit:contain;
+    }
+    #bookContents{
+      display:block;
+      width:100%;
+      min-height:150px;
+      box-sizing:border-box;
+      padding:14px;
+      background:#111;
+      color:white;
+      border:1px solid #00ffff;
+      border-radius:12px;
+      font-size:18px;
+      line-height:1.6;
+      outline:none;
+    }
+    .chapter-card{
+      width:100%;
+      box-sizing:border-box;
+      margin:0 0 18px;
+      padding:16px;
+      background:linear-gradient(145deg,#151515,#090909);
+      border:1px solid #333;
+      border-radius:16px;
+      box-shadow:0 8px 20px rgba(0,0,0,.35);
+    }
+    .chapter-title-input{
+      width:100%;
+      box-sizing:border-box;
+      padding:13px;
+      margin-bottom:12px;
+      background:#111;
+      color:#00ffff;
+      border:1px solid #00ffff;
+      border-radius:10px;
+      font-size:20px;
+      font-weight:bold;
+      outline:none;
+    }
+    .chapter-body{
+      color:white;
+      font-size:18px;
+      line-height:1.8;
+      min-height:150px;
+      outline:none;
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+    .book-action{
+      width:100%;
+      min-height:54px;
+      box-sizing:border-box;
+      border-radius:14px;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+    @media(max-width:520px){
+      #bookEditorInner{padding:0;}
+      .book-section,.chapter-card{padding:13px; border-radius:14px;}
+      .book-input{font-size:15px;}
+    }
+  </style>
 
-  <div
-  id="bookTitle"
-  contenteditable="true"
-  data-placeholder="Enter book title"
-  style="
-    display:block;
-    width:100%;
-    box-sizing:border-box;
-    padding:14px;
-    margin:20px 0;
-    background:#111;
-    color:white;
-    border:1px solid #00ffff;
-    border-radius:10px;
-    font-size:18px;
-    min-height:24px;
-    outline:none;
-  "
-></div>
+  <div id="bookEditorInner">
+    <h2 class="book-editor-heading">BOOK EDITOR</h2>
 
-  <h3 style="
-    color:#00ffff;
-    margin-top:25px;
-  ">
-    TABLE OF CONTENTS
-  </h3>
+    <!-- BOOK TITLE IS ALWAYS ON ITS OWN LINE -->
+    <div class="book-section">
+      <div class="book-section-title">BOOK TITLE</div>
+      <div
+        id="bookTitle"
+        contenteditable="true"
+        data-placeholder="Enter book title"
+        class="book-title-editor"
+      ></div>
+    </div>
 
-  <div
-  id="bookContents"
-  contenteditable="true"
-  data-placeholder="Enter table of contents..."
-  style="
-    display:block;
-    width:100%;
-    min-height:150px;
-    box-sizing:border-box;
-    padding:14px;
-    margin:10px 0 20px;
-    background:#111;
-    color:white;
-    border:1px solid #00ffff;
-    border-radius:10px;
-    font-size:18px;
-    line-height:1.6;
-    outline:none;
-  "
-></div>
+    <!-- FRONT COVER IS BELOW THE TITLE, IN ITS OWN SECTION -->
+    <div class="book-section">
+      <div class="book-section-title">FRONT COVER</div>
+      <div style="color:#aaa;font-size:14px;margin-bottom:10px;">
+        Choose the front cover image. The editor size will stay unchanged.
+      </div>
+    </div>
+
+    <div class="book-section">
+      <div class="book-section-title">TABLE OF CONTENTS</div>
+      <div
+        id="bookContents"
+        contenteditable="true"
+        data-placeholder="Enter table of contents..."
+      ></div>
+    </div>
+
+    <div class="book-section">
+      <div class="book-section-title">BACK COVER / LAST PAGE</div>
+      <div style="color:#aaa;font-size:14px;">
+        Choose an image to use as the final PDF page.
+      </div>
+    </div>
+  </div>
 `;
 
-       const coverInput = document.createElement("input");
+/* ================= COVER UPLOADS ================= */
 
-  coverInput.type = "file";
-  coverInput.accept = "image/*";
-  coverInput.style.display = "block";
-  coverInput.style.width = "100%";
-  coverInput.style.margin = "15px 0 25px";
-  coverInput.style.padding = "12px";
-  coverInput.style.boxSizing = "border-box";
-  coverInput.style.background = "#111";
-  coverInput.style.color = "white";
-  coverInput.style.border = "1px solid #00ffff";
-  coverInput.style.borderRadius = "10px";
+const frontCoverSection = bookScreen.querySelectorAll('.book-section')[1];
+const frontCoverPreview = document.createElement('div');
+frontCoverPreview.className = 'cover-preview';
+frontCoverPreview.style.display = 'none';
 
-  bookScreen.appendChild(coverInput);
+const coverInput = document.createElement('input');
+coverInput.type = 'file';
+coverInput.accept = 'image/*';
+coverInput.className = 'book-input';
+coverInput.setAttribute('aria-label','Upload front cover');
 
-  let coverImage = null;
+frontCoverSection.appendChild(coverInput);
+frontCoverSection.appendChild(frontCoverPreview);
 
-  coverInput.onchange = () => {
+let coverImage = null;
 
-    const file = coverInput.files[0];
+coverInput.onchange = () => {
+  const file = coverInput.files[0];
+  if (!file) return;
 
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      coverImage = reader.result;
-    };
-
-    reader.readAsDataURL(file);
+  const reader = new FileReader();
+  reader.onload = () => {
+    coverImage = reader.result;
+    frontCoverPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = coverImage;
+    img.alt = 'Front cover preview';
+    frontCoverPreview.appendChild(img);
+    frontCoverPreview.style.display = 'flex';
   };
+  reader.readAsDataURL(file);
+};
 
-     /* BACK COVER UPLOAD */
+const backCoverSection = bookScreen.querySelectorAll('.book-section')[3];
+const backCoverInput = document.createElement('input');
+backCoverInput.type = 'file';
+backCoverInput.accept = 'image/*';
+backCoverInput.className = 'book-input';
+backCoverInput.setAttribute('aria-label','Upload back cover');
 
-const backCoverInput = document.createElement("input");
+const backCoverPreview = document.createElement('div');
+backCoverPreview.className = 'cover-preview';
+backCoverPreview.style.display = 'none';
 
-backCoverInput.type = "file";
-backCoverInput.accept = "image/*";
-
-backCoverInput.style.display = "block";
-backCoverInput.style.width = "100%";
-backCoverInput.style.margin = "0 0 25px";
-backCoverInput.style.padding = "12px";
-backCoverInput.style.boxSizing = "border-box";
-backCoverInput.style.background = "#111";
-backCoverInput.style.color = "white";
-backCoverInput.style.border = "1px solid #00ffff";
-backCoverInput.style.borderRadius = "10px";
-
-const backCoverLabel = document.createElement("div");
-
-backCoverLabel.innerText = "BACK COVER / LAST PAGE";
-
-backCoverLabel.style.color = "#00ffff";
-backCoverLabel.style.fontFamily = "'Russo One'";
-backCoverLabel.style.fontSize = "18px";
-backCoverLabel.style.margin = "10px 0";
-
-bookScreen.appendChild(backCoverLabel);     
-
-bookScreen.appendChild(backCoverInput);
+backCoverSection.appendChild(backCoverInput);
+backCoverSection.appendChild(backCoverPreview);
 
 let backCoverImage = null;
 
 backCoverInput.onchange = () => {
-
   const file = backCoverInput.files[0];
-
   if (!file) return;
 
   const reader = new FileReader();
-
   reader.onload = () => {
     backCoverImage = reader.result;
+    backCoverPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = backCoverImage;
+    img.alt = 'Back cover preview';
+    backCoverPreview.appendChild(img);
+    backCoverPreview.style.display = 'flex';
   };
-
   reader.readAsDataURL(file);
 };
 
@@ -1577,43 +1696,22 @@ selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
 
-  chapter.style.marginTop = "25px";
-  chapter.style.padding = "15px";
-  chapter.style.background = "#111";
-  chapter.style.border = "1px solid #333";
-  chapter.style.borderRadius = "12px";
+  chapter.className = "chapter-card";
 
   chapter.innerHTML = `
     <input
-  type="text"
-  value="Chapter ${index + 1}"
-  style="
-    width:100%;
-    box-sizing:border-box;
-    padding:12px;
-    margin-bottom:12px;
-    background:#111;
-    color:#00ffff;
-    border:1px solid #00ffff;
-    border-radius:10px;
-    font-size:20px;
-    font-weight:bold;
-  "
->
+      type="text"
+      value="Chapter ${index + 1}"
+      class="chapter-title-input"
+    >
 
     <div
       contenteditable="true"
-      style="
-        color:white;
-        font-size:18px;
-        line-height:1.8;
-        min-height:150px;
-        outline:none;
-      "
+      class="chapter-body"
     >${sermon.text}</div>
   `;
 
-  bookScreen.appendChild(chapter);
+  bookScreen.querySelector("#bookEditorInner").appendChild(chapter);
 });
 
      const saveBookBtn = document.createElement("button");
@@ -1646,7 +1744,7 @@ toolsBtn.style.borderRadius = "12px";
 toolsBtn.style.fontSize = "18px";
 toolsBtn.style.fontWeight = "bold";
 
- bookScreen.appendChild(toolsBtn);
+ bookScreen.querySelector("#bookEditorInner").appendChild(toolsBtn);
 
 toolsBtn.onclick = () => {
 
@@ -1676,24 +1774,72 @@ toolsBtn.onclick = () => {
       gap:8px;
     ">
 
-      <button data-command="bold">BOLD</button>
-      <button data-command="italic">ITALIC</button>
-      <button data-command="underline">UNDERLINE</button>
+      <button data-command="bold" title="Bold">BOLD</button>
+      <button data-command="italic" title="Italic">ITALIC</button>
+      <button data-command="underline" title="Underline">UNDERLINE</button>
+      <button data-command="strikeThrough" title="Strike through">STRIKE</button>
+      <button data-command="superscript" title="Superscript">X²</button>
+      <button data-command="subscript" title="Subscript">X₂</button>
 
-      <select id="fontTool">
+      <select id="fontTool" title="Choose font">
         <option value="">FONT</option>
         <option value="Arial">Arial</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Times New Roman">Times New Roman</option>
+        <option value="Helvetica">Helvetica</option>
         <option value="Verdana">Verdana</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Garamond">Garamond</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Lucida Console">Lucida Console</option>
+        <option value="Impact">Impact</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+        <option value="Palatino Linotype">Palatino Linotype</option>
+        <option value="Book Antiqua">Book Antiqua</option>
+        <option value="Century Gothic">Century Gothic</option>
+        <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
+        <option value="Arial Black">Arial Black</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Open Sans">Open Sans</option>
+        <option value="Montserrat">Montserrat</option>
+        <option value="Poppins">Poppins</option>
+        <option value="Russo One">Russo One</option>
+        <option value="serif">Serif</option>
+        <option value="sans-serif">Sans Serif</option>
+        <option value="monospace">Monospace</option>
       </select>
 
-      <select id="sizeTool">
+      <select id="sizeTool" title="Choose font size">
         <option value="">SIZE</option>
-        <option value="1">Small</option>
-        <option value="3">Normal</option>
-        <option value="5">Large</option>
-        <option value="7">Extra Large</option>
+        <option value="8">8 px — Tiny</option>
+        <option value="10">10 px</option>
+        <option value="12">12 px — Small</option>
+        <option value="14">14 px</option>
+        <option value="16">16 px — Normal</option>
+        <option value="18">18 px</option>
+        <option value="20">20 px</option>
+        <option value="22">22 px</option>
+        <option value="24">24 px — Large</option>
+        <option value="28">28 px</option>
+        <option value="32">32 px</option>
+        <option value="36">36 px</option>
+        <option value="42">42 px</option>
+        <option value="48">48 px — Extra Large</option>
+        <option value="56">56 px</option>
+        <option value="64">64 px</option>
+        <option value="72">72 px — Huge</option>
+      </select>
+
+      <select id="styleTool" title="Text style">
+        <option value="">STYLE</option>
+        <option value="p">Normal Text</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="h4">Heading 4</option>
+        <option value="blockquote">Quote</option>
+        <option value="pre">Code / Monospace</option>
       </select>
 
       <input id="colorTool" type="color" value="#ffffff">
@@ -1744,6 +1890,8 @@ toolsBtn.onclick = () => {
     button.style.border = "1px solid #00ffff";
     button.style.borderRadius = "8px";
     button.style.fontWeight = "bold";
+    button.style.minHeight = "42px";
+    button.style.cursor = "pointer";
 
     button.onmousedown = (e) => {
       e.preventDefault();
@@ -1763,6 +1911,18 @@ toolsBtn.onclick = () => {
 
   });
 
+  toolsPanel.querySelectorAll("select").forEach(select => {
+    select.style.minHeight = "42px";
+    select.style.padding = "8px 10px";
+    select.style.background = "#222";
+    select.style.color = "white";
+    select.style.border = "1px solid #00ffff";
+    select.style.borderRadius = "8px";
+    select.style.fontSize = "14px";
+    select.style.fontWeight = "bold";
+    select.style.maxWidth = "100%";
+  });
+
   toolsPanel.querySelector("#fontTool").onchange = (event) => {
 
     restoreSelection();
@@ -1779,11 +1939,34 @@ toolsBtn.onclick = () => {
 
     restoreSelection();
 
-    document.execCommand(
-      "fontSize",
-      false,
-      event.target.value
-    );
+    const px = event.target.value;
+    if (!px) return;
+
+    // execCommand uses only 1–7. We use 7 as a temporary marker,
+    // then convert the selected text to the exact pixel size chosen.
+    document.execCommand("fontSize", false, "7");
+
+    bookScreen.querySelectorAll('font[size="7"]').forEach(el => {
+      el.style.fontSize = px + "px";
+      el.removeAttribute("size");
+    });
+
+  };
+
+  toolsPanel.querySelector("#styleTool").onchange = (event) => {
+
+    restoreSelection();
+
+    const style = event.target.value;
+    if (!style) return;
+
+    if (style === "blockquote") {
+      document.execCommand("formatBlock", false, "blockquote");
+    } else if (style === "pre") {
+      document.execCommand("formatBlock", false, "pre");
+    } else {
+      document.execCommand("formatBlock", false, style);
+    }
 
   };
 
@@ -1814,7 +1997,7 @@ toolsBtn.onclick = () => {
   bookScreen.appendChild(toolsPanel);
 };
 
-bookScreen.appendChild(saveBookBtn); 
+bookScreen.querySelector("#bookEditorInner").appendChild(saveBookBtn); 
 
       saveBookBtn.onclick = async () => {
   const bookTitle = document.getElementById("bookTitle").innerText.trim();
@@ -2330,11 +2513,39 @@ function submitLesson(){
 
 }
 function refreshLessons(){
-  currentLesson=null; playlist=[].concat(...Object.values(lessons)); index=0; playVideo(0);
-  stopLessonAds(); stopAds(); adIndex=0; resetAdImage(); setTimeout(()=>startAds(),200);
+  currentLesson=null;
+  playlist=[].concat(...Object.values(lessons));
+  index=0;
+  playVideo(0);
+  stopLessonAds();
+  stopAds();
+  adIndex=0;
+  resetAdImage();
+  setTimeout(()=>startAds(),200);
   display.value="";
 }
+
+/* ================= INITIAL AUTOMATIC REFRESH =================
+   Refresh the main playlist ONCE when the app is opened.
+   After that, automatic refresh is completely disabled.
+   The user can still press REFRESH manually at any time.
+========================= */
+let initialAutoRefreshDone = false;
+
+function initialAutoRefresh(){
+  if (initialAutoRefreshDone) return;
+  initialAutoRefreshDone = true;
+
+  // Give the app/video a moment to initialize, then do the one-time refresh.
+  setTimeout(() => {
+    refreshLessons();
+  }, 500);
+}
+
 startAds();
+
+// One automatic refresh per fresh app/page opening — never again until reopened.
+initialAutoRefresh();
 display.addEventListener("keypress",e=>{if(e.key==="Enter") submitLesson();});
 
 
