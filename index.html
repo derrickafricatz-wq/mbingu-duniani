@@ -69,7 +69,7 @@ body.landscape-mode #brandVideo {
   justify-content:center;
   box-sizing:border-box;
   padding:24px;
-  background:#000;
+  background:#062b35;
   pointer-events:none;
   opacity:1;
   overflow:hidden;
@@ -80,21 +80,19 @@ body.landscape-mode #brandVideo {
   content:"";
   position:absolute;
   inset:0;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(0,255,255,.09), transparent 34%),
-    linear-gradient(180deg, #000 0%, #020607 50%, #000 100%);
+  background:#062b35;
 }
 
 #startupDeka::after{
   content:"";
   position:absolute;
-  width:min(520px,82vw);
-  height:1px;
+  width:min(340px,70vw);
+  height:2px;
   left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  background:linear-gradient(90deg, transparent, rgba(0,255,255,.65), transparent);
-  opacity:.55;
+  top:calc(50% + 54px);
+  transform:translateX(-50%);
+  background:#00ffff;
+  opacity:.9;
 }
 
 .startup-deka-text{
@@ -103,45 +101,22 @@ body.landscape-mode #brandVideo {
   font-family:'Russo One',Arial,sans-serif;
   font-size:clamp(30px,9vw,72px);
   font-weight:700;
-  letter-spacing:clamp(3px,1.2vw,10px);
+  letter-spacing:clamp(2px,1vw,8px);
   line-height:1.15;
   text-transform:lowercase;
   text-align:center;
-  color:#00ffff;
-  transform:none;
-  text-shadow:0 0 8px rgba(0,255,255,.45), 0 0 24px rgba(0,255,255,.22);
-  animation:dekaSmartIn 1.2s ease-out both, dekaSmartGlow 2.8s ease-in-out 1s infinite alternate;
+  color:#ffffff;
+  text-shadow:none;
+  animation:dekaSmartIn 1s ease-out both;
 }
 
 .startup-line{
-  position:relative;
-  z-index:1;
-  width:min(300px,62vw);
-  height:2px;
-  margin-top:24px;
-  border-radius:999px;
-  background:#00ffff;
-  box-shadow:0 0 8px rgba(0,255,255,.55);
-  animation:dekaLine 1.2s ease-out both;
+  display:none;
 }
 
 @keyframes dekaSmartIn{
-  from{opacity:0;transform:translateY(14px);letter-spacing:clamp(8px,2vw,16px)}
-  to{opacity:1;transform:translateY(0);letter-spacing:clamp(3px,1.2vw,10px)}
-}
-
-@keyframes dekaSmartGlow{
-  from{opacity:.9;text-shadow:0 0 8px rgba(0,255,255,.4),0 0 18px rgba(0,255,255,.15)}
-  to{opacity:1;text-shadow:0 0 12px rgba(0,255,255,.7),0 0 30px rgba(0,255,255,.28)}
-}
-
-@keyframes dekaLine{
-  from{width:0;opacity:0}
-  to{width:min(300px,62vw);opacity:1}
-}
-
-@media (orientation:landscape){
-  .startup-deka-text{font-size:clamp(28px,7vw,64px)}
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
 }
 
 /* CLOCK */
@@ -2250,12 +2225,31 @@ if (coverImage) {
     <img
       src="${coverImage}"
       style="
+        position:absolute;
+        inset:0;
         width:100%;
         height:100%;
         object-fit:cover;
         display:block;
       "
     >
+    <div style="
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      padding:72px 55px 35px;
+      box-sizing:border-box;
+      text-align:center;
+      color:white;
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:54px;
+      font-weight:800;
+      line-height:1.12;
+      letter-spacing:1px;
+      word-break:break-word;
+      text-shadow:0 3px 10px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,.95);
+    ">${bookTitle || ""}</div>
   `;
 
 } else {
@@ -2301,30 +2295,10 @@ pdf.addImage(
   297
 );     
        
-const titleElement = document.getElementById("bookTitle");
-const contentsElement = document.getElementById("bookContents");      
-
-titleElement.style.background = "#ffffff";
-titleElement.style.color = "#000000";
+const contentsElement = document.getElementById("bookContents");
 
 contentsElement.style.background = "#ffffff";
 contentsElement.style.color = "#000000";
-
-const titleCanvas = await html2canvas(titleElement, {
-  backgroundColor: "#ffffff",
-  scale: 2
-});
-
-const titleImage = titleCanvas.toDataURL("image/png");
-
-pdf.addImage(
-  titleImage,
-  "PNG",
-  15,
-  15,
-  180,
-  (titleCanvas.height * 180) / titleCanvas.width
-);
 
 const contentsCanvas = await html2canvas(contentsElement, {
   backgroundColor: "#ffffff",
