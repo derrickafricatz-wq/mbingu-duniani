@@ -1502,203 +1502,354 @@ chapter.style.minHeight = "600px";
   `;
 
   /* =========================
-     FREE CLICK-TO-CURSOR
-  ========================= */
+   FULL CHAPTER FREE CURSOR
+========================= */
 
-  const chapterWritingArea =
-    chapter.querySelector(".chapter-writing-area");
+const chapterWritingArea =
+  chapter.querySelector(".chapter-writing-area");
 
-  chapterWritingArea.addEventListener("pointerdown", (e) => {
 
-    /* Only handle the empty writing space */
-    if (e.target !== chapterWritingArea) return;
+chapter.addEventListener("pointerdown", (e) => {
 
-    e.preventDefault();
+  /*
+     Ignore:
+     - chapter title input
+     - image controls
+     - image itself
+     - resize handle
+  */
 
-    chapterWritingArea.focus();
+  if (
+    e.target.closest("input") ||
+    e.target.closest("input[type=file]") ||
+    e.target.closest(".chapter-image") ||
+    e.target.closest(".image-resize-handle")
+  ) {
+    return;
+  }
 
-    const rect =
-      chapterWritingArea.getBoundingClientRect();
 
-    const zoom =
-      parseFloat(bookScreen.style.zoom || "1") || 1;
+  /*
+     Only work inside the actual chapter.
+  */
 
-    /* Convert screen position to editor position */
-    const x =
-      (e.clientX - rect.left) / zoom;
+  const chapterRect =
+    chapter.getBoundingClientRect();
 
-    const y =
-      (e.clientY - rect.top) / zoom;
+  if (
+    e.clientX < chapterRect.left ||
+    e.clientX > chapterRect.right ||
+    e.clientY < chapterRect.top ||
+    e.clientY > chapterRect.bottom
+  ) {
+    return;
+  }
 
-    const lineHeight =
-      18 * 1.8;
 
-    /* Which line did the author touch? */
-    let lineNumber =
-      Math.floor(y / lineHeight);
+  e.preventDefault();
 
-    if (lineNumber < 0) {
-      lineNumber = 0;
+  chapterWritingArea.focus();
+
+
+  /*
+     First try the browser's REAL caret
+     positioning system.
+  */
+
+  let range = null;
+
+  if (document.caretRangeFromPoint) {
+
+    range =
+      document.caretRangeFromPoint(
+        e.clientX,
+        e.clientY
+      );
+
+  } else if (document.caretPositionFromPoint) {
+
+    const position =
+      document.caretPositionFromPoint(
+        e.clientX,
+        e.clientY
+      );
+
+    if (position) {
+
+      range =
+        document.createRange();
+
+      range.setStart(
+        position.offsetNode,
+        position.offset
+      );
+
+      range.collapse(true);
     }
+  }
 
-    /* How far from the left? */
-    let spaces =
-      Math.floor(x / 10);
 
-    if (spaces < 0) {
-      spaces = 0;
-    }
+  /*
+     If the browser can already place the
+     caret at the touched location, use it.
+  */
 
-    /*
-       Get current text.
-       We deliberately work with plain text here
-       so the cursor can exist in empty space.
-    */
-
-    let text =
-      chapterWritingArea.innerText || "";
-
-    let lines =
-      text.split("\n");
-
-    /*
-       Make enough lines to reach
-       the exact vertical area touched.
-    */
-
-    while (lines.length <= lineNumber) {
-      lines.push("");
-    }
-
-    /*
-       Put the cursor on the line touched.
-       Add horizontal spacing so typing begins
-       approximately where the author touched.
-    */
-
-    let targetLine =
-      lines[lineNumber] || "";
-
-    if (targetLine.trim() === "") {
-
-      lines[lineNumber] =
-        " ".repeat(spaces);
-
-    }
-
-    text = lines.join("\n");
-
-    /*
-       Replace the editor contents only when
-       we need to create empty space.
-    */
-
-    chapterWritingArea.innerText = text;
-
-    /*
-       Put the cursor EXACTLY on the created line.
-    */
+  if (
+    range &&
+    chapterWritingArea.contains(
+      range.startContainer
+    )
+  ) {
 
     const selection =
       window.getSelection();
 
-    const range =
-      document.createRange();
+    selection.removeAllRanges();
 
-    const walker =
-      document.createTreeWalker(
-        chapterWritingArea,
-        NodeFilter.SHOW_TEXT
+    selection.addRange(range);
+
+    return;
+  }
+
+
+  /*
+     If the author touched EMPTY SPACE,
+     create enough blank writing lines
+     to reach that exact vertical area.
+  */
+
+  const rect =
+    chapterWritingArea.getBoundingClientRect();
+
+  const zoom =
+    parseFloat(
+      bookScreen.style.zoom || "1"
+    ) || 1;
+
+
+  const x =
+    (e.clientX - rect.left) / zoom;
+
+  const y =
+    (e.clientY - rect.top) / zoom;
+
+
+  const fontSize = 18;
+
+  const lineHeight =
+    fontSize * 1.8;
+
+
+  let lineNumber =
+    Math.floor(y / lineHeight);
+
+  if (lineNumber < 0) {
+    lineNumber = 0;
+  }
+
+
+  /*
+     Convert the existing content into lines.
+  */
+
+  let text =
+    chapterWritingArea.innerText || "";
+
+  let lines =
+    text.split("\n");
+
+
+  /*
+     Create blank lines until the exact
+     vertical position exists.
+  */
+
+  while (
+    lines.length <= lineNumber
+  ) {
+
+    lines.push("");
+  }
+
+
+  /*
+     Calculate horizontal position.
+     One character is approximately 10px
+     at the current editor size.
+  */
+
+  let characterPosition =
+    Math.floor(x / 10);
+
+  if (characterPosition < 0) {
+    characterPosition = 0;
+  }
+
+
+  /*
+     Put the cursor approximately where
+     the user touched horizontally.
+  */
+
+  const existingLine =
+    lines[lineNumber] || "";
+
+
+  if (
+    existingLine.length <
+    characterPosition
+  ) {
+
+    lines[lineNumber] =
+      existingLine +
+      " ".repeat(
+        characterPosition -
+        existingLine.length
       );
+  }
 
-    let textNode = null;
-    let currentLine = 0;
 
-    while (walker.nextNode()) {
+  text =
+    lines.join("\n");
 
-      const node = walker.currentNode;
 
-      const value = node.nodeValue || "";
+  /*
+     Rebuild only when empty space needs
+     to be created.
+  */
 
-      const lineBreaks =
-        (value.match(/\n/g) || []).length;
+  chapterWritingArea.innerText =
+    text;
 
-      if (
-        currentLine <= lineNumber &&
-        currentLine + lineBreaks >= lineNumber
-      ) {
 
-        textNode = node;
-        break;
-      }
+  /*
+     Find the exact text position again.
+  */
 
-      currentLine += lineBreaks;
-    }
+  const selection =
+    window.getSelection();
 
-    /*
-       If no text node exists, create one.
-    */
+  const newRange =
+    document.createRange();
 
-    if (!textNode) {
 
-      textNode =
-        document.createTextNode("");
+  const walker =
+    document.createTreeWalker(
+      chapterWritingArea,
+      NodeFilter.SHOW_TEXT
+    );
 
-      chapterWritingArea.appendChild(
-        textNode
-      );
-    }
 
-    /*
-       Find the beginning of the
-       requested line inside the text node.
-    */
+  let node = null;
+
+  let lineStart = 0;
+
+
+  while (walker.nextNode()) {
+
+    const current =
+      walker.currentNode;
 
     const value =
-      textNode.nodeValue || "";
+      current.nodeValue || "";
 
-    let offset = 0;
 
-    if (lineNumber > 0) {
+    const breaks =
+      (
+        value.match(/\n/g) || []
+      ).length;
 
-      let found = 0;
 
-      for (let i = 0; i < value.length; i++) {
+    if (
+      lineStart <= lineNumber &&
+      lineStart + breaks >= lineNumber
+    ) {
 
-        if (value[i] === "\n") {
+      node = current;
 
-          found++;
+      break;
+    }
 
-          if (found === lineNumber) {
 
-            offset = i + 1;
-            break;
-          }
+    lineStart += breaks;
+  }
+
+
+  if (!node) {
+
+    node =
+      document.createTextNode("");
+
+    chapterWritingArea.appendChild(
+      node
+    );
+  }
+
+
+  const value =
+    node.nodeValue || "";
+
+
+  let offset = 0;
+
+
+  if (lineNumber > 0) {
+
+    let found = 0;
+
+
+    for (
+      let i = 0;
+      i < value.length;
+      i++
+    ) {
+
+      if (value[i] === "\n") {
+
+        found++;
+
+
+        if (
+          found === lineNumber
+        ) {
+
+          offset = i + 1;
+
+          break;
         }
       }
     }
+  }
 
-    /*
-       Move horizontally according
-       to the user's touch.
-    */
 
-    offset += Math.min(
-      spaces,
-      value.length - offset
-    );
+  offset += Math.min(
+    characterPosition,
+    value.length - offset
+  );
 
-    range.setStart(
-      textNode,
-      offset
-    );
 
-    range.collapse(true);
+  newRange.setStart(
+    node,
+    Math.max(
+      0,
+      Math.min(
+        offset,
+        value.length
+      )
+    )
+  );
 
-    selection.removeAllRanges();
-    selection.addRange(range);
 
-  });
+  newRange.collapse(true);
+
+
+  selection.removeAllRanges();
+
+  selection.addRange(
+    newRange
+  );
+
+});
     
 
     /* OPTIONAL CHAPTER IMAGE */
