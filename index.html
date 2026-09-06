@@ -1455,51 +1455,50 @@ chapter.style.overflow = "hidden";
 chapter.style.minHeight = "600px";
 
   chapter.innerHTML = `
-    <input
-      type="text"
-      value="Chapter ${index + 1}"
-      style="
-        position:relative;
-        z-index:40;
-        width:100%;
-        box-sizing:border-box;
-        padding:12px;
-        margin-bottom:12px;
-        background:#111;
-        color:#00ffff;
-        border:1px solid #00ffff;
-        border-radius:10px;
-        font-size:20px;
-        font-weight:bold;
-      "
-    >
+  <input
+    type="text"
+    value="Chapter ${index + 1}"
+    style="
+      position:relative;
+      z-index:40;
+      width:100%;
+      box-sizing:border-box;
+      padding:12px;
+      margin-bottom:12px;
+      background:#111;
+      color:#00ffff;
+      border:1px solid #00ffff;
+      border-radius:10px;
+      font-size:20px;
+      font-weight:bold;
+    "
+  >
 
+  <div
+    class="chapter-writing-area"
+    contenteditable="true"
+    spellcheck="false"
+    style="
+      position:absolute;
+      inset:15px;
 
-    <div
-      class="chapter-writing-area"
-      contenteditable="true"
-      spellcheck="false"
-      style="
-        position:absolute;
-        left:15px;
-        right:15px;
-        top:15px;
-        bottom:15px;
+      color:white;
+      font-size:18px;
+      line-height:1.8;
 
-        color:white;
-        font-size:18px;
-        line-height:1.8;
+      outline:none;
+      box-sizing:border-box;
 
-        outline:none;
-        box-sizing:border-box;
+      white-space:pre-wrap;
+      overflow:hidden;
 
-        white-space:pre-wrap;
-        overflow:hidden;
+      z-index:10;
 
-        z-index:10;
-      "
-    >${sermon.text}</div>
-  `;
+      min-height:calc(100% - 30px);
+      padding:0;
+    "
+  >${sermon.text}</div>
+`;
 
   /* =========================
    FULL CHAPTER FREE CURSOR
