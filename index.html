@@ -422,7 +422,7 @@ Install App
   <div id="guideText">Welcome! Swipe up/down or press buttons to explore.</div>
   <button id="nextGuide" style="
     margin-top:30px; padding:12px 20px; border:none; border-radius:12px;
-    background:#00ffff; color:black; font-size:22px;">Next ➤</button>
+    background:#00ffff; color:black; font-size:22px;">Next âž¤</button>
 </div>
 
 <script src="health-data.js"></script>
@@ -535,7 +535,7 @@ function getMedia(id){
 
 <div id="scrollBanner">
   <div id="scrollText">
-    <span class="dekaStyle">MBINGU DUNIANI</span> •Madhabahu ya neno na maombi.
+    <span class="dekaStyle">MBINGU DUNIANI</span> â€¢Madhabahu ya neno na maombi.
   </div>
 </div>
 
@@ -543,13 +543,13 @@ function getMedia(id){
 <button id="smartToggle">
   <span class="dekaIcon">DK</span>
   <div id="smartLabel">
-    <div>Explore • Treat • Learn</div>
+    <div>Explore â€¢ Treat â€¢ Learn</div>
     <small>powered by deka</small>
   </div>
 </button>
 
 <div id="smartPanel">
-  <button class="smart-item" id="openControls">⌨ SYSTEM KEYPAD</button>
+  <button class="smart-item" id="openControls">âŒ¨ SYSTEM KEYPAD</button>
  
   <button class="smart-item" id="openTranscript">
     SERMON TRANSCRIPT
@@ -595,10 +595,10 @@ function getMedia(id){
 
   <!-- VIDEO CONTROLS -->
 <button class="ctrl-btn" id="rew"></button>
-<button class="ctrl-btn" id="playPause">⏯</button>
+<button class="ctrl-btn" id="playPause">â¯</button>
 <button class="ctrl-btn" id="ff"></button>
 
-<button class="ctrl-btn" onclick="zoomVideo(-0.1)">−</button>
+<button class="ctrl-btn" onclick="zoomVideo(-0.1)">âˆ’</button>
 <span id="zoomLevel">100%</span>
 <button class="ctrl-btn" onclick="zoomVideo(0.1)">+</button>
 
@@ -635,7 +635,7 @@ function getMedia(id){
 
   <button class="ctrl-btn" onclick="refreshLessons()" 
   style="grid-column: span 3; width:100%; border-radius:15px;">
-    ↻ REFRESH
+    â†» REFRESH
   </button>
 
 </div>
@@ -694,7 +694,7 @@ const guideSteps = [
 
   { text: "SYSTEM KEYPAD opens lesson controls." },
 
-  { text: "Use keys 1–5 then press OK to open lessons." },
+  { text: "Use keys 1â€“5 then press OK to open lessons." },
 
   { text: "REFRESH restores the main playlist." },
 
@@ -1443,750 +1443,45 @@ selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
 
-chapter.className = "book-chapter";
-chapter.style.position = "relative";
-chapter.style.marginTop = "25px";
-chapter.style.padding = "15px";
-chapter.style.background = "#111";
-chapter.style.border = "1px solid #333";
-chapter.style.borderRadius = "12px";
-chapter.style.boxSizing = "border-box";
-chapter.style.overflow = "hidden";
-chapter.style.minHeight = "600px";
+  chapter.style.marginTop = "25px";
+  chapter.style.padding = "15px";
+  chapter.style.background = "#111";
+  chapter.style.border = "1px solid #333";
+  chapter.style.borderRadius = "12px";
 
   chapter.innerHTML = `
-  <input
-    type="text"
-    value="Chapter ${index + 1}"
-    style="
-      position:relative;
-      z-index:40;
-      width:100%;
-      box-sizing:border-box;
-      padding:12px;
-      margin-bottom:12px;
-      background:#111;
-      color:#00ffff;
-      border:1px solid #00ffff;
-      border-radius:10px;
-      font-size:20px;
-      font-weight:bold;
-    "
-  >
-
-  <div
-    class="chapter-writing-area"
-    contenteditable="true"
-    spellcheck="false"
-    style="
-      position:absolute;
-      inset:15px;
-
-      color:white;
-      font-size:18px;
-      line-height:1.8;
-
-      outline:none;
-      box-sizing:border-box;
-
-      white-space:pre-wrap;
-      overflow:hidden;
-
-      z-index:10;
-
-      min-height:calc(100% - 30px);
-      padding:0;
-    "
-  >${sermon.text}</div>
-`;
-
-  /* =========================
-   FULL CHAPTER FREE CURSOR
-========================= */
-
-const chapterWritingArea =
-  chapter.querySelector(".chapter-writing-area");
-
-
-chapter.addEventListener("pointerdown", (e) => {
-
-  /*
-     Ignore:
-     - chapter title input
-     - image controls
-     - image itself
-     - resize handle
-  */
-
-  if (
-    e.target.closest("input") ||
-    e.target.closest("input[type=file]") ||
-    e.target.closest(".chapter-image") ||
-    e.target.closest(".image-resize-handle")
-  ) {
-    return;
-  }
-
-
-  /*
-     Only work inside the actual chapter.
-  */
-
-  const chapterRect =
-    chapter.getBoundingClientRect();
-
-  if (
-    e.clientX < chapterRect.left ||
-    e.clientX > chapterRect.right ||
-    e.clientY < chapterRect.top ||
-    e.clientY > chapterRect.bottom
-  ) {
-    return;
-  }
-
-
-  e.preventDefault();
-
-  chapterWritingArea.focus();
-
-
-  /*
-     First try the browser's REAL caret
-     positioning system.
-  */
-
-  let range = null;
-
-  if (document.caretRangeFromPoint) {
-
-    range =
-      document.caretRangeFromPoint(
-        e.clientX,
-        e.clientY
-      );
-
-  } else if (document.caretPositionFromPoint) {
-
-    const position =
-      document.caretPositionFromPoint(
-        e.clientX,
-        e.clientY
-      );
-
-    if (position) {
-
-      range =
-        document.createRange();
-
-      range.setStart(
-        position.offsetNode,
-        position.offset
-      );
-
-      range.collapse(true);
-    }
-  }
-
-
-  /*
-     If the browser can already place the
-     caret at the touched location, use it.
-  */
-
-  if (
-    range &&
-    chapterWritingArea.contains(
-      range.startContainer
-    )
-  ) {
-
-    const selection =
-      window.getSelection();
-
-    selection.removeAllRanges();
-
-    selection.addRange(range);
-
-    return;
-  }
-
-
-  /*
-     If the author touched EMPTY SPACE,
-     create enough blank writing lines
-     to reach that exact vertical area.
-  */
-
-  const rect =
-    chapterWritingArea.getBoundingClientRect();
-
-  const zoom =
-    parseFloat(
-      bookScreen.style.zoom || "1"
-    ) || 1;
-
-
-  const x =
-    (e.clientX - rect.left) / zoom;
-
-  const y =
-    (e.clientY - rect.top) / zoom;
-
-
-  const fontSize = 18;
-
-  const lineHeight =
-    fontSize * 1.8;
-
-
-  let lineNumber =
-    Math.floor(y / lineHeight);
-
-  if (lineNumber < 0) {
-    lineNumber = 0;
-  }
-
-
-  /*
-     Convert the existing content into lines.
-  */
-
-  let text =
-    chapterWritingArea.innerText || "";
-
-  let lines =
-    text.split("\n");
-
-
-  /*
-     Create blank lines until the exact
-     vertical position exists.
-  */
-
-  while (
-    lines.length <= lineNumber
-  ) {
-
-    lines.push("");
-  }
-
-
-  /*
-     Calculate horizontal position.
-     One character is approximately 10px
-     at the current editor size.
-  */
-
-  let characterPosition =
-    Math.floor(x / 10);
-
-  if (characterPosition < 0) {
-    characterPosition = 0;
-  }
-
-
-  /*
-     Put the cursor approximately where
-     the user touched horizontally.
-  */
-
-  const existingLine =
-    lines[lineNumber] || "";
-
-
-  if (
-    existingLine.length <
-    characterPosition
-  ) {
-
-    lines[lineNumber] =
-      existingLine +
-      " ".repeat(
-        characterPosition -
-        existingLine.length
-      );
-  }
-
-
-  text =
-    lines.join("\n");
-
-
-  /*
-     Rebuild only when empty space needs
-     to be created.
-  */
-
-  chapterWritingArea.innerText =
-    text;
-
-
-  /*
-     Find the exact text position again.
-  */
-
-  const selection =
-    window.getSelection();
-
-  const newRange =
-    document.createRange();
-
-
-  const walker =
-    document.createTreeWalker(
-      chapterWritingArea,
-      NodeFilter.SHOW_TEXT
-    );
-
-
-  let node = null;
-
-  let lineStart = 0;
-
-
-  while (walker.nextNode()) {
-
-    const current =
-      walker.currentNode;
-
-    const value =
-      current.nodeValue || "";
-
-
-    const breaks =
-      (
-        value.match(/\n/g) || []
-      ).length;
-
-
-    if (
-      lineStart <= lineNumber &&
-      lineStart + breaks >= lineNumber
-    ) {
-
-      node = current;
-
-      break;
-    }
-
-
-    lineStart += breaks;
-  }
-
-
-  if (!node) {
-
-    node =
-      document.createTextNode("");
-
-    chapterWritingArea.appendChild(
-      node
-    );
-  }
-
-
-  const value =
-    node.nodeValue || "";
-
-
-  let offset = 0;
-
-
-  if (lineNumber > 0) {
-
-    let found = 0;
-
-
-    for (
-      let i = 0;
-      i < value.length;
-      i++
-    ) {
-
-      if (value[i] === "\n") {
-
-        found++;
-
-
-        if (
-          found === lineNumber
-        ) {
-
-          offset = i + 1;
-
-          break;
-        }
-      }
-    }
-  }
-
-
-  offset += Math.min(
-    characterPosition,
-    value.length - offset
-  );
-
-
-  newRange.setStart(
-    node,
-    Math.max(
-      0,
-      Math.min(
-        offset,
-        value.length
-      )
-    )
-  );
-
-
-  newRange.collapse(true);
-
-
-  selection.removeAllRanges();
-
-  selection.addRange(
-    newRange
-  );
-
-});
-    
-
-    /* OPTIONAL CHAPTER IMAGE */
-
-  const imageLabel = document.createElement("div");
-
-  imageLabel.innerText = "OPTIONAL IMAGE / ILLUSTRATION";
-
-  imageLabel.style.color = "#00ffff";
-  imageLabel.style.fontFamily = "'Russo One'";
-  imageLabel.style.fontSize = "16px";
-  imageLabel.style.marginTop = "20px";
-  imageLabel.style.marginBottom = "8px";
-
-
-  const imageInput = document.createElement("input");
-
-  imageInput.type = "file";
-  imageInput.accept = "image/*";
-
-  imageInput.style.display = "block";
-  imageInput.style.width = "100%";
-  imageInput.style.boxSizing = "border-box";
-  imageInput.style.padding = "10px";
-  imageInput.style.background = "#111";
-  imageInput.style.color = "white";
-  imageInput.style.border = "1px solid #00ffff";
-  imageInput.style.borderRadius = "10px";
-
-/* CLEAN IMAGE UPLOAD CONTROLS AT BOTTOM */
-
-const uploadArea = document.createElement("div");
-
-uploadArea.style.position = "absolute"; uploadArea.style.zIndex = "50";
-uploadArea.style.left = "10px";
-uploadArea.style.right = "10px";
-uploadArea.style.bottom = "10px";
-
-uploadArea.style.display = "flex";
-uploadArea.style.alignItems = "center";
-uploadArea.style.gap = "6px";
-
-uploadArea.style.width = "auto";
-uploadArea.style.maxWidth = "calc(100% - 20px)";
-uploadArea.style.boxSizing = "border-box";
-
-uploadArea.style.opacity = "0.75";
-
-
-imageLabel.style.margin = "0";
-imageLabel.style.fontSize = "11px";
-imageLabel.style.whiteSpace = "nowrap";
-imageLabel.style.flexShrink = "1";
-
-
-imageInput.style.width = "0";
-imageInput.style.minWidth = "0";
-imageInput.style.flex = "1";
-imageInput.style.padding = "5px";
-imageInput.style.fontSize = "11px";
-imageInput.style.boxSizing = "border-box";
-
-
-uploadArea.appendChild(imageLabel);
-uploadArea.appendChild(imageInput);
-
-chapter.appendChild(uploadArea);
-
- 
-  /* IMAGE DATA */
-
-  chapter._chapterImage = null;
-  chapter._imageX = 20;
-  chapter._imageY = 250;
-  chapter._imageWidth = 220;
-  chapter._imageBox = null;
-
-
-  imageInput.onchange = () => {
-
-    const file = imageInput.files[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-
-      chapter._chapterImage = reader.result;
-
-
-      /* REMOVE PREVIOUS IMAGE */
-
-      if (chapter._imageBox) {
-        chapter._imageBox.remove();
-      }
-
-
-      /* IMAGE CONTAINER */
-
-      const imageBox = document.createElement("div");
-
-      chapter._imageBox = imageBox;
-
-      imageBox.style.position = "absolute";
-      imageBox.style.left = chapter._imageX + "px";
-      imageBox.style.top = chapter._imageY + "px";
-      imageBox.style.width = chapter._imageWidth + "px";
-
-      imageBox.style.zIndex = "20";
-
-      imageBox.style.cursor = "move";
-
-      imageBox.style.touchAction = "none";
-
-      imageBox.style.userSelect = "none";
-
-
-      /* IMAGE */
-
-      const img = document.createElement("img");
-
-      img.src = reader.result;
-
-      img.style.display = "block";
-      img.style.width = "100%";
-      img.style.height = "auto";
-
-      img.style.maxWidth = "none";
-      img.style.maxHeight = "none";
-
-      img.style.objectFit = "contain";
-
-      img.style.pointerEvents = "none";
-
-      img.draggable = false;
-
-
-      imageBox.appendChild(img);
-
-
-      /* RESIZE HANDLE */
-
-      const resizeHandle = document.createElement("div");
-
-      resizeHandle.style.position = "absolute";
-      resizeHandle.style.right = "-8px";
-      resizeHandle.style.bottom = "-8px";
-
-      resizeHandle.style.width = "18px";
-      resizeHandle.style.height = "18px";
-
-      resizeHandle.style.background = "#00ffff";
-      resizeHandle.style.borderRadius = "50%";
-
-      resizeHandle.style.cursor = "nwse-resize";
-
-      resizeHandle.style.touchAction = "none";
-
-      resizeHandle.style.zIndex = "30";
-
-
-      imageBox.appendChild(resizeHandle);
-
-
-      /* PUT IMAGE DIRECTLY INSIDE CHAPTER */
-
-      chapter.appendChild(imageBox);
-
-
-      /* =========================
-         MOVE IMAGE
-      ========================= */
-
-      let moving = false;
-      let startX = 0;
-      let startY = 0;
-      let originalX = 0;
-      let originalY = 0;
-
-
-      imageBox.addEventListener("pointerdown", (e) => {
-
-        if (e.target === resizeHandle) return;
-
-        e.preventDefault();
-
-        moving = true;
-
-        imageBox.setPointerCapture(e.pointerId);
-
-        startX = e.clientX;
-        startY = e.clientY;
-
-        originalX = chapter._imageX;
-        originalY = chapter._imageY;
-
-      });
-
-
-      imageBox.addEventListener("pointermove", (e) => {
-
-        if (!moving) return;
-
-        e.preventDefault();
-
-        const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
-
-        let newX =
-          originalX +
-          (e.clientX - startX) / zoom;
-
-        let newY =
-          originalY +
-          (e.clientY - startY) / zoom;
-
-
-        /* KEEP IMAGE INSIDE CHAPTER */
-
-        const maxX =
-          chapter.clientWidth -
-          imageBox.offsetWidth -
-          5;
-
-        const maxY =
-          chapter.clientHeight -
-          imageBox.offsetHeight -
-          5;
-
-
-        newX = Math.max(0, Math.min(newX, maxX));
-        newY = Math.max(0, Math.min(newY, maxY));
-
-
-        chapter._imageX = newX;
-        chapter._imageY = newY;
-
-
-        imageBox.style.left = newX + "px";
-        imageBox.style.top = newY + "px";
-
-      });
-
-
-      imageBox.addEventListener("pointerup", (e) => {
-
-        moving = false;
-
-        try {
-          imageBox.releasePointerCapture(e.pointerId);
-        } catch (err) {}
-
-      });
-
-
-      imageBox.addEventListener("pointercancel", () => {
-
-        moving = false;
-
-      });
-
-
-      /* =========================
-         RESIZE IMAGE
-      ========================= */
-
-      let resizing = false;
-      let resizeStartX = 0;
-      let resizeStartWidth = 0;
-
-
-      resizeHandle.addEventListener("pointerdown", (e) => {
-
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        resizing = true;
-
-        resizeHandle.setPointerCapture(e.pointerId);
-
-        resizeStartX = e.clientX;
-
-        resizeStartWidth = chapter._imageWidth;
-
-      });
-
-
-      resizeHandle.addEventListener("pointermove", (e) => {
-
-  if (!resizing) return;
-
-  e.preventDefault();
-
-  const zoom = parseFloat(bookScreen.style.zoom || "1") || 1;
-
-  let newWidth =
-    resizeStartWidth +
-    (e.clientX - resizeStartX) / zoom;
-
-  /* ALLOW BOTH SHRINKING AND EXPANDING */
-
-  newWidth = Math.max(80, newWidth);
-
-  chapter._imageWidth = newWidth;
-
-  imageBox.style.width = newWidth + "px";
-
-});
-
-
-      resizeHandle.addEventListener("pointerup", (e) => {
-
-        resizing = false;
-
-        try {
-          resizeHandle.releasePointerCapture(e.pointerId);
-        } catch (err) {}
-
-      });
-
-
-      resizeHandle.addEventListener("pointercancel", () => {
-
-        resizing = false;
-
-      });
-
-    };
-
-    reader.readAsDataURL(file);
-
-  };
-
+    <input
+  type="text"
+  value="Chapter ${index + 1}"
+  style="
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    margin-bottom:12px;
+    background:#111;
+    color:#00ffff;
+    border:1px solid #00ffff;
+    border-radius:10px;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
+
+    <div
+      contenteditable="true"
+      style="
+        color:white;
+        font-size:18px;
+        line-height:1.8;
+        min-height:150px;
+        outline:none;
+      "
+    >${sermon.text}</div>
+  `;
 
   bookScreen.appendChild(chapter);
 });
-     
+
      const saveBookBtn = document.createElement("button");
 
 saveBookBtn.innerText = "SAVE BOOK";
@@ -3021,7 +2316,7 @@ backBtn.onclick=()=>{
   clearInterval(scrollInterval);
 };
 
-const playBtn=document.createElement("button"); playBtn.innerText="⏯ PLAY/PAUSE";
+const playBtn=document.createElement("button"); playBtn.innerText="â¯ PLAY/PAUSE";
 playBtn.onclick=toggleScroll;
 
 const printBtn = document.createElement("button");
@@ -3042,7 +2337,7 @@ printBtn.onclick = () => {
     });
 
     // Footer
-    html += "<hr><p>Explore • Treat • Learn</p>";
+    html += "<hr><p>Explore â€¢ Treat â€¢ Learn</p>";
     html +=           "<p>powered by deka</p>";
 
     html += "</body></html>";
@@ -3072,13 +2367,13 @@ function toggleTopics(toggleBtn){
     buttons.forEach((btn, i)=>{
       btn.style.display = i < 3 ? "block" : "none";
     });
-    toggleBtn.innerText = "☰ SHOW";
+    toggleBtn.innerText = "â˜° SHOW";
     topicsExpanded = false;
   } else {
     buttons.forEach(btn=>{
       btn.style.display = "block";
     });
-    toggleBtn.innerText = "☰ HIDE";
+    toggleBtn.innerText = "â˜° HIDE";
     topicsExpanded = true;
   }
 }
