@@ -422,7 +422,7 @@ Install App
   <div id="guideText">Welcome! Swipe up/down or press buttons to explore.</div>
   <button id="nextGuide" style="
     margin-top:30px; padding:12px 20px; border:none; border-radius:12px;
-    background:#00ffff; color:black; font-size:22px;">Next âž¤</button>
+    background:#00ffff; color:black; font-size:22px;">Next</button>
 </div>
 
 <script src="health-data.js"></script>
@@ -535,7 +535,7 @@ function getMedia(id){
 
 <div id="scrollBanner">
   <div id="scrollText">
-    <span class="dekaStyle">MBINGU DUNIANI</span> â€¢Madhabahu ya neno na maombi.
+    <span class="dekaStyle">MBINGU DUNIANI</span> Madhabahu ya neno na maombi.
   </div>
 </div>
 
@@ -543,13 +543,13 @@ function getMedia(id){
 <button id="smartToggle">
   <span class="dekaIcon">DK</span>
   <div id="smartLabel">
-    <div>Explore â€¢ Treat â€¢ Learn</div>
+    <div>Heaven On Earth</div>
     <small>powered by deka</small>
   </div>
 </button>
 
 <div id="smartPanel">
-  <button class="smart-item" id="openControls">âŒ¨ SYSTEM KEYPAD</button>
+  <button class="smart-item" id="openControls">SYSTEM KEYPAD</button>
  
   <button class="smart-item" id="openTranscript">
     SERMON TRANSCRIPT
@@ -594,13 +594,13 @@ function getMedia(id){
 <div id="controlGrid">
 
   <!-- VIDEO CONTROLS -->
-<button class="ctrl-btn" id="rew"></button>
-<button class="ctrl-btn" id="playPause">â¯</button>
-<button class="ctrl-btn" id="ff"></button>
+<button class="ctrl-btn" id="rew">⏮️</button>
+<button class="ctrl-btn" id="playPause">⏯️</button>
+<button class="ctrl-btn" id="ff">⏭️</button>
 
-<button class="ctrl-btn" onclick="zoomVideo(-0.1)">âˆ’</button>
+<button class="ctrl-btn" onclick="zoomVideo(-0.1)">⏬</button>
 <span id="zoomLevel">100%</span>
-<button class="ctrl-btn" onclick="zoomVideo(0.1)">+</button>
+<button class="ctrl-btn" onclick="zoomVideo(0.1)">⏫</button>
 
 <div></div>
 
@@ -635,7 +635,7 @@ function getMedia(id){
 
   <button class="ctrl-btn" onclick="refreshLessons()" 
   style="grid-column: span 3; width:100%; border-radius:15px;">
-    â†» REFRESH
+    REFRESH
   </button>
 
 </div>
@@ -694,7 +694,7 @@ const guideSteps = [
 
   { text: "SYSTEM KEYPAD opens lesson controls." },
 
-  { text: "Use keys 1â€“5 then press OK to open lessons." },
+  { text: "Use keys 15 then press OK to open lessons." },
 
   { text: "REFRESH restores the main playlist." },
 
@@ -2316,7 +2316,7 @@ backBtn.onclick=()=>{
   clearInterval(scrollInterval);
 };
 
-const playBtn=document.createElement("button"); playBtn.innerText="â¯ PLAY/PAUSE";
+const playBtn=document.createElement("button"); playBtn.innerText="PLAY/PAUSE";
 playBtn.onclick=toggleScroll;
 
 const printBtn = document.createElement("button");
@@ -2337,7 +2337,7 @@ printBtn.onclick = () => {
     });
 
     // Footer
-    html += "<hr><p>Explore â€¢ Treat â€¢ Learn</p>";
+    html += "<hr><p>Heaven On Earth</p>";
     html +=           "<p>powered by deka</p>";
 
     html += "</body></html>";
@@ -2367,13 +2367,13 @@ function toggleTopics(toggleBtn){
     buttons.forEach((btn, i)=>{
       btn.style.display = i < 3 ? "block" : "none";
     });
-    toggleBtn.innerText = "â˜° SHOW";
+    toggleBtn.innerText = "SHOW";
     topicsExpanded = false;
   } else {
     buttons.forEach(btn=>{
       btn.style.display = "block";
     });
-    toggleBtn.innerText = "â˜° HIDE";
+    toggleBtn.innerText = "HIDE";
     topicsExpanded = true;
   }
 }
