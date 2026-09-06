@@ -338,62 +338,185 @@ body.landscape-mode #brandVideo {
   gap: 10px;
 }
 
+  /* =========================
+     SERMON TRANSCRIPT UI
+     Clean + mobile friendly + 3D buttons
+  ========================= */
+
   #transcriptPanel {
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 180;
-  display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 180;
+    display: none;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 
   #transcriptTitle {
-  color: #00ffff;
-  font-family: 'Russo One', sans-serif;
-  font-size: 24px;
-  padding: 20px;
-  text-align: center;
-  }
-
-  #transcriptText {
-  color: white;
-  padding: 20px;
-  font-size: 20px;
-  line-height: 1.8;
-  overflow-y: auto;
+    position: relative;
+    z-index: 2;
+    color: #00ffff;
+    font-family: 'Russo One', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    line-height: 1.2;
+    padding: 22px 105px 14px 22px;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
   }
 
   #closeTranscript {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: #111;
-  color: white;
-  border: 1px solid #00ffff;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 16px;
-  z-index: 10;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 20;
+    min-width: 112px;
+    height: 52px;
+    padding: 0 18px;
+    border: 1px solid #00ffff;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #252525, #0b0b0b);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    box-shadow:
+      0 7px 0 #004d4d,
+      0 12px 24px rgba(0,255,255,.18),
+      inset 0 1px 0 rgba(255,255,255,.12);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+
+  #closeTranscript:active {
+    transform: translateY(5px);
+    box-shadow:
+      0 2px 0 #004d4d,
+      0 6px 12px rgba(0,255,255,.14),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  /* Transcript action buttons */
+  #transcriptControls {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    padding: 8px 16px 14px;
+    box-sizing: border-box;
+  }
+
+  #transcriptControls button {
+    width: 100%;
+    min-width: 0;
+    min-height: 58px;
+    padding: 12px 8px;
+    border: 1px solid rgba(0,255,255,.85);
+    border-radius: 15px;
+    background: linear-gradient(145deg, #18ffff 0%, #00caca 55%, #008f8f 100%);
+    color: #001010;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(14px, 3.8vw, 17px);
+    font-weight: 900;
+    letter-spacing: .35px;
+    white-space: nowrap;
+    box-shadow:
+      0 7px 0 #005858,
+      0 11px 20px rgba(0,255,255,.16),
+      inset 0 2px 0 rgba(255,255,255,.55),
+      inset 0 -3px 0 rgba(0,0,0,.14);
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #transcriptControls button:active {
+    transform: translateY(5px) scale(.985);
+    box-shadow:
+      0 2px 0 #005858,
+      0 5px 10px rgba(0,255,255,.12),
+      inset 0 1px 0 rgba(255,255,255,.4);
+    filter: brightness(.96);
+  }
+
+  #transcriptControls #savedSermons {
+    grid-column: 1 / -1;
+  }
+
+  /* Give the primary actions a slightly stronger visual hierarchy */
+  #transcriptControls #startTranscript,
+  #transcriptControls #saveTranscript {
+    background: linear-gradient(145deg, #38ffff 0%, #00dede 55%, #009999 100%);
   }
 
   #transcriptText {
-  color: white !important;
-  background: black !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  padding: 80px 20px 20px 20px;
-  font-size: 20px;
-  line-height: 1.8;
+    color: white !important;
+    background: black !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100%;
+    height: calc(100vh - 190px);
+    padding: 18px 20px 100px;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: clamp(19px, 5vw, 22px);
+    line-height: 1.8;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-bottom: 120px;
+    outline: none;
   }
 
-  #transcriptText {
-  height: calc(100vh - 120px);
-  overflow-y: auto;
-  box-sizing: border-box;
+  @media (max-width: 420px) {
+    #transcriptTitle {
+      padding-left: 14px;
+      padding-right: 118px;
+      font-size: 21px;
+    }
+
+    #closeTranscript {
+      right: 10px;
+      top: 10px;
+      min-width: 102px;
+      height: 48px;
+      font-size: 15px;
+    }
+
+    #transcriptControls {
+      gap: 10px;
+      padding: 6px 12px 12px;
+    }
+
+    #transcriptControls button {
+      min-height: 54px;
+      border-radius: 14px;
+      font-size: 13px;
+    }
+
+    #transcriptText {
+      height: calc(100vh - 175px);
+      padding-left: 16px;
+      padding-right: 16px;
+      font-size: 19px;
+    }
   }
 
-  #transcriptText {
-  scroll-padding-bottom: 180px;
+  @media (min-width: 700px) {
+    #transcriptControls {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    #transcriptControls #savedSermons {
+      grid-column: auto;
+    }
   }
   
 </style>
@@ -1113,6 +1236,10 @@ const closeTranscript = document.getElementById("closeTranscript");
 
 closeTranscript.onclick = () => {
   transcriptPanel.style.display = "none";
+
+  // The guide/settings button belongs to the main screen,
+  // not the transcript panel.
+  settingsBtn.style.display = "block";
 }; 
 
 const controls = document.getElementById("controls");
@@ -1122,7 +1249,14 @@ const ff = document.getElementById("ff");
 const playPause = document.getElementById("playPause");
 
  openTranscript.onclick = () => {
+  // Hide the main-screen guide/settings button so it cannot
+  // overlap the transcript title or CLOSE button.
+  settingsBtn.style.display = "none";
+
   transcriptPanel.style.display = "block";
+
+  // Start the transcript at the top every time it opens.
+  transcriptText.scrollTop = 0;
 };
 
   document.getElementById("saveTranscript").onclick = () => {
