@@ -6,9 +6,9 @@
 
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#00ffff">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bangers&family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Dancing+Script:wght@400;600;700&family=Lobster&family=Monoton&family=Orbitron:wght@400;600;700;800&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@400;600;700;800&family=Press+Start+2P&family=Righteous&family=Roboto:wght@400;500;700&family=Russo+One&family=Satisfy&family=Special+Elite&display=swap" rel="stylesheet">
 
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -55,7 +55,97 @@ body.landscape-mode #brandVideo {
   object-position: center center;
 }
 
+/* ONE-TIME STARTUP BRAND — FULL SCREEN SMART STYLE */
+#startupDeka{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
+  min-height:100vh;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  padding:24px;
+  background:#000;
+  pointer-events:none;
+  opacity:1;
+  overflow:hidden;
+  transition:opacity .9s ease;
+}
+
+#startupDeka::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(0,255,255,.09), transparent 34%),
+    linear-gradient(180deg, #000 0%, #020607 50%, #000 100%);
+}
+
+#startupDeka::after{
+  content:"";
+  position:absolute;
+  width:min(520px,82vw);
+  height:1px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(90deg, transparent, rgba(0,255,255,.65), transparent);
+  opacity:.55;
+}
+
+.startup-deka-text{
+  position:relative;
+  z-index:1;
+  font-family:'Russo One',Arial,sans-serif;
+  font-size:clamp(30px,9vw,72px);
+  font-weight:700;
+  letter-spacing:clamp(3px,1.2vw,10px);
+  line-height:1.15;
+  text-transform:lowercase;
+  text-align:center;
+  color:#00ffff;
+  transform:none;
+  text-shadow:0 0 8px rgba(0,255,255,.45), 0 0 24px rgba(0,255,255,.22);
+  animation:dekaSmartIn 1.2s ease-out both, dekaSmartGlow 2.8s ease-in-out 1s infinite alternate;
+}
+
+.startup-line{
+  position:relative;
+  z-index:1;
+  width:min(300px,62vw);
+  height:2px;
+  margin-top:24px;
+  border-radius:999px;
+  background:#00ffff;
+  box-shadow:0 0 8px rgba(0,255,255,.55);
+  animation:dekaLine 1.2s ease-out both;
+}
+
+@keyframes dekaSmartIn{
+  from{opacity:0;transform:translateY(14px);letter-spacing:clamp(8px,2vw,16px)}
+  to{opacity:1;transform:translateY(0);letter-spacing:clamp(3px,1.2vw,10px)}
+}
+
+@keyframes dekaSmartGlow{
+  from{opacity:.9;text-shadow:0 0 8px rgba(0,255,255,.4),0 0 18px rgba(0,255,255,.15)}
+  to{opacity:1;text-shadow:0 0 12px rgba(0,255,255,.7),0 0 30px rgba(0,255,255,.28)}
+}
+
+@keyframes dekaLine{
+  from{width:0;opacity:0}
+  to{width:min(300px,62vw);opacity:1}
+}
+
+@media (orientation:landscape){
+  .startup-deka-text{font-size:clamp(28px,7vw,64px)}
+}
+
 /* CLOCK */
+
 #clockBox {
   position: fixed;
   top: 10px;
@@ -636,6 +726,12 @@ function getMedia(id){
   </script>
 
 <video id="brandVideo" autoplay muted playsinline></video>
+
+<!-- ONE-TIME STARTUP SCREEN: shown only during the first automatic refresh of each app opening. -->
+<div id="startupDeka" aria-hidden="true">
+  <div class="startup-deka-text">powered by deka</div>
+  <div class="startup-line"></div>
+</div>
 
 <div id="clockBox"></div>
 <button id="settingsBtn" style="
@@ -1434,6 +1530,11 @@ bookScreen.style.zIndex = "400";
 bookScreen.style.padding = "20px";
 bookScreen.style.overflowY = "auto";
 bookScreen.style.zoom = "1";
+bookScreen.style.transform = "none";
+bookScreen.style.transformOrigin = "top left";
+bookScreen.style.width = "100vw";
+bookScreen.style.maxWidth = "100vw";
+bookScreen.style.boxSizing = "border-box";
 
 bookScreen.innerHTML = `
   <style>
@@ -1576,6 +1677,34 @@ bookScreen.innerHTML = `
       font-weight:bold;
       cursor:pointer;
       touch-action:manipulation;
+    }
+    /* Keep the editor at one stable scale when Android opens/closes the file picker. */
+    #bookEditorInner, #bookEditorInner *{
+      max-width:100%;
+      box-sizing:border-box;
+    }
+    .book-section, .chapter-card, .book-editor-heading{
+      zoom:1 !important;
+      transform:none !important;
+      transform-origin:top left;
+    }
+    .book-input{
+      font-size:16px !important;
+      line-height:1.2;
+      min-height:52px;
+      appearance:auto;
+      -webkit-appearance:auto;
+    }
+    .cover-preview{
+      min-height:0;
+      height:220px;
+      max-height:220px;
+    }
+    .cover-preview img{
+      width:100%;
+      height:100%;
+      max-height:none;
+      object-fit:contain;
     }
     @media(max-width:520px){
       #bookEditorInner{padding:0;}
@@ -1805,6 +1934,21 @@ toolsBtn.onclick = () => {
         <option value="Montserrat">Montserrat</option>
         <option value="Poppins">Poppins</option>
         <option value="Russo One">Russo One</option>
+        <option value="Orbitron">Orbitron</option>
+        <option value="Audiowide">Audiowide</option>
+        <option value="Bebas Neue">Bebas Neue</option>
+        <option value="Bangers">Bangers</option>
+        <option value="Cinzel">Cinzel</option>
+        <option value="Playfair Display">Playfair Display</option>
+        <option value="Dancing Script">Dancing Script</option>
+        <option value="Lobster">Lobster</option>
+        <option value="Pacifico">Pacifico</option>
+        <option value="Righteous">Righteous</option>
+        <option value="Monoton">Monoton</option>
+        <option value="Press Start 2P">Press Start 2P</option>
+        <option value="Permanent Marker">Permanent Marker</option>
+        <option value="Special Elite">Special Elite</option>
+        <option value="Satisfy">Satisfy</option>
         <option value="serif">Serif</option>
         <option value="sans-serif">Sans Serif</option>
         <option value="monospace">Monospace</option>
@@ -1831,15 +1975,24 @@ toolsBtn.onclick = () => {
         <option value="72">72 px — Huge</option>
       </select>
 
-      <select id="styleTool" title="Text style">
+      <select id="styleTool" title="Stylish text style">
         <option value="">STYLE</option>
-        <option value="p">Normal Text</option>
+        <option value="normal">Normal Text</option>
         <option value="h1">Heading 1</option>
         <option value="h2">Heading 2</option>
         <option value="h3">Heading 3</option>
         <option value="h4">Heading 4</option>
         <option value="blockquote">Quote</option>
         <option value="pre">Code / Monospace</option>
+        <option value="zigzag">〰 ZIGZAG</option>
+        <option value="neon">✦ NEON GLOW</option>
+        <option value="threeD">3D TEXT</option>
+        <option value="outline">OUTLINE</option>
+        <option value="shadow">DEEP SHADOW</option>
+        <option value="elegant">ELEGANT</option>
+        <option value="typewriter">TYPEWRITER</option>
+        <option value="letterspace">WIDE LETTERS</option>
+        <option value="uppercase">UPPERCASE</option>
       </select>
 
       <input id="colorTool" type="color" value="#ffffff">
@@ -1852,6 +2005,24 @@ toolsBtn.onclick = () => {
 
     </div>
   `;
+
+  /* Stylish text effects used by STYLE menu. */
+  if (!document.getElementById("bookStyleEffects")) {
+    const style = document.createElement("style");
+    style.id = "bookStyleEffects";
+    style.textContent = `
+      .book-style-zigzag{text-decoration-line:underline;text-decoration-style:wavy;text-decoration-thickness:2px;text-decoration-color:#00ffff;text-underline-offset:4px}
+      .book-style-neon{text-shadow:0 0 4px currentColor,0 0 10px currentColor,0 0 20px currentColor}
+      .book-style-3d{text-shadow:1px 1px 0 #777,2px 2px 0 #555,3px 3px 0 #333,4px 4px 8px rgba(0,0,0,.8);font-weight:800}
+      .book-style-outline{-webkit-text-stroke:1px currentColor;text-shadow:none}
+      .book-style-shadow{text-shadow:5px 5px 0 rgba(0,0,0,.75),0 0 8px rgba(0,255,255,.35)}
+      .book-style-elegant{font-family:'Playfair Display',Georgia,serif;font-style:italic;letter-spacing:.04em}
+      .book-style-typewriter{font-family:'Special Elite','Courier New',monospace;letter-spacing:.03em}
+      .book-style-letterspace{letter-spacing:.18em}
+      .book-style-uppercase{text-transform:uppercase;letter-spacing:.08em}
+    `;
+    document.head.appendChild(style);
+  }
 
   document.addEventListener("selectionchange", () => {
 
@@ -1942,14 +2113,29 @@ toolsBtn.onclick = () => {
     const px = event.target.value;
     if (!px) return;
 
-    // execCommand uses only 1–7. We use 7 as a temporary marker,
-    // then convert the selected text to the exact pixel size chosen.
     document.execCommand("fontSize", false, "7");
 
     bookScreen.querySelectorAll('font[size="7"]').forEach(el => {
       el.style.fontSize = px + "px";
       el.removeAttribute("size");
     });
+
+    // Also handle browsers that wrap the selection in a span instead of <font>.
+    const selection = window.getSelection();
+    if (selection.rangeCount) {
+      const range = selection.getRangeAt(0);
+      let node = range.commonAncestorContainer;
+      if (node.nodeType === 3) node = node.parentElement;
+      if (node && node.closest && node.closest(".chapter-body, #bookContents, #bookTitle")) {
+        const span = document.createElement("span");
+        span.style.fontSize = px + "px";
+        try {
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+        } catch(e) {}
+      }
+    }
 
   };
 
@@ -1960,12 +2146,31 @@ toolsBtn.onclick = () => {
     const style = event.target.value;
     if (!style) return;
 
-    if (style === "blockquote") {
-      document.execCommand("formatBlock", false, "blockquote");
-    } else if (style === "pre") {
-      document.execCommand("formatBlock", false, "pre");
-    } else {
-      document.execCommand("formatBlock", false, style);
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) return;
+
+    const range = selection.getRangeAt(0);
+
+    if (["normal","h1","h2","h3","h4","blockquote","pre"].includes(style)) {
+      const command = style === "normal" ? "p" : style;
+      document.execCommand("formatBlock", false, command);
+      return;
+    }
+
+    const className = "book-style-" + style;
+    const span = document.createElement("span");
+    span.className = className;
+
+    try {
+      const fragment = range.extractContents();
+      span.appendChild(fragment);
+      range.insertNode(span);
+      selection.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      selection.addRange(newRange);
+    } catch (e) {
+      console.warn("Could not apply text style", e);
     }
 
   };
@@ -2512,16 +2717,21 @@ function submitLesson(){
   display.value = "";
 
 }
-function refreshLessons(){
+function refreshLessons(autoStart = true){
   currentLesson=null;
   playlist=[].concat(...Object.values(lessons));
   index=0;
-  playVideo(0);
+
   stopLessonAds();
   stopAds();
   adIndex=0;
   resetAdImage();
-  setTimeout(()=>startAds(),200);
+
+  if(autoStart){
+    playVideo(0);
+    setTimeout(()=>startAds(),200);
+  }
+
   display.value="";
 }
 
@@ -2536,15 +2746,26 @@ function initialAutoRefresh(){
   if (initialAutoRefreshDone) return;
   initialAutoRefreshDone = true;
 
-  // Give the app/video a moment to initialize, then do the one-time refresh.
+  const splash = document.getElementById("startupDeka");
+
+  // Refresh the playlist immediately, but keep the video stopped behind the startup screen.
+  refreshLessons(false);
+
+  // "powered by deka" stays on screen for 15 seconds on each fresh opening.
   setTimeout(() => {
-    refreshLessons();
-  }, 500);
+    playVideo(0);
+    startAds();
+
+    if (splash) {
+      splash.style.opacity = "0";
+      setTimeout(() => splash.remove(), 850);
+    }
+  }, 15000);
 }
 
 startAds();
 
-// One automatic refresh per fresh app/page opening — never again until reopened.
+// One automatic startup refresh per fresh app/page opening — never again until reopened.
 initialAutoRefresh();
 display.addEventListener("keypress",e=>{if(e.key==="Enter") submitLesson();});
 
