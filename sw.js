@@ -1,4 +1,4 @@
-const CACHE_NAME = "afya-care-v33";
+const CACHE_NAME = "afya-care-v25";
 
 /* =========================
    CORE APP FILES
@@ -7,42 +7,35 @@ const CACHE_NAME = "afya-care-v33";
 const APP_FILES = [
 
   /* ROOT */
-  "/AFYA-CARE/",
-  "/AFYA-CARE/index.html",
-  "/AFYA-CARE/manifest.json",
-  "/AFYA-CARE/sw.js",
+  "/mbingu-duniani/",
+  "/mbingu-duniani/index.html",
+  "/mbingu-duniani/manifest.json",
+  "/mbingu-duniani/sw.js",
 
   /* DATA FILES */
-  "/AFYA-CARE/health-data.js",
-  "/AFYA-CARE/lesson-data.js",
-  "/AFYA-CARE/ads-data.js",
-  "/AFYA-CARE/special-ads.js",
-  "/AFYA-CARE/hints.js",
+  "/mbingu-duniani/health-data.js",
+  "/mbingu-duniani/lesson-data.js",
+  "/mbingu-duniani/ads-data.js",
+  "/mbingu-duniani/special-ads.js",
+  "/mbingu-duniani/hints.js",
 
  
 /* =========================
      SPECIAL ADS IMAGES ONLY
   ========================= */
-  "/AFYA-CARE/images/1.jpg",
-  "/AFYA-CARE/images/2.jpg",
+  "/mbingu-duniani/images/1.jpg",
+  "/mbingu-duniani/images/2.jpg",
 
    
 /* =========================
      ADS IMAGES ONLY
   ========================= */
-  "/AFYA-CARE/images/ad3.png",
-  "/AFYA-CARE/images/one.jpg",
+  "/mbingu-duniani/images/ad3.png",
+  "/mbingu-duniani/images/one.jpg",
 
   /* =========================
      HEALTH CLASS IMAGES ONLY
   ========================= */
-  "/AFYA-CARE/images/a1.jpeg",
-  "/AFYA-CARE/images/a2.jpeg",
-  "/AFYA-CARE/images/b.jpeg",
-  "/AFYA-CARE/images/c.jpeg",
-  "/AFYA-CARE/images/d.jpeg",
-  "/AFYA-CARE/images/e1.png",
-  "/AFYA-CARE/images/e2.jpeg"
 
 ];
 
