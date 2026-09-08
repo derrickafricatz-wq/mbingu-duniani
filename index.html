@@ -3243,15 +3243,34 @@ async function openHeavensBookstore(){
           return p && p.reference && (String(p.id)===String(book.id) || String(p.supabaseId||"")===String(book.supabaseId||book.id));
         }catch(e){ return false; }
       })();
-      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button>${(!paid && pending)?'<button class="hb-btn pay hb-check-payment" style="margin-left:6px">CHECK</button>':''}</div><div class="hb-lock">${paid?'Unlocked on this device':pending?'Payment sent — checking BLMPay…':'Payment required to read'}</div></div>`;
+      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button><button class="hb-btn pay hb-check-payment" style="margin-left:6px">CHECK</button></div><div class="hb-lock">${paid?'Unlocked on this device':pending?'Payment sent — checking BLMPay…':'Payment required to read'}</div></div>`;
       card.querySelector(".hb-btn").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
       const checkBtn=card.querySelector('.hb-check-payment');
       if(checkBtn){
         checkBtn.onclick=async()=>{
           try{
             const p=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
-            if(p && p.reference) await watchHeavensPayment(book,store,p.reference);
-          }catch(e){ console.warn(e); }
+            if(p && p.reference && (String(p.id)===String(book.id) || String(p.supabaseId||"")===String(book.supabaseId||book.id))){
+              checkBtn.disabled=true;
+              checkBtn.textContent="CHECKING…";
+              await watchHeavensPayment(book,store,p.reference);
+              return;
+            }
+            if(p && p.reference && paid){
+              alert("This book is already marked as PAID and unlocked on this device.");
+              return;
+            }
+            if(p && p.reference){
+              alert("No pending payment was found for this book. If you paid for this book, use the same device/browser where the payment was started.");
+            }else if(paid){
+              alert("This book is already marked as PAID and unlocked on this device.");
+            }else{
+              alert("There is no pending BLMPay payment to check for this book yet.");
+            }
+          }catch(e){
+            console.warn(e);
+            alert("Could not check this payment right now.");
+          }
         };
       }
       grid.appendChild(card);
