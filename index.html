@@ -3237,15 +3237,29 @@ async function openHeavensBookstore(){
     filtered.forEach(book=>{
       const paid=isBookPaid(book); const card=document.createElement("div"); card.className="hb-card"; card.dataset.bookId=String(book.id);
       const cover=book.frontCover?`<img src="${book.frontCover}" alt="">`:`<div class="hb-cover-empty">${escapeBookHtml(book.title||"BOOK")}</div>`;
-      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button></div><div class="hb-lock">${paid?'Unlocked on this device':'Payment required to read'}</div></div>`;
+      const pending=(()=>{
+        try{
+          const p=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
+          return p && p.reference && (String(p.id)===String(book.id) || String(p.supabaseId||"")===String(book.supabaseId||book.id));
+        }catch(e){ return false; }
+      })();
+      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button>${(!paid && pending)?'<button class="hb-btn pay hb-check-payment" style="margin-left:6px">CHECK</button>':''}</div><div class="hb-lock">${paid?'Unlocked on this device':pending?'Payment sent — checking BLMPay…':'Payment required to read'}</div></div>`;
       card.querySelector(".hb-btn").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
+      const checkBtn=card.querySelector('.hb-check-payment');
+      if(checkBtn){
+        checkBtn.onclick=async()=>{
+          try{
+            const p=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
+            if(p && p.reference) await watchHeavensPayment(book,store,p.reference);
+          }catch(e){ console.warn(e); }
+        };
+      }
       grid.appendChild(card);
     });
   }
   search.oninput=render; store.querySelector("#hbSearchBtn").onclick=render;
   store.querySelector("#hbClose").onclick=()=>store.remove();
   render();
-  resumeHeavensPendingPayment(store);
 
   // Refresh the storefront from the server, while keeping local editor books visible.
   const serverBooks = await loadHeavensServerBooks();
@@ -3256,6 +3270,7 @@ async function openHeavensBookstore(){
     books = Array.from(merged.values());
     render();
   }
+  resumeHeavensPendingPayment(store, books);
 }
 
 function escapeBookHtml(v){return String(v).replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
@@ -3266,15 +3281,28 @@ function getBlmPayReference(data){
   const candidates = [
     data?.reference,
     data?.payment_reference,
+    data?.blmpay_reference,
     data?.payment?.reference,
+    data?.payment?.payment_reference,
+    data?.payment?.data?.reference,
+    data?.payment?.data?.payment_reference,
+    data?.payment?.data?.data?.reference,
     data?.blmpay?.reference,
     data?.blmpay?.payment_reference,
     data?.blmpay?.data?.reference,
-    data?.payment?.data?.reference,
+    data?.blmpay?.data?.payment_reference,
+    data?.blmpay?.data?.payment?.reference,
+    data?.blmpay?.data?.payment?.payment_reference,
     data?.data?.reference,
-    data?.data?.payment?.reference
+    data?.data?.payment_reference,
+    data?.data?.payment?.reference,
+    data?.data?.payment?.payment_reference,
+    data?.data?.payment?.data?.reference,
+    data?.data?.payment?.data?.payment_reference,
+    data?.data?.data?.reference
   ];
-  return candidates.find(v => v && String(v).trim()) ? String(candidates.find(v => v && String(v).trim())).trim() : "";
+  const found=candidates.find(v=>v!==undefined && v!==null && String(v).trim());
+  return found ? String(found).trim() : "";
 }
 
 function stopHeavensPaymentPolling(){
@@ -3296,32 +3324,53 @@ async function watchHeavensPayment(book,store,reference){
   stopHeavensPaymentPolling();
   const started=Date.now();
   const timeout=5*60*1000;
+  const ref=String(reference||"").trim();
+  if(!ref){
+    console.error("Heaven's Books: cannot watch payment without a BLMPay reference.");
+    return;
+  }
+
+  const setCardState=(isPaid, message)=>{
+    if(!store || !document.body.contains(store)) return;
+    store.querySelectorAll('.hb-card').forEach(card=>{
+      if(String(card.dataset.bookId)===String(book.id)){
+        const btn=card.querySelector('.hb-btn');
+        if(btn){
+          btn.className="hb-btn "+(isPaid?"read":"pay");
+          btn.textContent=isPaid?"READ":"PAY";
+        }
+        const lock=card.querySelector('.hb-lock');
+        if(lock) lock.textContent=message || (isPaid?"Unlocked on this device":"Payment required to read");
+      }
+    });
+  };
 
   const poll=async()=>{
     try{
-      const result=await checkHeavensPaymentStatus(reference);
-      console.log("Heaven's Books BLMPay status:",result);
+      console.log("Heaven's Books: checking BLMPay reference",ref);
+      const result=await checkHeavensPaymentStatus(ref);
+      console.log("Heaven's Books BLMPay status response:",result);
+
       const status=String(
-        result?.status || result?.payment?.status || result?.data?.status || result?.data?.payment?.status || ""
-      ).toLowerCase();
+        result?.blmpay_status ||
+        result?.status ||
+        result?.payment?.status ||
+        result?.payment?.data?.status ||
+        result?.data?.blmpay_status ||
+        result?.data?.status ||
+        result?.data?.payment?.status ||
+        result?.data?.payment?.data?.status ||
+        result?.data?.data?.status ||
+        ""
+      ).trim().toLowerCase();
+
+      console.log("Heaven's Books payment reference:",ref,"status:",status);
 
       if(["completed","success","succeeded","paid"].includes(status)){
         markBookPaid(book);
         localStorage.removeItem("heavensPendingPayment");
         stopHeavensPaymentPolling();
-        if(store && document.body.contains(store)){
-          store.querySelectorAll('.hb-card').forEach(card=>{
-            if(String(card.dataset.bookId)===String(book.id)){
-              const btn=card.querySelector('.hb-btn');
-              if(btn){
-                btn.className="hb-btn read";
-                btn.textContent="READ";
-              }
-              const lock=card.querySelector('.hb-lock');
-              if(lock) lock.textContent="Unlocked on this device";
-            }
-          });
-        }
+        setCardState(true,"Payment confirmed — book unlocked");
         alert("Payment confirmed by BLMPay. The book is now READ.");
         return;
       }
@@ -3329,8 +3378,18 @@ async function watchHeavensPayment(book,store,reference){
       if(["failed","voided","cancelled","expired","reversed"].includes(status)){
         localStorage.removeItem("heavensPendingPayment");
         stopHeavensPaymentPolling();
+        setCardState(false,"Payment was not completed");
         alert("BLMPay payment was not completed. The book is still locked.");
         return;
+      }
+
+      if(store && document.body.contains(store)){
+        store.querySelectorAll('.hb-card').forEach(card=>{
+          if(String(card.dataset.bookId)===String(book.id)){
+            const lock=card.querySelector('.hb-lock');
+            if(lock) lock.textContent=status ? "Waiting for BLMPay confirmation…" : "Payment sent — checking BLMPay…";
+          }
+        });
       }
     }catch(err){
       console.warn("BLMPay status check failed:",err);
@@ -3338,7 +3397,15 @@ async function watchHeavensPayment(book,store,reference){
 
     if(Date.now()-started >= timeout){
       stopHeavensPaymentPolling();
-      alert("We are still waiting for BLMPay confirmation. If you completed payment, open Heaven's Books again in a moment.");
+      if(store && document.body.contains(store)){
+        store.querySelectorAll('.hb-card').forEach(card=>{
+          if(String(card.dataset.bookId)===String(book.id)){
+            const lock=card.querySelector('.hb-lock');
+            if(lock) lock.textContent="Still waiting for BLMPay confirmation — tap PAY/CHECK again later.";
+          }
+        });
+      }
+      alert("We are still waiting for BLMPay confirmation. Your payment was not marked as paid locally yet. You can open Heaven's Books again later to check the same payment.");
       return;
     }
     heavensPaymentPollTimer=setTimeout(poll,3000);
@@ -3346,12 +3413,15 @@ async function watchHeavensPayment(book,store,reference){
   poll();
 }
 
-async function resumeHeavensPendingPayment(store){
+async function resumeHeavensPendingPayment(store, books){
   try{
     const pending=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
     if(!pending || !pending.reference) return;
-    const books=JSON.parse(localStorage.getItem("savedBooks")||"[]");
-    const book=books.find(b=>String(b.id)===String(pending.id));
+    const list=Array.isArray(books) ? books : JSON.parse(localStorage.getItem("savedBooks")||"[]");
+    const book=list.find(b=>
+      String(b.id)===String(pending.id) ||
+      String(b.supabaseId||"")===String(pending.supabaseId||"")
+    );
     if(book) watchHeavensPayment(book,store,pending.reference);
   }catch(e){
     console.warn("Could not resume pending Heaven's Books payment:",e);
@@ -3415,7 +3485,8 @@ async function startBookPayment(book,store){
         blmpay:data.blmpay || data.payment || data
       }));
 
-      alert("BLMPay payment request sent. Complete the mobile-money prompt. We will automatically check BLMPay and unlock this book only after BLMPay reports it as completed.");
+      render();
+      alert("BLMPay payment request sent. Complete the mobile-money prompt. Payment reference: " + reference + "\n\nWe will automatically check BLMPay and unlock this book only after BLMPay reports it as completed.");
       watchHeavensPayment(book,store,reference);
     }else{
       const msg=data && (data.error || data.message) ? (data.error || data.message) : "BLMPay did not accept the payment request.";
