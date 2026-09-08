@@ -3235,7 +3235,7 @@ async function openHeavensBookstore(){
     });
     if(!filtered.length){grid.innerHTML=`<div class="hb-empty">No books found.<br><br>Try another search or category.</div>`;return;}
     filtered.forEach(book=>{
-      const paid=isBookPaid(book); const card=document.createElement("div"); card.className="hb-card";
+      const paid=isBookPaid(book); const card=document.createElement("div"); card.className="hb-card"; card.dataset.bookId=String(book.id);
       const cover=book.frontCover?`<img src="${book.frontCover}" alt="">`:`<div class="hb-cover-empty">${escapeBookHtml(book.title||"BOOK")}</div>`;
       card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button></div><div class="hb-lock">${paid?'Unlocked on this device':'Payment required to read'}</div></div>`;
       card.querySelector(".hb-btn").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
@@ -3245,6 +3245,7 @@ async function openHeavensBookstore(){
   search.oninput=render; store.querySelector("#hbSearchBtn").onclick=render;
   store.querySelector("#hbClose").onclick=()=>store.remove();
   render();
+  resumeHeavensPendingPayment(store);
 
   // Refresh the storefront from the server, while keeping local editor books visible.
   const serverBooks = await loadHeavensServerBooks();
@@ -3259,16 +3260,111 @@ async function openHeavensBookstore(){
 
 function escapeBookHtml(v){return String(v).replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
 
+let heavensPaymentPollTimer = null;
+
+function getBlmPayReference(data){
+  const candidates = [
+    data?.reference,
+    data?.payment_reference,
+    data?.payment?.reference,
+    data?.blmpay?.reference,
+    data?.blmpay?.payment_reference,
+    data?.blmpay?.data?.reference,
+    data?.payment?.data?.reference,
+    data?.data?.reference,
+    data?.data?.payment?.reference
+  ];
+  return candidates.find(v => v && String(v).trim()) ? String(candidates.find(v => v && String(v).trim())).trim() : "";
+}
+
+function stopHeavensPaymentPolling(){
+  if(heavensPaymentPollTimer){
+    clearTimeout(heavensPaymentPollTimer);
+    heavensPaymentPollTimer = null;
+  }
+}
+
+async function checkHeavensPaymentStatus(reference){
+  const {data,error} = await heavensSupabase.functions.invoke("heavens-blmpay-status",{
+    body:{reference:String(reference)}
+  });
+  if(error) throw error;
+  return data || {};
+}
+
+async function watchHeavensPayment(book,store,reference){
+  stopHeavensPaymentPolling();
+  const started=Date.now();
+  const timeout=5*60*1000;
+
+  const poll=async()=>{
+    try{
+      const result=await checkHeavensPaymentStatus(reference);
+      console.log("Heaven's Books BLMPay status:",result);
+      const status=String(
+        result?.status || result?.payment?.status || result?.data?.status || result?.data?.payment?.status || ""
+      ).toLowerCase();
+
+      if(["completed","success","succeeded","paid"].includes(status)){
+        markBookPaid(book);
+        localStorage.removeItem("heavensPendingPayment");
+        stopHeavensPaymentPolling();
+        if(store && document.body.contains(store)){
+          store.querySelectorAll('.hb-card').forEach(card=>{
+            if(String(card.dataset.bookId)===String(book.id)){
+              const btn=card.querySelector('.hb-btn');
+              if(btn){
+                btn.className="hb-btn read";
+                btn.textContent="READ";
+              }
+              const lock=card.querySelector('.hb-lock');
+              if(lock) lock.textContent="Unlocked on this device";
+            }
+          });
+        }
+        alert("Payment confirmed by BLMPay. The book is now READ.");
+        return;
+      }
+
+      if(["failed","voided","cancelled","expired","reversed"].includes(status)){
+        localStorage.removeItem("heavensPendingPayment");
+        stopHeavensPaymentPolling();
+        alert("BLMPay payment was not completed. The book is still locked.");
+        return;
+      }
+    }catch(err){
+      console.warn("BLMPay status check failed:",err);
+    }
+
+    if(Date.now()-started >= timeout){
+      stopHeavensPaymentPolling();
+      alert("We are still waiting for BLMPay confirmation. If you completed payment, open Heaven's Books again in a moment.");
+      return;
+    }
+    heavensPaymentPollTimer=setTimeout(poll,3000);
+  };
+  poll();
+}
+
+async function resumeHeavensPendingPayment(store){
+  try{
+    const pending=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
+    if(!pending || !pending.reference) return;
+    const books=JSON.parse(localStorage.getItem("savedBooks")||"[]");
+    const book=books.find(b=>String(b.id)===String(pending.id));
+    if(book) watchHeavensPayment(book,store,pending.reference);
+  }catch(e){
+    console.warn("Could not resume pending Heaven's Books payment:",e);
+  }
+}
+
 async function startBookPayment(book,store){
   try{
-    // Your Edge Function requires a valid Supabase Authorization header.
     const session = await ensureHeavensAnonymousSession();
     if(!session || !session.access_token){
       throw new Error("Could not create a Supabase login session.");
     }
 
-    // The current Edge Function expects a UUID that exists in heavens_books.
-    // New/older local editor books may not have been published to Supabase yet.
     const supabaseBookId = book.supabaseId || book.id;
     if(!supabaseBookId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(supabaseBookId))){
       alert("This book is not yet published to Heaven's Books server. Publish/sync the book first, then try PAY again.");
@@ -3284,13 +3380,13 @@ async function startBookPayment(book,store){
       return;
     }
 
-    const {data, error} = await heavensSupabase.functions.invoke("heavens-blmpay-payment",{
+    const {data,error} = await heavensSupabase.functions.invoke("heavens-blmpay-payment",{
       body:{
-        book_id: String(supabaseBookId),
-        phone_number: phoneNumber.trim(),
-        firstname: "Heaven's Books",
-        lastname: "Customer",
-        email: (session.user && session.user.email) || "customer@heavens-books.local"
+        book_id:String(supabaseBookId),
+        phone_number:phoneNumber.trim(),
+        firstname:"Heaven's Books",
+        lastname:"Customer",
+        email:(session.user && session.user.email) || "customer@heavens-books.local"
       }
     });
 
@@ -3303,16 +3399,26 @@ async function startBookPayment(book,store){
     console.log("Heaven's Books BLMPay response:",data);
 
     if(data && data.success){
+      const reference=getBlmPayReference(data);
+      if(!reference){
+        console.error("BLMPay payment response has no payment reference:",data);
+        alert("BLMPay accepted the request, but no payment reference was returned. Do not pay again yet; check the payment function response.");
+        return;
+      }
+
       localStorage.setItem("heavensPendingPayment",JSON.stringify({
         id:book.id,
         supabaseId:String(supabaseBookId),
         title:book.title,
+        reference,
         startedAt:Date.now(),
         blmpay:data.blmpay || data.payment || data
       }));
-      alert("Payment request sent successfully. Check your phone for the mobile-money prompt. After BLMPay confirms the payment, the book will be unlocked.");
+
+      alert("BLMPay payment request sent. Complete the mobile-money prompt. We will automatically check BLMPay and unlock this book only after BLMPay reports it as completed.");
+      watchHeavensPayment(book,store,reference);
     }else{
-      const msg = data && (data.error || data.message) ? (data.error || data.message) : "BLMPay did not accept the payment request.";
+      const msg=data && (data.error || data.message) ? (data.error || data.message) : "BLMPay did not accept the payment request.";
       alert("Payment request failed: " + msg);
     }
   }catch(err){
