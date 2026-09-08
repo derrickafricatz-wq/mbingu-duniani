@@ -632,12 +632,12 @@ body.landscape-mode #brandVideo {
 
 #heavensReader{position:fixed;inset:0;z-index:700;background:#111;color:#171717;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none;font-family:Georgia,'Times New Roman',serif}
 .hr-head{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0e1317;border-bottom:1px solid #233139;color:#fff;font-family:Arial,Helvetica,sans-serif}
-.hr-back{width:42px;height:42px;flex:0 0 42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:27px;line-height:1}
+.hr-back{position:relative;z-index:60;width:42px;height:42px;flex:0 0 42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:27px;line-height:1}
 .hr-name{flex:1;font-family:'Russo One';font-size:16px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
 .hr-counter{min-width:68px;text-align:right;color:#8ea0a7;font:700 11px Arial,sans-serif}
 .hr-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px 10px 70px;overflow:hidden;background:radial-gradient(circle at center,#2a2d2f 0,#111 72%)}
-.hr-book{position:relative;width:min(94vw,760px);height:min(calc(100dvh - 154px),980px);max-height:calc(100% - 2px);perspective:1800px}
-.hr-page{position:absolute;inset:0;background:#fffdf7;border-radius:3px 12px 12px 3px;box-shadow:0 10px 35px rgba(0,0,0,.45),inset -10px 0 20px rgba(0,0,0,.035);padding:clamp(24px,5vw,58px) clamp(22px,6vw,68px) 48px;overflow:hidden;transform-origin:left center;backface-visibility:hidden;transition:transform .46s ease,opacity .46s ease;box-sizing:border-box}
+.hr-book{position:relative;width:min(94vw,760px);height:calc(100% - 2px);max-height:calc(100dvh - 150px);min-height:360px;perspective:1800px}
+.hr-page{position:absolute;z-index:1;inset:0;background:#fffdf7;border-radius:3px 12px 12px 3px;box-shadow:0 10px 35px rgba(0,0,0,.45),inset -10px 0 20px rgba(0,0,0,.035);padding:clamp(24px,5vw,58px) clamp(22px,6vw,68px) 48px;overflow:hidden;transform-origin:left center;backface-visibility:hidden;transition:transform .46s ease,opacity .46s ease;box-sizing:border-box}
 .hr-page.is-turning-next{transform:rotateY(-92deg);opacity:.2}
 .hr-page.is-turning-prev{transform:rotateY(92deg);opacity:.2;transform-origin:right center}
 .hr-page-inner{height:100%;overflow:auto;scrollbar-width:none}
@@ -653,7 +653,7 @@ body.landscape-mode #brandVideo {
 .hr-page-chapter::after{content:"";display:block;width:58px;height:1px;background:#888;margin:22px auto}
 .hr-running{position:absolute;left:clamp(22px,6vw,68px);right:clamp(22px,6vw,68px);bottom:14px;display:flex;justify-content:space-between;gap:15px;color:#999;font:10px Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px}
 .hr-controls{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:20}
-.hr-nav{width:48px;height:42px;border-radius:13px;border:1px solid #00ffff;background:#101719;color:#00ffff;font-size:25px;font-weight:800;box-shadow:0 5px 0 #004c4c}
+.hr-nav{position:relative;z-index:50;width:48px;height:42px;border-radius:13px;border:1px solid #00ffff;background:#101719;color:#00ffff;font-size:25px;font-weight:800;box-shadow:0 5px 0 #004c4c}
 .hr-nav:active{transform:translateY(3px);box-shadow:0 2px 0 #004c4c}
 .hr-page-count{min-width:72px;text-align:center;color:#fff;background:#0e1317;border:1px solid #30434a;border-radius:12px;padding:9px 8px;font:700 11px Arial,sans-serif}
 .hr-hint{position:absolute;right:14px;top:12px;color:#9ba8ad;font:10px Arial,sans-serif;opacity:.8}
@@ -1522,19 +1522,6 @@ selectBox.onchange = () => {
     });
   }
 
-  const closeBtn = document.createElement("button");
-
-  closeBtn.innerText = "CLOSE";
-
-  closeBtn.style.position = "fixed";
-  closeBtn.style.top = "15px";
-  closeBtn.style.right = "15px";
-  closeBtn.style.padding = "10px 16px";
-  closeBtn.style.background = "#111";
-  closeBtn.style.color = "white";
-  closeBtn.style.border = "1px solid #00ffff";
-  closeBtn.style.borderRadius = "8px";
-
     screen.querySelector("#createBookBtn").onclick = () => {
 
   const selected = [];
@@ -2329,20 +2316,8 @@ localStorage.setItem(
   JSON.stringify(savedBooks)
 );
 
-// Publish the same book to Heaven's Books server so PAY can use a real UUID.
-// If publishing fails, the local book/PDF is still preserved.
-try{
-  const remoteBook = await publishBookToHeavensServer(newBook);
-  if(remoteBook && remoteBook.id){
-    newBook.supabaseId = remoteBook.id;
-    const pos = savedBooks.findIndex(b => b.id === newBook.id);
-    if(pos >= 0) savedBooks[pos] = newBook;
-    localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
-    console.log("Heaven's Books: published", remoteBook.id);
-  }
-}catch(syncErr){
-  console.warn("Heaven's Books server sync failed; local copy kept:", syncErr);
-}
+// PDF generation/download is deliberately completed BEFORE server publishing.
+// That way a slow/offline Heaven's Books server can never prevent the author's free PDF download.
 
 const { jsPDF } = window.jspdf;
 
@@ -2576,6 +2551,23 @@ if (backCoverImage) {
 }     
 
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
+
+// Publish only after the PDF has been handed to the browser.
+// The PDF is the author's free copy; the bookstore version remains protected by payment.
+try{
+  const remoteBook = await publishBookToHeavensServer(newBook);
+  if(remoteBook && remoteBook.id){
+    newBook.supabaseId = remoteBook.id;
+    const pos = savedBooks.findIndex(b => b.id === newBook.id);
+    if(pos >= 0) savedBooks[pos] = newBook;
+    localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
+    console.log("Heaven's Books: published", remoteBook.id);
+  }
+}catch(syncErr){
+  console.warn("Heaven's Books server sync failed; local copy/PDF kept:", syncErr);
+}
+
+alert("Book saved successfully. Your free PDF copy has been downloaded, and the book has been added to Heaven's Books.");
 };
 
 document.body.appendChild(bookScreen);
@@ -3225,9 +3217,23 @@ const HEAVENS_PAID_KEY = "heavensPaidBooks";
 function getPaidBooks(){
   try{return JSON.parse(localStorage.getItem(HEAVENS_PAID_KEY)||"{}")}catch(e){return {}}
 }
-function isBookPaid(book){ return !!getPaidBooks()[book.id]; }
+function getHeavensBookStableKey(book){
+  return String(book?.supabaseId || book?.id || "").trim();
+}
+function isBookPaid(book){
+  const paid=getPaidBooks();
+  const key=getHeavensBookStableKey(book);
+  if(key && paid[key]) return true;
+  // Compatibility with older local records that were keyed by the local HB id.
+  if(book?.id && paid[book.id]) return true;
+  return false;
+}
 function markBookPaid(book){
-  const paid=getPaidBooks(); paid[book.id]={paidAt:new Date().toISOString(),title:book.title};
+  const paid=getPaidBooks();
+  const key=getHeavensBookStableKey(book);
+  if(!key) return;
+  paid[key]={paidAt:new Date().toISOString(),title:book.title};
+  if(book.id && book.id!==key) paid[book.id]=paid[key];
   localStorage.setItem(HEAVENS_PAID_KEY,JSON.stringify(paid));
 }
 
@@ -3343,8 +3349,17 @@ async function openHeavensBookstore(){
   const serverBooks = await loadHeavensServerBooks();
   if(serverBooks.length){
     const merged = new Map();
-    books.forEach(b => merged.set(String(b.supabaseId || b.id), b));
-    serverBooks.forEach(b => merged.set(String(b.supabaseId), b));
+    books.forEach(b => merged.set(String(b.supabaseId || b.id), {...b}));
+    serverBooks.forEach(b => {
+      const key=String(b.supabaseId || b.id);
+      const local=merged.get(key) || {};
+      merged.set(key,{...local,...b,
+        contents:b.contents || local.contents || "",
+        frontCover:b.frontCover || local.frontCover || "",
+        backCover:b.backCover || local.backCover || "",
+        chapters:Array.isArray(b.chapters) && b.chapters.length ? b.chapters : (Array.isArray(local.chapters)?local.chapters:[])
+      });
+    });
     books = Array.from(merged.values());
     render();
   }
@@ -3605,14 +3620,15 @@ async function startBookPayment(book,store){
 }
 
 function openBookReader(book,store){
-  const existing=document.getElementById("heavensReader"); if(existing) existing.remove();
+  const existing=document.getElementById("heavensReader");
+  if(existing) existing.remove();
   if(!isBookPaid(book)){startBookPayment(book,store);return;}
 
   const reader=document.createElement("div");
   reader.id="heavensReader";
   reader.innerHTML=`
     <div class="hr-head">
-      <button class="hr-back" aria-label="Close book">‹</button>
+      <button class="hr-back" type="button" aria-label="Close book">×</button>
       <div class="hr-name">${escapeBookHtml(book.title||"Untitled Book")}</div>
       <div class="hr-counter" id="hrTopCount">1 / 1</div>
     </div>
@@ -3620,9 +3636,9 @@ function openBookReader(book,store){
       <div class="hr-book" id="hrBook"></div>
       <div class="hr-hint">SWIPE OR USE ARROWS</div>
       <div class="hr-controls">
-        <button class="hr-nav" id="hrPrev" aria-label="Previous page">‹</button>
+        <button class="hr-nav" id="hrPrev" type="button" aria-label="Previous page">‹</button>
         <div class="hr-page-count" id="hrPageCount">PAGE 1 / 1</div>
-        <button class="hr-nav" id="hrNext" aria-label="Next page">›</button>
+        <button class="hr-nav" id="hrNext" type="button" aria-label="Next page">›</button>
       </div>
     </div>`;
   document.body.appendChild(reader);
@@ -3632,9 +3648,10 @@ function openBookReader(book,store){
   const topCountEl=reader.querySelector("#hrTopCount");
   const pages=[];
 
-  function addPage(kind, build){
+  function addPage(kind,build){
     const page=document.createElement("article");
     page.className="hr-page"+(kind==="cover"?" hr-page-cover-wrap":"");
+    page.style.display="none";
     const inner=document.createElement("div");
     inner.className="hr-page-inner";
     page.appendChild(inner);
@@ -3647,113 +3664,130 @@ function openBookReader(book,store){
     pages.push(page);
   }
 
-  if(book.frontCover){
+  const front=String(book.frontCover||"");
+  if(front){
     addPage("cover",(inner,page)=>{
-      inner.innerHTML=`<img class="hr-page-cover" src="${escapeBookHtml(book.frontCover)}" alt="Front cover">`;
+      const img=document.createElement("img");
+      img.className="hr-page-cover";
+      img.alt="Front cover";
+      img.src=front;
+      img.onerror=()=>{img.style.display="none";inner.textContent=book.title||"Untitled Book";inner.style.display="grid";inner.style.placeItems="center";inner.style.fontSize="32px";inner.style.fontWeight="800";};
+      inner.appendChild(img);
       page.querySelector(".hr-running").style.display="none";
     });
   }else{
-    addPage("title",(inner)=>{
+    addPage("title",inner=>{
       const sub=document.createElement("div"); sub.className="hr-page-subtitle"; sub.textContent="HEAVEN'S BOOKS";
       const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent=book.title||"Untitled Book";
       inner.append(sub,title);
     });
   }
 
-  if(book.contents){
-    addPage("contents",(inner)=>{
+  if(String(book.contents||"").trim()){
+    addPage("contents",inner=>{
       const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent="Table of Contents";
-      const text=document.createElement("div"); text.className="hr-page-text"; text.textContent=book.contents;
+      const text=document.createElement("div"); text.className="hr-page-text"; text.textContent=String(book.contents||"");
       inner.append(title,text);
     });
   }
 
   const chapterList=Array.isArray(book.chapters)?book.chapters:[];
   chapterList.forEach((ch,index)=>{
-    addPage("chapter",(inner)=>{
-      const title=document.createElement("h1"); title.className="hr-page-chapter"; title.textContent=ch.title||("Chapter "+(index+1));
+    const chapterTitle=String(ch?.title||("Chapter "+(index+1))).trim();
+    addPage("chapter",inner=>{
+      const title=document.createElement("h1"); title.className="hr-page-chapter"; title.textContent=chapterTitle;
       inner.appendChild(title);
     });
 
-    const raw=String(ch.text||"").trim();
+    const raw=String(ch?.text||"").trim();
     const paragraphs=raw.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
     const chunks=[];
     let current="";
-    const target=window.innerWidth<600?1150:1900;
+    // Conservative chunks prevent text from disappearing below the page edge.
+    const target=window.innerWidth<600?900:1550;
     paragraphs.forEach(par=>{
-      const candidate=current?(current+"\n\n"+par):par;
-      if(candidate.length>target && current){chunks.push(current);current=par;}
-      else current=candidate;
+      if(par.length>target){
+        if(current){chunks.push(current);current="";}
+        for(let i=0;i<par.length;i+=target) chunks.push(par.slice(i,i+target));
+      }else{
+        const candidate=current?(current+"\n\n"+par):par;
+        if(candidate.length>target && current){chunks.push(current);current=par;}else current=candidate;
+      }
     });
     if(current)chunks.push(current);
     if(!chunks.length)chunks.push("");
 
-    chunks.forEach((chunk)=>addPage("text",(inner)=>{
+    chunks.forEach(chunk=>addPage("text",inner=>{
       const text=document.createElement("div"); text.className="hr-page-text"; text.textContent=chunk;
       inner.appendChild(text);
     }));
   });
 
-  if(book.backCover){
+  const back=String(book.backCover||"");
+  if(back){
     addPage("cover",(inner,page)=>{
-      inner.innerHTML=`<img class="hr-page-cover" src="${escapeBookHtml(book.backCover)}" alt="Back cover">`;
+      const img=document.createElement("img");
+      img.className="hr-page-cover";
+      img.alt="Back cover";
+      img.src=back;
+      img.onerror=()=>{img.style.display="none";inner.textContent="THE END";inner.style.display="grid";inner.style.placeItems="center";inner.style.fontSize="30px";inner.style.fontWeight="800";};
+      inner.appendChild(img);
       page.querySelector(".hr-running").style.display="none";
     });
   }
 
-  if(pages.length===0){
-    addPage("title",(inner)=>{
+  if(!pages.length){
+    addPage("title",inner=>{
       const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent=book.title||"Untitled Book";
       inner.appendChild(title);
     });
   }
 
   let currentPage=0;
+  let turning=false;
   function updateReader(){
     pages.forEach((p,i)=>{
-      p.style.display=i===currentPage?"block":"none";
+      p.style.display=(i===currentPage)?"block":"none";
+      p.style.zIndex=(i===currentPage)?10:1;
       p.classList.remove("is-turning-next","is-turning-prev");
     });
-    pageCountEl.textContent=`PAGE ${currentPage+1} / ${pages.length}`;
-    topCountEl.textContent=`${currentPage+1} / ${pages.length}`;
+    const label=`${currentPage+1} / ${pages.length}`;
+    pageCountEl.textContent=`PAGE ${label}`;
+    topCountEl.textContent=label;
   }
   function turnTo(nextPage,direction){
-    if(nextPage<0||nextPage>=pages.length||nextPage===currentPage)return;
+    if(turning||nextPage<0||nextPage>=pages.length||nextPage===currentPage)return;
+    turning=true;
     const old=pages[currentPage], next=pages[nextPage];
     next.style.display="block";
-    next.style.zIndex="2";
-    old.style.zIndex="1";
+    next.style.zIndex="9";
+    old.style.zIndex="10";
     old.classList.add(direction>0?"is-turning-next":"is-turning-prev");
     setTimeout(()=>{
       currentPage=nextPage;
+      turning=false;
       updateReader();
-    },330);
+    },470);
   }
-  function next(){turnTo(currentPage+1,1)}
-  function prev(){turnTo(currentPage-1,-1)}
+  const next=()=>turnTo(currentPage+1,1);
+  const prev=()=>turnTo(currentPage-1,-1);
 
-  reader.querySelector("#hrNext").onclick=next;
-  reader.querySelector("#hrPrev").onclick=prev;
-  reader.querySelector(".hr-back").onclick=()=>reader.remove();
+  reader.querySelector("#hrNext").onclick=e=>{e.stopPropagation();next();};
+  reader.querySelector("#hrPrev").onclick=e=>{e.stopPropagation();prev();};
+  const closeReader=()=>{reader.remove();document.body.style.overflow="";};
+  reader.querySelector(".hr-back").onclick=e=>{e.stopPropagation();closeReader();};
+  reader.tabIndex=0;
+  reader.focus();
   reader.addEventListener("keydown",e=>{
     if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();next();}
     if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();prev();}
-    if(e.key==="Escape")reader.remove();
+    if(e.key==="Escape"){e.preventDefault();closeReader();}
     if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();
   });
-  reader.tabIndex=0;
-  reader.focus();
 
   let startX=0,startY=0;
-  reader.addEventListener("touchstart",e=>{
-    const t=e.changedTouches[0]; startX=t.screenX; startY=t.screenY;
-  },{passive:true});
-  reader.addEventListener("touchend",e=>{
-    const t=e.changedTouches[0];
-    const dx=t.screenX-startX, dy=t.screenY-startY;
-    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev();}
-  },{passive:true});
-
+  reader.addEventListener("touchstart",e=>{const t=e.changedTouches[0];startX=t.screenX;startY=t.screenY;},{passive:true});
+  reader.addEventListener("touchend",e=>{const t=e.changedTouches[0];const dx=t.screenX-startX,dy=t.screenY-startY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev();}},{passive:true});
   reader.addEventListener("contextmenu",e=>e.preventDefault());
   reader.addEventListener("copy",e=>e.preventDefault());
   reader.addEventListener("cut",e=>e.preventDefault());
