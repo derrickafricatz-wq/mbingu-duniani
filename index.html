@@ -3250,22 +3250,49 @@ async function openHeavensBookstore(){
         checkBtn.onclick=async()=>{
           try{
             const p=JSON.parse(localStorage.getItem("heavensPendingPayment")||"null");
-            if(p && p.reference && (String(p.id)===String(book.id) || String(p.supabaseId||"")===String(book.supabaseId||book.id))){
-              checkBtn.disabled=true;
-              checkBtn.textContent="CHECKING…";
+            checkBtn.disabled=true;
+            checkBtn.textContent="CHECKING…";
+
+            const localMatches = p && p.reference && (
+              String(p.id)===String(book.id) ||
+              String(p.supabaseId||"")===String(book.supabaseId||book.id)
+            );
+
+            if(localMatches){
               await watchHeavensPayment(book,store,p.reference);
               return;
             }
-            if(p && p.reference && paid){
-              alert("This book is already marked as PAID and unlocked on this device.");
+
+            // Important: payment references are normally stored server-side in book_orders.
+            // This lets CHECK recover a payment even when localStorage was cleared,
+            // the user changed browser/device, or the app was refreshed.
+            const serverCheck = await checkHeavensPaymentStatus("", book.supabaseId || book.id);
+            console.log("Heaven's Books server payment lookup:", serverCheck);
+
+            const recoveredReference = getBlmPayReference(serverCheck) ||
+              serverCheck?.reference || serverCheck?.blmpay_reference || "";
+
+            if(serverCheck?.success && recoveredReference){
+              localStorage.setItem("heavensPendingPayment",JSON.stringify({
+                id:book.id,
+                supabaseId:String(book.supabaseId || book.id),
+                title:book.title,
+                reference:String(recoveredReference),
+                startedAt:Date.now(),
+                recovered:true
+              }));
+              await watchHeavensPayment(book,store,String(recoveredReference));
               return;
             }
-            if(p && p.reference){
-              alert("No pending payment was found for this book. If you paid for this book, use the same device/browser where the payment was started.");
-            }else if(paid){
+
+            if(paid){
+              checkBtn.disabled=false;
+              checkBtn.textContent="CHECK";
               alert("This book is already marked as PAID and unlocked on this device.");
             }else{
-              alert("There is no pending BLMPay payment to check for this book yet.");
+              checkBtn.disabled=false;
+              checkBtn.textContent="CHECK";
+              alert(serverCheck?.error || "No payment order was found for this book yet. If you already paid, make sure the payment was made for this exact book.");
             }
           }catch(e){
             console.warn(e);
@@ -3331,9 +3358,12 @@ function stopHeavensPaymentPolling(){
   }
 }
 
-async function checkHeavensPaymentStatus(reference){
+async function checkHeavensPaymentStatus(reference, bookId){
+  const body = {};
+  if(reference) body.reference = String(reference);
+  if(bookId) body.book_id = String(bookId);
   const {data,error} = await heavensSupabase.functions.invoke("heavens-blmpay-status",{
-    body:{reference:String(reference)}
+    body
   });
   if(error) throw error;
   return data || {};
