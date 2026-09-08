@@ -1,132 +1,215 @@
 const healthyTopics = {
 
-hiv: {
-  title: "VVU / UKIMWI (Darasa la Hospitali)",
-  lines: [
+  faith: {
+    title: "Mungu na Maisha",
+    lines: [
 
-    "📖 Ufafanuzi",
-    "Virusi vya Ukimwi ni virusi vinavyoathiri mfumo wa kinga ya mwili na kudhoofisha uwezo wa kupambana na magonjwa.",
+      "📖 Somo la Maisha",
+      "Mungu hakutaki uishi kwa hofu; anataka uishi kwa imani, tumaini, na moyo wa ujasiri.",
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/a1.jpeg"
-    },
+      {
+        type: "image",
+        src: ""
+      },
 
-    "📖 Dalili",
-    "Homa za mara kwa mara, uchovu mkali, kupungua uzito, na maambukizi ya mara kwa mara.",
+      "📖 Nukuu ya Mungu",
+      "“Usiogope, kwa maana mimi ni pamoja nawe.”",
 
-    "📖 Njia za Maambukizi",
-    "Virusi vya Ukimwi huenea kupitia ngono bila kinga, damu iliyoambukizwa, na matumizi ya sindano zisizo salama.",
+      "📖 Tafakari",
+      "Wakati maisha yanapokuwa magumu, kumbuka kuwa Mungu bado yupo pamoja nawe hata kama huoni njia.",
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/a2.jpeg"
-    },
+      {
+        type: "image",
+        src: ""
+      },
 
-    "📖 Kinga",
-    "Tumia kondomu wakati wa ngono, epuka kushiriki sindano, na hakikisha damu ni salama kabla ya kupewa.",
+      "📖 Neno la Maisha",
+      "Usikate tamaa kwa sababu ya kile unachokiona leo; Mungu anaweza kuwa anaandaa kesho iliyo bora zaidi."
 
-    "📖 Matibabu",
-    "Kutumia dawa za kudhibiti makali ya virusi vya ukimwi zinazo muwezesha mtu kuishi maisha marefu na yenye afya."
+    ]
+  },
 
-  ]
-},
+  hope: {
+    title: "Tumaini kwa Mungu",
+    lines: [
 
-infectionSpread: {
-  title: "Njia za Maambukizi ya Magonjwa",
-  lines: [
+      "📖 Tumaini",
+      "Mungu hufungua milango ambayo mwanadamu hawezi kuifungua.",
 
-    "📖 Ufafanuzi",
-    "Maambukizi hutokea pale viini vya magonjwa vinapohama kutoka kwa mtu mmoja kwenda mwingine.",
+      {
+        type: "image",
+        src: ""
+      },
 
-    "📖 Njia za Maambukizi",
-    "Magonjwa huenea kupitia hewa, maji, chakula, au kugusana na mtu aliyeambukizwa.",
-    "Kukohoa na kupiga chafya husambaza vimelea kwa urahisi.",
-    "Kutonawa mikono ni chanzo kikubwa cha maambukizi.",
-    "Kuepuka mikusanyiko wakati wa mlipuko hupunguza hatari ya kuambukizwa.",
+      "📖 Nukuu ya Mungu",
+      "“Mtegemee Mungu kwa moyo wako wote, wala usizitegemee akili zako mwenyewe.”",
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/b.jpeg"
-    },
+      "📖 Tafakari",
+      "Usiporuhusu moyo wako kukata tamaa, bado kuna nafasi ya kuona muujiza wa Mungu.",
 
-    "📖 Kinga",
-    "Osha mikono mara kwa mara, vaa barakoa wakati wa mlipuko, na epuka kugusana na wagonjwa."
+      "📖 Ujumbe",
+      "Kuchelewa kwa jibu siyo maana Mungu amekusahau; wakati mwingine Mungu huandaa jambo bora kuliko uliloliomba."
 
-  ]
-},
+    ]
+  },
 
-vaccines: {
-  title: "Umuhimu wa Chanjo",
-  lines: [
+  strength: {
+    title: "Nguvu kutoka kwa Mungu",
+    lines: [
 
-    "📖 Ufafanuzi",
-    "Chanjo husaidia mwili kujenga kinga dhidi ya magonjwa kabla ya kuambukizwa.",
+      "📖 Nguvu",
+      "Unapohisi umechoka, kumbuka kwamba nguvu za Mungu hazina mwisho.",
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/c.jpeg"
-    },
+      {
+        type: "image",
+        src: ""
+      },
 
-    "📖 Jinsi Chanjo Inavyofanya Kazi",
-    "Chanjo hufundisha mfumo wa kinga kutambua na kupambana na vimelea vya magonjwa.",
+      "📖 Nukuu ya Mungu",
+      "“Mungu ni kimbilio letu na nguvu zetu, msaada utakaoonekana wakati wa mateso.”",
 
-    "📖 Umuhimu",
-    "Watoto na watu wazima wanahitaji chanjo kulingana na umri wao.",
-    "Chanjo huzuia milipuko ya magonjwa kwenye jamii."
+      "📖 Tafakari",
+      "Usijione dhaifu kwa sababu unapitia changamoto. Mungu anaweza kutumia kipindi hicho kukujenga kuwa mtu mwenye nguvu zaidi.",
 
-  ]
-},
+      {
+        type: "image",
+        src: ""
+      },
 
-respiratory: {
-  title: "Magonjwa ya Njia ya Hewa",
-  lines: [
+      "📖 Ujumbe",
+      "Simama tena. Omba tena. Amini tena. Mungu bado hajamaliza hadithi ya maisha yako."
 
-    "📖 Ufafanuzi",
-    "Magonjwa ya njia ya hewa huathiri mfumo wa kupumua na huenea kwa urahisi.",
+    ]
+  },
 
-    "📖 Dalili",
-    "Kikohozi, homa, na kupumua kwa shida.",
+  love: {
+    title: "Upendo wa Mungu",
+    lines: [
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/d.jpeg"
-    },
+      "📖 Upendo",
+      "Upendo wa Mungu haupimwi kwa mali, nafasi, au mafanikio; ni upendo unaomfikia kila anayemtafuta.",
 
-    "📖 Kinga",
-    "Vaa barakoa wakati wa mlipuko na epuka msongamano.",
-    "Nawa mikono mara kwa mara na tumia sanitizer."
+      {
+        type: "image",
+        src: ""
+      },
 
-  ]
-},
+      "📖 Nukuu ya Mungu",
+      "“Mungu ni upendo.”",
 
-medication: {
-  title: "Matumizi Sahihi ya Dawa",
-  lines: [
+      "📖 Tafakari",
+      "Jifunze kumpenda Mungu na pia kuwa mtu wa upendo, msamaha, huruma, na wema kwa wengine.",
 
-    "📖 Ufafanuzi",
-    "Kutumia dawa kwa usahihi ni muhimu kwa afya na kuzuia usugu wa dawa.",
+      "📖 Ujumbe",
+      "Moyo unaojua kusamehe hubeba amani ambayo dunia haiwezi kununua."
 
-    "📖 Kanuni Muhimu",
-    "Tumia dawa kulingana na maelekezo ya daktari.",
+    ]
+  },
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/e1.png"
-    },
+  success: {
+    title: "Mungu na Mafanikio",
+    lines: [
 
-    "Usitumie antibiotics bila ushauri wa mtaalamu wa afya.",
+      "📖 Mafanikio",
+      "Mafanikio ya kweli siyo kuwa na kila kitu, bali kuwa na Mungu katika kila hatua ya maisha yako.",
 
-    "Kumaliza dozi kamili ni muhimu kuzuia usugu wa dawa.",
+      {
+        type: "image",
+        src: ""
+      },
 
-    {
-      type: "image",
-      src: "https://derrickafricatz-wq.github.io/AFYA-CARE/images/e2.jpeg"
-    },
+      "📖 Nukuu ya Mungu",
+      "“Mkabidhi Bwana kazi zako, nayo mipango yako itathibitika.”",
 
-    "Hifadhi dawa vizuri ili zisipoteze ufanisi wake."
+      "📖 Tafakari",
+      "Fanya kazi kwa bidii, omba kwa imani, na mwachie Mungu matokeo.",
 
-  ]
-}
+      {
+        type: "image",
+        src: ""
+      },
+
+      "📖 Ujumbe",
+      "Usilinganishe safari yako na ya mwingine. Mungu ana muda wake kwa kila jambo."
+
+    ]
+  },
+
+  peace: {
+    title: "Amani ya Mungu",
+    lines: [
+
+      "📖 Amani",
+      "Amani ya kweli haitegemei hali ya dunia; inatokana na kumtumaini Mungu.",
+
+      "📖 Nukuu ya Mungu",
+      "“Amani yangu nawapa ninyi; siwapi kama ulimwengu utoavyo.”",
+
+      {
+        type: "image",
+        src: ""
+      },
+
+      "📖 Tafakari",
+      "Unaposhindwa kuelewa kinachoendelea, tuliza moyo wako na umkabidhi Mungu kila jambo.",
+
+      "📖 Ujumbe",
+      "Mungu anaweza kuweka amani moyoni mwako hata katikati ya dhoruba."
+
+    ]
+  },
+
+  prayer: {
+    title: "Nguvu ya Maombi",
+    lines: [
+
+      "📖 Maombi",
+      "Maombi ni mazungumzo ya moyo wako na Mungu. Usichoke kuomba.",
+
+      {
+        type: "image",
+        src: ""
+      },
+
+      "📖 Nukuu ya Mungu",
+      "“Ombeni, nanyi mtapewa; tafuteni, nanyi mtapata.”",
+
+      "📖 Tafakari",
+      "Mungu husikia hata maombi ambayo moyo wako umeshindwa kuyaeleza kwa maneno.",
+
+      "📖 Ujumbe",
+      "Endelea kuomba hata kama jibu halijafika. Imani haikomi kwa sababu ya kusubiri."
+
+    ]
+  },
+
+  life: {
+    title: "Maisha na Mungu",
+    lines: [
+
+      "📖 Maisha",
+      "Maisha ni safari. Kuna siku za furaha, siku za machozi, siku za ushindi na siku za kujifunza.",
+
+      {
+        type: "image",
+        src: ""
+      },
+
+      "📖 Nukuu ya Mungu",
+      "“Katika kila jambo Mungu hufanya kazi pamoja na wale wampendao.”",
+
+      "📖 Tafakari",
+      "Usihukumu maisha yako kwa sura ya leo. Mungu bado anaweza kubadilisha kesho yako.",
+
+      {
+        type: "image",
+        src: ""
+      },
+
+      "📖 Ujumbe",
+      "Mshike Mungu katika kila hatua. Pale nguvu zako zinapoishia, ndipo imani yako inapoweza kuanza."
+
+    ]
+  }
 
 };
