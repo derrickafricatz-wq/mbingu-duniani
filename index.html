@@ -2255,6 +2255,9 @@ const savedBooks =
 
 const bookCategory = (bookScreen.querySelector("#bookCategory")?.value || "SERMONS").trim();
 
+// Heaven's Books payment test/default price. Change this when you add per-book pricing.
+const bookPrice = 1000;
+
 // Keep a compact copy for the in-app Heaven's Books library.
 async function compressBookCover(dataUrl){
   if(!dataUrl) return "";
@@ -2276,21 +2279,40 @@ async function compressBookCover(dataUrl){
 const libraryCover = await compressBookCover(coverImage);
 const libraryBackCover = await compressBookCover(backCoverImage);
 
-savedBooks.push({
+const newBook = {
   id: "HB-" + Date.now() + "-" + Math.random().toString(36).slice(2,8),
   title: bookTitle || "Untitled Book",
   category: bookCategory || "SERMONS",
+  price: bookPrice,
+  currency: "TZS",
   contents: document.getElementById("bookContents").innerText.trim(),
   frontCover: libraryCover,
   backCover: libraryBackCover,
   chapters: chapters,
   date: new Date().toLocaleDateString()
-});
+};
+
+savedBooks.push(newBook);
 
 localStorage.setItem(
   "savedBooks",
   JSON.stringify(savedBooks)
 );
+
+// Publish the same book to Heaven's Books server so PAY can use a real UUID.
+// If publishing fails, the local book/PDF is still preserved.
+try{
+  const remoteBook = await publishBookToHeavensServer(newBook);
+  if(remoteBook && remoteBook.id){
+    newBook.supabaseId = remoteBook.id;
+    const pos = savedBooks.findIndex(b => b.id === newBook.id);
+    if(pos >= 0) savedBooks[pos] = newBook;
+    localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
+    console.log("Heaven's Books: published", remoteBook.id);
+  }
+}catch(syncErr){
+  console.warn("Heaven's Books server sync failed; local copy kept:", syncErr);
+}
 
 const { jsPDF } = window.jspdf;
 
@@ -3101,6 +3123,71 @@ async function ensureHeavensAnonymousSession(){
 // Start/restore the anonymous session when the app is running.
 ensureHeavensAnonymousSession().catch(()=>{});
 
+async function publishBookToHeavensServer(book){
+  const session = await ensureHeavensAnonymousSession();
+  if(!session || !session.user) throw new Error("Could not create Heaven's Books login session.");
+
+  const payload = {
+    title: String(book.title || "Untitled Book"),
+    category: String(book.category || "SERMONS"),
+    price: Number(book.price || 1000),
+    currency: String(book.currency || "TZS"),
+    front_cover: book.frontCover || null,
+    back_cover: book.backCover || null,
+    contents: String(book.contents || ""),
+    chapters: Array.isArray(book.chapters) ? book.chapters : [],
+    author_id: session.user.id,
+    active: true
+  };
+
+  if(book.supabaseId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(book.supabaseId))){
+    const {data,error} = await heavensSupabase
+      .from("heavens_books")
+      .update(payload)
+      .eq("id", String(book.supabaseId))
+      .select("id,title,category,price,currency,front_cover,back_cover,contents,chapters,created_at")
+      .single();
+    if(error) throw error;
+    return data;
+  }
+
+  const {data,error} = await heavensSupabase
+    .from("heavens_books")
+    .insert(payload)
+    .select("id,title,category,price,currency,front_cover,back_cover,contents,chapters,created_at")
+    .single();
+  if(error) throw error;
+  return data;
+}
+
+async function loadHeavensServerBooks(){
+  try{
+    await ensureHeavensAnonymousSession();
+    const {data,error} = await heavensSupabase
+      .from("heavens_books")
+      .select("id,title,category,price,currency,front_cover,back_cover,contents,chapters,created_at")
+      .eq("active",true)
+      .order("created_at",{ascending:false});
+    if(error) throw error;
+    return (data || []).map(b => ({
+      id: "HB-SERVER-" + b.id,
+      supabaseId: b.id,
+      title: b.title,
+      category: b.category || "SERMONS",
+      price: Number(b.price || 1000),
+      currency: b.currency || "TZS",
+      contents: b.contents || "",
+      frontCover: b.front_cover || "",
+      backCover: b.back_cover || "",
+      chapters: Array.isArray(b.chapters) ? b.chapters : [],
+      date: b.created_at ? new Date(b.created_at).toLocaleDateString() : ""
+    }));
+  }catch(err){
+    console.warn("Heaven's Books server library could not load:",err);
+    return [];
+  }
+}
+
 /* ================= HEAVEN'S BOOKSTORE ================= */
 const HEAVENS_PAYMENT_LINK = "https://pay.blmtec.co.tz/pay/book-apos-s-payies-wggry8";
 const HEAVENS_PAID_KEY = "heavensPaidBooks";
@@ -3114,10 +3201,10 @@ function markBookPaid(book){
   localStorage.setItem(HEAVENS_PAID_KEY,JSON.stringify(paid));
 }
 
-function openHeavensBookstore(){
+async function openHeavensBookstore(){
   const existing=document.getElementById("heavensBookstore"); if(existing) existing.remove();
   const store=document.createElement("div"); store.id="heavensBookstore";
-  const books=JSON.parse(localStorage.getItem("savedBooks")||"[]");
+  let books=JSON.parse(localStorage.getItem("savedBooks")||"[]");
   const cats=["ALL","SERMONS","BIBLE","PRAYER","TEACHING","WORSHIP","PROPHECY","SPIRITUAL GROWTH"];
   store.innerHTML=`
     <div class="hb-head">
@@ -3158,6 +3245,16 @@ function openHeavensBookstore(){
   search.oninput=render; store.querySelector("#hbSearchBtn").onclick=render;
   store.querySelector("#hbClose").onclick=()=>store.remove();
   render();
+
+  // Refresh the storefront from the server, while keeping local editor books visible.
+  const serverBooks = await loadHeavensServerBooks();
+  if(serverBooks.length){
+    const merged = new Map();
+    books.forEach(b => merged.set(String(b.supabaseId || b.id), b));
+    serverBooks.forEach(b => merged.set(String(b.supabaseId), b));
+    books = Array.from(merged.values());
+    render();
+  }
 }
 
 function escapeBookHtml(v){return String(v).replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
