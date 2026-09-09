@@ -1471,8 +1471,8 @@ const playPause = document.getElementById("playPause");
   screen.style.inset = "0";
   screen.style.background = "black";
   screen.style.color = "white";
-  screen.style.zIndex = "9999";
-  screen.style.padding = "0";
+  screen.style.zIndex = "100000";
+  screen.style.padding = "env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0";
   screen.style.overflowY = "auto";
 
   screen.innerHTML = `
@@ -1485,6 +1485,11 @@ const playPause = document.getElementById("playPause");
       <div id="savedSermonsList"></div>
     </div>
   `;
+
+  // IMPORTANT: the Saved Sermons screen must be mounted into the document.
+  // Without this, the screen is created in memory but never becomes visible.
+  document.body.appendChild(screen);
+
   screen.querySelector("#savedSermonsClose").onclick=(e)=>{e.preventDefault();e.stopPropagation();screen.remove();};
 
   if (savedSermons.length === 0) {
