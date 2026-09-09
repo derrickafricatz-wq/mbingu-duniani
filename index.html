@@ -512,12 +512,18 @@ body.landscape-mode #brandVideo {
   }
 
   #transcriptControls #savedSermons {
+    position:relative;
+    z-index:50;
+    pointer-events:auto;
     grid-column: 1 / -1;
   }
 
   /* Give the primary actions a slightly stronger visual hierarchy */
   #transcriptControls #startTranscript,
   #transcriptControls #saveTranscript {
+    position:relative;
+    z-index:50;
+    pointer-events:auto;
     background: linear-gradient(145deg, #38ffff 0%, #00dede 55%, #009999 100%);
   }
 
@@ -583,6 +589,9 @@ body.landscape-mode #brandVideo {
     }
 
     #transcriptControls #savedSermons {
+    position:relative;
+    z-index:50;
+    pointer-events:auto;
       grid-column: auto;
     }
   }
@@ -611,6 +620,7 @@ body.landscape-mode #brandVideo {
 .hb-cover-empty{font-family:'Russo One';color:#00ffff;font-size:26px;text-align:center;padding:15px}
 .hb-card-body{padding:12px}
 .hb-card-title{font-weight:800;font-size:16px;line-height:1.25;color:#fff;min-height:40px}
+.hb-price{display:inline-block;margin:7px 0 9px;padding:6px 10px;border-radius:9px;border:1px solid rgba(0,255,255,.5);background:rgba(0,255,255,.08);color:#00ffff;font-weight:900;font-size:15px}
 .hb-meta{font-size:11px;color:#7f9198;margin:6px 0 10px}
 .hb-actions{display:flex;gap:7px}
 .hb-btn{flex:1;min-height:42px;border-radius:11px;border:1px solid #00ffff;background:#111;color:#00ffff;font-weight:800}
@@ -619,18 +629,52 @@ body.landscape-mode #brandVideo {
 .hb-lock{font-size:10px;color:#7f9198;text-align:center;margin-top:8px}
 .hb-empty{grid-column:1/-1;text-align:center;padding:70px 25px;color:#77878d}
 .hb-close{position:absolute;right:14px;top:13px;width:42px;height:42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:22px;z-index:5}
-#heavensReader{position:fixed;inset:0;z-index:700;background:#080a0c;color:#fff;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none}
-.hr-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0e1317;border-bottom:1px solid #233139}
-.hr-back{width:42px;height:42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:22px}
-.hr-name{flex:1;font-family:'Russo One';font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hr-body{flex:1;overflow:auto;padding:18px 17px 60px;-webkit-user-select:none;user-select:none}
-.hr-cover{width:100%;max-height:58vh;object-fit:contain;background:#000;border-radius:14px;display:block;margin:0 auto 18px}
-.hr-content{font-size:18px;line-height:1.85;color:#eee;white-space:pre-wrap}
-.hr-chapter{padding:18px 0;border-top:1px solid #26343a}
-.hr-chapter h2{color:#00ffff;font-family:'Russo One';font-size:22px;margin:0 0 12px}
-.hr-pay{margin:50px auto;max-width:420px;text-align:center;padding:25px;border:1px solid #00ffff;border-radius:18px;background:#101518}
-.hr-pay button{width:100%;padding:15px;border-radius:13px;border:0;background:#00ffff;color:#001015;font-weight:900;font-size:17px}
-.hr-note{color:#82939a;font-size:12px;line-height:1.6;margin-top:12px}
+.heavens-payment-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+.heavens-payment-card{position:relative;width:min(560px,100%);background:linear-gradient(160deg,#10191d,#071012);border:1px solid rgba(0,255,255,.55);border-radius:24px;padding:26px;box-shadow:0 25px 70px rgba(0,0,0,.65);font-family:Arial,Helvetica,sans-serif;color:#fff;box-sizing:border-box}
+.heavens-payment-close{position:absolute;right:13px;top:13px;width:38px;height:38px;border-radius:50%;border:1px solid #365057;background:#111;color:#fff;font-size:24px;line-height:1}
+.heavens-payment-kicker{color:#00ffff;font-size:11px;font-weight:900;letter-spacing:2px;margin-top:2px}
+.heavens-payment-card h2{margin:10px 58px 10px 0;font-size:clamp(26px,5vw,32px)}.heavens-payment-book{color:#b7c3c7;font-size:14px;line-height:1.45;margin-bottom:18px}
+.heavens-payment-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-radius:15px;background:rgba(0,255,255,.07);border:1px solid rgba(0,255,255,.22);margin-bottom:18px}
+.heavens-payment-total span{font-size:10px;letter-spacing:1.4px;color:#9aabb0;font-weight:800}.heavens-payment-total strong{color:#00ffff;font-size:21px}
+.heavens-phone-label{display:block;color:#dce5e7;font-size:13px;font-weight:800;margin-bottom:7px}.heavens-phone-input{width:100%;box-sizing:border-box;padding:19px 18px;min-height:62px;border-radius:13px;border:1px solid #38545c;background:#050a0c;color:#fff;font-size:17px;outline:none}.heavens-phone-input:focus{border-color:#00ffff;box-shadow:0 0 0 3px rgba(0,255,255,.1)}
+.heavens-pay-continue{width:100%;margin-top:16px;padding:17px;min-height:58px;border:0;border-radius:13px;background:#00ffff;color:#041012;font-size:15px;font-weight:900}.heavens-payment-note{margin-top:12px;color:#829298;font-size:11px;line-height:1.5;text-align:center}
+
+#heavensReader{position:fixed;inset:0;z-index:700;background:radial-gradient(circle at 50% 42%,#263237 0,#101518 48%,#070a0c 100%);color:#171717;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none;font-family:Georgia,'Times New Roman',serif}
+.hr-head{height:60px;flex:0 0 60px;display:flex;align-items:center;gap:12px;padding:8px 12px;background:linear-gradient(180deg,#10191d,#091013);border-bottom:1px solid rgba(0,255,255,.24);color:#fff;font-family:Arial,Helvetica,sans-serif;box-shadow:0 5px 20px rgba(0,0,0,.35);position:relative;z-index:80}
+.hr-back{position:relative;z-index:90;width:46px;height:46px;flex:0 0 46px;border-radius:50%;border:1px solid #00eaff;background:linear-gradient(145deg,#1b3036,#061014);color:#00eaff;font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 2px rgba(255,255,255,.12),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 0 #003d43,0 8px 18px rgba(0,0,0,.45);text-shadow:0 1px 4px rgba(0,255,255,.35);cursor:pointer;touch-action:manipulation}
+.hr-back:active{transform:translateY(3px);box-shadow:inset 0 2px 2px rgba(255,255,255,.08),inset 0 -3px 6px rgba(0,0,0,.5),0 2px 0 #003d43,0 5px 10px rgba(0,0,0,.4)}
+.hr-name{flex:1;font-family:'Russo One',Arial,sans-serif;font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;letter-spacing:.3px}
+.hr-counter{min-width:68px;text-align:right;color:#9fb0b6;font:700 11px Arial,sans-serif}
+.hr-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px 10px 82px;overflow:hidden;background:radial-gradient(ellipse at center,#364147 0,#1a2023 38%,#0b0e10 78%)}
+.hr-stage:before{content:"";position:absolute;width:min(94vw,790px);height:70%;left:50%;top:15%;transform:translateX(-50%);background:rgba(0,0,0,.25);filter:blur(28px);border-radius:50%;pointer-events:none}
+.hr-book{position:relative;width:min(92vw,720px);height:min(76vh,920px);max-height:calc(100dvh - 155px);min-height:390px;perspective:1800px;filter:drop-shadow(0 24px 28px rgba(0,0,0,.55))}
+.hr-book:before{content:"";position:absolute;left:-7px;top:2%;bottom:2%;width:10px;border-radius:7px 0 0 7px;background:linear-gradient(90deg,#20282b,#080b0d 55%,#4b5558);box-shadow:-4px 0 10px rgba(0,0,0,.35);z-index:0}
+.hr-page{position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,#f4efe4 0,#fffdf7 5%,#fffdf9 88%,#e7dfd1 100%);border-radius:2px 15px 15px 3px;box-shadow:0 8px 28px rgba(0,0,0,.48),inset -16px 0 25px rgba(92,73,43,.10),inset 2px 0 0 rgba(255,255,255,.9);padding:clamp(25px,5vw,58px) clamp(23px,6vw,68px) 48px;overflow:hidden;transform-origin:left center;backface-visibility:hidden;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.22,.75,.2,1),opacity .55s ease;box-sizing:border-box}
+.hr-page:after{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,rgba(60,45,30,.14),transparent);pointer-events:none}
+.hr-page.is-turning-next{transform:rotateY(-96deg);opacity:.12;box-shadow:10px 12px 28px rgba(0,0,0,.15)}
+.hr-page.is-turning-prev{transform:rotateY(96deg);opacity:.12;transform-origin:right center}
+.hr-page-inner{height:100%;overflow:hidden;scrollbar-width:none;box-sizing:border-box;position:relative;z-index:2}
+.hr-page-inner::-webkit-scrollbar{display:none}
+.hr-page-cover{width:100%;height:100%;object-fit:cover;display:block;border-radius:2px 8px 8px 2px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.hr-page-cover-wrap{padding:0;background:#050708;display:flex;align-items:center;justify-content:center;border-radius:4px 14px 14px 4px;overflow:hidden}
+.hr-page-cover-wrap:after{display:none}
+.hr-page-cover-wrap .hr-page-inner{overflow:hidden;width:100%;height:100%}
+.hr-page-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(27px,5vw,42px);line-height:1.18;text-align:center;margin:0 0 26px;color:#151515;letter-spacing:.2px}
+.hr-page-subtitle{text-align:center;color:#777;font:700 11px Arial,sans-serif;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:26px}
+.hr-page-text{font-size:clamp(17px,2.4vw,21px);line-height:1.78;color:#242424;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left}
+.hr-page-text::first-letter{font-size:1.7em;font-weight:700}
+.hr-page-chapter{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,5.5vw,42px);line-height:1.2;text-align:center;color:#111;margin:0 0 25px;padding-top:19%;}
+.hr-page-chapter:before{content:"CHAPTER";display:block;font:800 10px Arial,sans-serif;letter-spacing:3px;color:#00aebe;margin-bottom:14px}
+.hr-page-chapter::after{content:"";display:block;width:72px;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);margin:24px auto}
+.hr-page-rule{width:72px;height:1px;background:#9a9a9a;margin:0 auto 26px}
+.hr-running{position:absolute;left:clamp(23px,6vw,68px);right:clamp(23px,6vw,68px);bottom:13px;display:flex;justify-content:space-between;gap:15px;color:#999;font:9px Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;z-index:3}
+.hr-controls{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:15px;z-index:70}
+.hr-nav{position:relative;z-index:80;width:54px;height:50px;border-radius:50%;border:1px solid #00eaff;background:linear-gradient(145deg,#1c3941,#071114 70%);color:#eaffff;font-size:38px;font-family:Arial,sans-serif;font-weight:300;line-height:42px;display:flex;align-items:center;justify-content:center;padding:0 0 4px;box-shadow:inset 0 2px 2px rgba(255,255,255,.15),inset 0 -7px 10px rgba(0,0,0,.58),0 5px 0 #00454b,0 9px 20px rgba(0,0,0,.5);text-shadow:0 1px 5px rgba(0,255,255,.5);cursor:pointer;touch-action:manipulation}
+.hr-nav:active{transform:translateY(4px);box-shadow:inset 0 2px 2px rgba(255,255,255,.08),inset 0 -4px 7px rgba(0,0,0,.55),0 2px 0 #00454b,0 5px 11px rgba(0,0,0,.45)}
+.hr-page-count{min-width:74px;text-align:center;color:#fff;background:linear-gradient(180deg,#172126,#0b1114);border:1px solid #344a51;border-radius:14px;padding:10px 9px;font:700 10px Arial,sans-serif;letter-spacing:.5px;box-shadow:inset 0 1px rgba(255,255,255,.07),0 5px 12px rgba(0,0,0,.3)}
+.hr-hint{position:absolute;right:16px;top:12px;color:#9ba8ad;font:9px Arial,sans-serif;opacity:.55;letter-spacing:1px}
+@media(max-width:600px){.hr-stage{padding:9px 7px 80px}.hr-book{width:92vw;height:calc(100dvh - 166px);max-height:calc(100dvh - 166px);min-height:390px}.hr-page{padding:25px 22px 42px;border-radius:2px 12px 12px 3px}.hr-page-text{font-size:17px;line-height:1.72}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:58px;flex-basis:58px}.hr-counter{min-width:55px;font-size:10px}.hr-nav{width:52px;height:48px}.hr-controls{gap:13px}.hr-page-count{min-width:67px}}
+@media(max-width:600px){.hr-stage{padding:9px 7px 62px}.hr-book{width:96vw;height:calc(100dvh - 136px)}.hr-page{padding:24px 22px 42px}.hr-page-text{font-size:18px;line-height:1.75}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:54px;flex-basis:54px}.hr-counter{min-width:58px;font-size:10px}}
 @media(max-width:480px){.hb-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.hb-cover{height:155px}.hb-card-title{font-size:14px}.hb-btn{font-size:11px}}
 @media(min-width:760px){.hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hb-cover{height:240px}}
 
@@ -1416,44 +1460,24 @@ const playPause = document.getElementById("playPause");
   screen.style.background = "black";
   screen.style.color = "white";
   screen.style.zIndex = "300";
-  screen.style.padding = "20px";
+  screen.style.padding = "0";
   screen.style.overflowY = "auto";
 
   screen.innerHTML = `
-    <h2 style="
-      color:#00ffff;
-      text-align:center;
-      font-family:'Russo One';
-    ">
-      SAVED SERMONS
-    </h2>
-
-    <button id="createBookBtn" style="
-      display:block;
-      margin:15px auto 20px;
-      padding:12px 22px;
-      background:#00ffff;
-      color:black;
-      border:none;
-      border-radius:12px;
-      font-size:18px;
-      font-weight:bold;
-    ">
-      CREATE BOOK
-    </button>
+    <div style="position:sticky;top:0;z-index:20;padding:14px 60px 14px 18px;background:#050505;border-bottom:1px solid #18383d;box-shadow:0 8px 25px rgba(0,0,0,.35);">
+      <h2 style="margin:0;color:#00ffff;text-align:center;font-family:'Russo One';font-size:21px;line-height:1.25;">SAVED SERMONS</h2>
+      <button id="savedSermonsClose" aria-label="Close saved sermons" style="position:absolute;right:14px;top:12px;width:38px;height:38px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:24px;line-height:1;">×</button>
+    </div>
+    <div style="padding:16px;">
+      <button id="createBookBtn" style="display:block;width:100%;max-width:430px;margin:0 auto 20px;padding:13px 22px;background:#00ffff;color:black;border:none;border-radius:12px;font-size:18px;font-weight:bold;">CREATE BOOK</button>
+      <div id="savedSermonsList"></div>
+    </div>
   `;
+  screen.querySelector("#savedSermonsClose").onclick=()=>screen.remove();
 
   if (savedSermons.length === 0) {
 
-    screen.innerHTML += `
-      <p style="
-        text-align:center;
-        margin-top:50px;
-        color:#aaa;
-      ">
-        No saved sermons yet.
-      </p>
-    `;
+    screen.querySelector("#savedSermonsList").innerHTML = `<p style="text-align:center;margin:50px 0;color:#aaa;">No saved sermons yet.</p>`;
 
   } else {
 
@@ -1511,22 +1535,9 @@ selectBox.onchange = () => {
   screen.remove();
 };
 
-      screen.appendChild(item);
+      screen.querySelector("#savedSermonsList").appendChild(item);
     });
   }
-
-  const closeBtn = document.createElement("button");
-
-  closeBtn.innerText = "CLOSE";
-
-  closeBtn.style.position = "fixed";
-  closeBtn.style.top = "15px";
-  closeBtn.style.right = "15px";
-  closeBtn.style.padding = "10px 16px";
-  closeBtn.style.background = "#111";
-  closeBtn.style.color = "white";
-  closeBtn.style.border = "1px solid #00ffff";
-  closeBtn.style.borderRadius = "8px";
 
     screen.querySelector("#createBookBtn").onclick = () => {
 
@@ -1731,6 +1742,12 @@ bookScreen.innerHTML = `
       max-height:none;
       object-fit:contain;
     }
+    .book-price-box{margin-top:14px;padding:14px;border:1px solid rgba(0,255,255,.28);border-radius:14px;background:linear-gradient(145deg,rgba(0,255,255,.07),rgba(255,255,255,.02));}
+    .book-price-label{color:#00ffff;font-weight:800;font-size:12px;letter-spacing:1.5px;margin-bottom:8px;}
+    .book-price-row{display:flex;align-items:center;gap:8px;}
+    .book-price-currency{min-width:58px;text-align:center;padding:12px 8px;border:1px solid #00ffff;border-radius:10px;color:#00ffff;font-weight:900;background:#071113;}
+    .book-price-input{margin:0!important;flex:1;font-size:18px!important;font-weight:800;}
+    .book-price-help{color:#8d9a9f;font-size:12px;margin-top:8px;line-height:1.45;}
     @media(max-width:520px){
       #bookEditorInner{padding:0;}
       .book-section,.chapter-card{padding:13px; border-radius:14px;}
@@ -1759,6 +1776,12 @@ bookScreen.innerHTML = `
         <option value="PROPHECY">PROPHECY</option>
         <option value="SPIRITUAL GROWTH">SPIRITUAL GROWTH</option>
       </select>
+
+      <div class="book-price-box">
+        <div class="book-price-label">BOOK PRICE</div>
+        <div class="book-price-row"><span class="book-price-currency">TZS</span><input id="bookPrice" class="book-input book-price-input" type="number" min="1" step="1" inputmode="numeric" placeholder="Enter selling price"></div>
+        <div class="book-price-help">Set the exact amount customers will pay for this book.</div>
+      </div>
     </div>
 
     <!-- FRONT COVER IS BELOW THE TITLE, IN ITS OWN SECTION -->
@@ -2255,8 +2278,19 @@ const savedBooks =
 
 const bookCategory = (bookScreen.querySelector("#bookCategory")?.value || "SERMONS").trim();
 
-// Heaven's Books payment test/default price. Change this when you add per-book pricing.
-const bookPrice = 1000;
+// The author sets the selling price for this specific book.
+const priceInput = document.getElementById("bookPrice");
+const bookPrice = Number(priceInput?.value || 0);
+if(!Number.isFinite(bookPrice) || bookPrice <= 0){
+  priceInput?.focus();
+  alert("Please enter a valid book price in TZS before saving the book.");
+  return;
+}
+if(!Number.isInteger(bookPrice)){
+  priceInput?.focus();
+  alert("Please enter the book price as a whole TZS amount, for example 1000 or 2500.");
+  return;
+}
 
 // Keep a compact copy for the in-app Heaven's Books library.
 async function compressBookCover(dataUrl){
@@ -2299,20 +2333,8 @@ localStorage.setItem(
   JSON.stringify(savedBooks)
 );
 
-// Publish the same book to Heaven's Books server so PAY can use a real UUID.
-// If publishing fails, the local book/PDF is still preserved.
-try{
-  const remoteBook = await publishBookToHeavensServer(newBook);
-  if(remoteBook && remoteBook.id){
-    newBook.supabaseId = remoteBook.id;
-    const pos = savedBooks.findIndex(b => b.id === newBook.id);
-    if(pos >= 0) savedBooks[pos] = newBook;
-    localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
-    console.log("Heaven's Books: published", remoteBook.id);
-  }
-}catch(syncErr){
-  console.warn("Heaven's Books server sync failed; local copy kept:", syncErr);
-}
+// PDF generation/download is deliberately completed BEFORE server publishing.
+// That way a slow/offline Heaven's Books server can never prevent the author's free PDF download.
 
 const { jsPDF } = window.jspdf;
 
@@ -2546,6 +2568,23 @@ if (backCoverImage) {
 }     
 
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
+
+// Publish only after the PDF has been handed to the browser.
+// The PDF is the author's free copy; the bookstore version remains protected by payment.
+try{
+  const remoteBook = await publishBookToHeavensServer(newBook);
+  if(remoteBook && remoteBook.id){
+    newBook.supabaseId = remoteBook.id;
+    const pos = savedBooks.findIndex(b => b.id === newBook.id);
+    if(pos >= 0) savedBooks[pos] = newBook;
+    localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
+    console.log("Heaven's Books: published", remoteBook.id);
+  }
+}catch(syncErr){
+  console.warn("Heaven's Books server sync failed; local copy/PDF kept:", syncErr);
+}
+
+alert("Book saved successfully. Your free PDF copy has been downloaded, and the book has been added to Heaven's Books.");
 };
 
 document.body.appendChild(bookScreen);
@@ -3130,7 +3169,7 @@ async function publishBookToHeavensServer(book){
   const payload = {
     title: String(book.title || "Untitled Book"),
     category: String(book.category || "SERMONS"),
-    price: Number(book.price || 1000),
+    price: Number(book.price || 0),
     currency: String(book.currency || "TZS"),
     front_cover: book.frontCover || null,
     back_cover: book.backCover || null,
@@ -3174,7 +3213,7 @@ async function loadHeavensServerBooks(){
       supabaseId: b.id,
       title: b.title,
       category: b.category || "SERMONS",
-      price: Number(b.price || 1000),
+      price: Number(b.price || 0),
       currency: b.currency || "TZS",
       contents: b.contents || "",
       frontCover: b.front_cover || "",
@@ -3195,9 +3234,31 @@ const HEAVENS_PAID_KEY = "heavensPaidBooks";
 function getPaidBooks(){
   try{return JSON.parse(localStorage.getItem(HEAVENS_PAID_KEY)||"{}")}catch(e){return {}}
 }
-function isBookPaid(book){ return !!getPaidBooks()[book.id]; }
+function getHeavensBookStableKey(book){
+  return String(book?.supabaseId || book?.id || "").trim();
+}
+function isBookPaid(book){
+  const paid=getPaidBooks();
+  const key=getHeavensBookStableKey(book);
+  if(key && paid[key]) return true;
+  // Compatibility with older local records that were keyed by the local HB id.
+  if(book?.id && paid[book.id]) return true;
+  // Older versions could change the local/server id after publishing.
+  // Preserve access by matching the saved payment record to the book title.
+  const title=String(book?.title||'').trim().toLowerCase();
+  if(title){
+    for(const record of Object.values(paid)){
+      if(record && String(record.title||'').trim().toLowerCase()===title) return true;
+    }
+  }
+  return false;
+}
 function markBookPaid(book){
-  const paid=getPaidBooks(); paid[book.id]={paidAt:new Date().toISOString(),title:book.title};
+  const paid=getPaidBooks();
+  const key=getHeavensBookStableKey(book);
+  if(!key) return;
+  paid[key]={paidAt:new Date().toISOString(),title:book.title};
+  if(book.id && book.id!==key) paid[book.id]=paid[key];
   localStorage.setItem(HEAVENS_PAID_KEY,JSON.stringify(paid));
 }
 
@@ -3243,7 +3304,16 @@ async function openHeavensBookstore(){
           return p && p.reference && (String(p.id)===String(book.id) || String(p.supabaseId||"")===String(book.supabaseId||book.id));
         }catch(e){ return false; }
       })();
-      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button><button class="hb-btn pay hb-check-payment" style="margin-left:6px">CHECK</button></div><div class="hb-lock">${paid?'Unlocked on this device':pending?'Payment sent — checking BLMPay…':'Payment required to read'}</div></div>`;
+      const displayPrice = Number(book.price || 0);
+      const priceLabel = Number.isFinite(displayPrice) && displayPrice > 0 ? `TZS ${displayPrice.toLocaleString()}` : "PRICE NOT SET";
+      card.innerHTML=`<div class="hb-cover">${cover}</div><div class="hb-card-body"><div class="hb-card-title">${escapeBookHtml(book.title||"Untitled Book")}</div><div class="hb-meta">${escapeBookHtml(book.category||"SERMONS")} • ${escapeBookHtml(book.date||"")}</div><div class="hb-price">${priceLabel}</div><div class="hb-actions"><button class="hb-btn ${paid?'read':'pay'}">${paid?'READ':'PAY'}</button><button class="hb-btn pay hb-check-payment" style="margin-left:6px">CHECK</button></div><div class="hb-lock">${paid?'Unlocked on this device':pending?'Payment sent — checking BLMPay…':'Payment required to read'}</div></div>`;
+      const coverImg=card.querySelector('.hb-cover img');
+      if(coverImg){
+        coverImg.onerror=()=>{
+          const holder=card.querySelector('.hb-cover');
+          holder.innerHTML=`<div class="hb-cover-empty">${escapeBookHtml(book.title||'BOOK')}</div>`;
+        };
+      }
       card.querySelector(".hb-btn").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
       const checkBtn=card.querySelector('.hb-check-payment');
       if(checkBtn){
@@ -3311,8 +3381,17 @@ async function openHeavensBookstore(){
   const serverBooks = await loadHeavensServerBooks();
   if(serverBooks.length){
     const merged = new Map();
-    books.forEach(b => merged.set(String(b.supabaseId || b.id), b));
-    serverBooks.forEach(b => merged.set(String(b.supabaseId), b));
+    books.forEach(b => merged.set(String(b.supabaseId || b.id), {...b}));
+    serverBooks.forEach(b => {
+      const key=String(b.supabaseId || b.id);
+      const local=merged.get(key) || {};
+      merged.set(key,{...local,...b,
+        contents:b.contents || local.contents || "",
+        frontCover:b.frontCover || local.frontCover || "",
+        backCover:b.backCover || local.backCover || "",
+        chapters:Array.isArray(b.chapters) && b.chapters.length ? b.chapters : (Array.isArray(local.chapters)?local.chapters:[])
+      });
+    });
     books = Array.from(merged.values());
     render();
   }
@@ -3477,6 +3556,31 @@ async function resumeHeavensPendingPayment(store, books){
   }
 }
 
+function heavensPhonePaymentDialog(book, amount){
+  return new Promise(resolve=>{
+    const old=document.getElementById("heavensPaymentDialog"); if(old) old.remove();
+    const overlay=document.createElement("div"); overlay.id="heavensPaymentDialog"; overlay.className="heavens-payment-overlay";
+    overlay.innerHTML=`<div class="heavens-payment-card" role="dialog" aria-modal="true" aria-labelledby="heavensPayTitle">
+      <button class="heavens-payment-close" type="button" aria-label="Close">×</button>
+      <div class="heavens-payment-kicker">HEAVEN'S BOOKS</div>
+      <h2 id="heavensPayTitle">Confirm your purchase</h2>
+      <div class="heavens-payment-book">${escapeBookHtml(book.title||"Untitled Book")}</div>
+      <div class="heavens-payment-total"><span>TOTAL PRICE</span><strong>TZS ${amount.toLocaleString()}</strong></div>
+      <label class="heavens-phone-label" for="heavensPayPhone">Mobile-money number</label>
+      <input id="heavensPayPhone" class="heavens-phone-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XXXXXXXX or 255XXXXXXXXX">
+      <button id="heavensPayContinue" class="heavens-pay-continue" type="button">SEND PAYMENT PROMPT</button>
+      <div class="heavens-payment-note">A prompt for exactly <b>TZS ${amount.toLocaleString()}</b> will be sent to this number.</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    const input=overlay.querySelector("#heavensPayPhone");
+    const close=()=>{overlay.remove();resolve(null);};
+    overlay.querySelector(".heavens-payment-close").onclick=close;
+    overlay.addEventListener("click",e=>{if(e.target===overlay)close();});
+    overlay.querySelector("#heavensPayContinue").onclick=()=>{const value=input.value.trim();if(!value){input.focus();return;}overlay.remove();resolve(value);};
+    setTimeout(()=>input.focus(),80);
+  });
+}
+
 async function startBookPayment(book,store){
   try{
     const session = await ensureHeavensAnonymousSession();
@@ -3490,14 +3594,14 @@ async function startBookPayment(book,store){
       return;
     }
 
-    const phoneNumber = prompt("Enter the mobile-money phone number for this payment:", "0770857868");
-    if(!phoneNumber) return;
-
-    const amount = Number(book.price || 1000);
+    const amount = Number(book.price);
     if(!Number.isFinite(amount) || amount <= 0){
-      alert("This book does not have a valid price yet.");
+      alert("This book does not have a valid price yet. The author must set a price before it can be purchased.");
       return;
     }
+
+    const phoneNumber = await heavensPhonePaymentDialog(book, amount);
+    if(!phoneNumber) return;
 
     const {data,error} = await heavensSupabase.functions.invoke("heavens-blmpay-payment",{
       body:{
@@ -3548,22 +3652,220 @@ async function startBookPayment(book,store){
 }
 
 function openBookReader(book,store){
-  const existing=document.getElementById("heavensReader"); if(existing) existing.remove();
+  const existing=document.getElementById("heavensReader");
+  if(existing) existing.remove();
   if(!isBookPaid(book)){startBookPayment(book,store);return;}
-  const reader=document.createElement("div"); reader.id="heavensReader";
-  reader.innerHTML=`<div class="hr-head"><button class="hr-back">‹</button><div class="hr-name">${escapeBookHtml(book.title)}</div></div><div class="hr-body" id="hrBody"></div>`;
+
+  const reader=document.createElement("div");
+  reader.id="heavensReader";
+  reader.innerHTML=`
+    <div class="hr-head">
+      <button class="hr-back" type="button" aria-label="Close book">×</button>
+      <div class="hr-name">${escapeBookHtml(book.title||"Untitled Book")}</div>
+      <div class="hr-counter" id="hrTopCount">1 / 1</div>
+    </div>
+    <div class="hr-stage" id="hrStage">
+      <div class="hr-book" id="hrBook"></div>
+      <div class="hr-hint">SWIPE TO TURN</div>
+      <div class="hr-controls">
+        <button class="hr-nav" id="hrPrev" type="button" aria-label="Previous page">‹</button>
+        <div class="hr-page-count" id="hrPageCount">1 / 1</div>
+        <button class="hr-nav" id="hrNext" type="button" aria-label="Next page">›</button>
+      </div>
+    </div>`;
   document.body.appendChild(reader);
-  const body=reader.querySelector("#hrBody");
-  if(book.frontCover){const img=document.createElement("img");img.className="hr-cover";img.src=book.frontCover;body.appendChild(img);}
-  if(book.contents){const c=document.createElement("div");c.className="hr-chapter";c.innerHTML=`<h2>TABLE OF CONTENTS</h2><div class="hr-content"></div>`;c.querySelector(".hr-content").textContent=book.contents;body.appendChild(c);}
-  (book.chapters||[]).forEach(ch=>{const sec=document.createElement("section");sec.className="hr-chapter";const h=document.createElement("h2");h.textContent=ch.title||"Chapter";const t=document.createElement("div");t.className="hr-content";t.textContent=ch.text||"";sec.appendChild(h);sec.appendChild(t);body.appendChild(sec);});
-  const note=document.createElement("div");note.className="hr-note";note.textContent="This reader does not provide download, print, copy, or share controls.";body.appendChild(note);
-  reader.querySelector(".hr-back").onclick=()=>reader.remove();
+  document.body.style.overflow="hidden";
+
+  const bookEl=reader.querySelector("#hrBook");
+  const pageCountEl=reader.querySelector("#hrPageCount");
+  const topCountEl=reader.querySelector("#hrTopCount");
+  const pages=[];
+
+  function addPage(kind,build){
+    const page=document.createElement("article");
+    page.className="hr-page"+(kind==="cover"?" hr-page-cover-wrap":"");
+    page.style.display="none";
+    const inner=document.createElement("div");
+    inner.className="hr-page-inner";
+    page.appendChild(inner);
+    build(inner,page);
+    const running=document.createElement("div");
+    running.className="hr-running";
+    running.innerHTML=`<span>${escapeBookHtml(book.title||"")}</span><span>${pages.length+1}</span>`;
+    page.appendChild(running);
+    bookEl.appendChild(page);
+    pages.push(page);
+  }
+
+  // Front cover is always the first page.
+  const front=String(book.frontCover||"");
+  if(front){
+    addPage("cover",(inner,page)=>{
+      const img=document.createElement("img");
+      img.className="hr-page-cover";
+      img.alt="Front cover";
+      img.src=front;
+      img.onerror=()=>{
+        img.remove();
+        inner.style.display="grid";inner.style.placeItems="center";inner.style.padding="40px";
+        inner.innerHTML=`<div class="hr-page-title">${escapeBookHtml(book.title||"Untitled Book")}</div>`;
+      };
+      inner.appendChild(img);
+      page.querySelector(".hr-running").style.display="none";
+    });
+  }else{
+    addPage("title",inner=>{
+      const sub=document.createElement("div");sub.className="hr-page-subtitle";sub.textContent="HEAVEN'S BOOKS";
+      const title=document.createElement("h1");title.className="hr-page-title";title.textContent=book.title||"Untitled Book";
+      inner.append(sub,title);
+    });
+  }
+
+  // Normalize older/local/server records before building the book.
+  let chapterList=Array.isArray(book.chapters)?book.chapters.filter(Boolean):[];
+  if(typeof book.chapters==="string"){
+    try{const parsed=JSON.parse(book.chapters);if(Array.isArray(parsed))chapterList=parsed.filter(Boolean);}catch(e){}
+  }
+  let fallbackText=String(book.text||book.content||"").trim();
+  let contentsText=String(book.contents||"").trim();
+  let back=String(book.backCover||"");
+
+  if(!chapterList.length && !fallbackText || !contentsText || !back){
+    const localBooks=(()=>{try{return JSON.parse(localStorage.getItem("savedBooks")||"[]")}catch(e){return[]}})();
+    const localMatch=localBooks.find(b=>
+      (book.supabaseId&&b.supabaseId&&String(b.supabaseId)===String(book.supabaseId)) ||
+      String(b.title||"").trim().toLowerCase()===String(book.title||"").trim().toLowerCase()
+    );
+    if(localMatch){
+      if(!chapterList.length){
+        if(Array.isArray(localMatch.chapters))chapterList=localMatch.chapters.filter(Boolean);
+        else if(typeof localMatch.chapters==="string"){try{const parsed=JSON.parse(localMatch.chapters);if(Array.isArray(parsed))chapterList=parsed.filter(Boolean)}catch(e){}}
+      }
+      if(!fallbackText)fallbackText=String(localMatch.text||localMatch.content||"").trim();
+      if(!contentsText)contentsText=String(localMatch.contents||"").trim();
+      if(!back)back=String(localMatch.backCover||"");
+    }
+  }
+  if(!chapterList.length && fallbackText)chapterList=[{title:"Book Content",text:fallbackText}];
+
+  // Contents comes immediately after the front cover.
+  if(contentsText){
+    addPage("contents",inner=>{
+      const sub=document.createElement("div");sub.className="hr-page-subtitle";sub.textContent="HEAVEN'S BOOKS";
+      const title=document.createElement("h1");title.className="hr-page-title";title.textContent="TABLE OF CONTENTS";
+      const rule=document.createElement("div");rule.className="hr-page-rule";
+      const text=document.createElement("div");text.className="hr-page-text";text.textContent=contentsText;
+      inner.append(sub,title,rule,text);
+    });
+  }
+
+  // Each chapter gets a clean opening page, followed by neatly paginated text pages.
+  chapterList.forEach((ch,index)=>{
+    const chapterTitle=String(ch?.title||("Chapter "+(index+1))).trim();
+    addPage("chapter",inner=>{
+      const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=chapterTitle;
+      const intro=document.createElement("div");intro.className="hr-page-subtitle";intro.textContent="HEAVEN'S BOOKS";
+      inner.append(title,intro);
+    });
+
+    const raw=String(ch?.text||"").trim();
+    const paragraphs=raw.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+    const chunks=[];let current="";
+    const target=window.innerWidth<600?1050:1850;
+    paragraphs.forEach(par=>{
+      if(par.length>target){
+        if(current){chunks.push(current);current="";}
+        for(let i=0;i<par.length;i+=target)chunks.push(par.slice(i,i+target));
+      }else{
+        const candidate=current?(current+"\n\n"+par):par;
+        if(candidate.length>target&&current){chunks.push(current);current=par;}else current=candidate;
+      }
+    });
+    if(current)chunks.push(current);
+    if(!chunks.length)chunks.push("");
+    chunks.forEach(chunk=>addPage("text",inner=>{
+      const text=document.createElement("div");text.className="hr-page-text";text.textContent=chunk;inner.appendChild(text);
+    }));
+  });
+
+  // Back cover is a real final page, never hidden behind the controls.
+  if(back){
+    addPage("cover",(inner,page)=>{
+      const img=document.createElement("img");
+      img.className="hr-page-cover";
+      img.alt="Back cover";
+      img.src=back;
+      img.onerror=()=>{
+        img.remove();
+        inner.style.display="grid";inner.style.placeItems="center";inner.style.padding="40px";
+        inner.innerHTML=`<div class="hr-page-title">THE END</div>`;
+      };
+      inner.appendChild(img);
+      page.querySelector(".hr-running").style.display="none";
+    });
+  }
+
+  if(!pages.length){
+    addPage("title",inner=>{
+      const title=document.createElement("h1");title.className="hr-page-title";title.textContent=book.title||"Untitled Book";inner.appendChild(title);
+    });
+  }
+
+  let currentPage=0;
+  let turning=false;
+  let turnTimer=null;
+
+  function updateReader(){
+    pages.forEach((p,i)=>{
+      p.style.display=(i===currentPage)?"block":"none";
+      p.style.zIndex=(i===currentPage)?10:1;
+      p.classList.remove("is-turning-next","is-turning-prev");
+    });
+    const label=`${currentPage+1} / ${pages.length}`;
+    pageCountEl.textContent=label;
+    topCountEl.textContent=label;
+  }
+
+  function turnTo(nextPage,direction){
+    if(turning||nextPage<0||nextPage>=pages.length||nextPage===currentPage)return;
+    turning=true;
+    const old=pages[currentPage],next=pages[nextPage];
+    next.style.display="block";
+    next.style.zIndex="9";
+    old.style.zIndex="10";
+    old.classList.add(direction>0?"is-turning-next":"is-turning-prev");
+    clearTimeout(turnTimer);
+    turnTimer=setTimeout(()=>{
+      currentPage=nextPage;turning=false;updateReader();
+    },560);
+  }
+
+  const next=()=>turnTo(currentPage+1,1);
+  const prev=()=>turnTo(currentPage-1,-1);
+  reader.querySelector("#hrNext").onclick=e=>{e.stopPropagation();next();};
+  reader.querySelector("#hrPrev").onclick=e=>{e.stopPropagation();prev();};
+  const closeReader=()=>{clearTimeout(turnTimer);reader.remove();document.body.style.overflow="";};
+  reader.querySelector(".hr-back").onclick=e=>{e.stopPropagation();closeReader();};
+
+  reader.tabIndex=0;reader.focus();
+  reader.addEventListener("keydown",e=>{
+    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();next();}
+    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();prev();}
+    if(e.key==="Escape"){e.preventDefault();closeReader();}
+    if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();
+  });
+
+  let startX=0,startY=0;
+  reader.addEventListener("touchstart",e=>{const t=e.changedTouches[0];startX=t.screenX;startY=t.screenY;},{passive:true});
+  reader.addEventListener("touchend",e=>{
+    const t=e.changedTouches[0],dx=t.screenX-startX,dy=t.screenY-startY;
+    if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev();}
+  },{passive:true});
   reader.addEventListener("contextmenu",e=>e.preventDefault());
   reader.addEventListener("copy",e=>e.preventDefault());
   reader.addEventListener("cut",e=>e.preventDefault());
   reader.addEventListener("dragstart",e=>e.preventDefault());
-  reader.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();});
+  updateReader();
 }
 
 // Optional gateway return hook: if the gateway is configured to redirect back with
@@ -3574,6 +3876,16 @@ function openBookReader(book,store){
     const books=JSON.parse(localStorage.getItem("savedBooks")||"[]"); const book=books.find(b=>b.id===id);
     if(book) markBookPaid(book);
   }
+})();
+
+/* ================= SAVED SERMONS SAFETY BINDINGS ================= */
+// Re-bind these two controls at the end of the script as a safety net.
+// This keeps them clickable even if another UI layer changes its stacking order.
+(function hardenSavedSermonControls(){
+  const saveBtn=document.getElementById('saveTranscript');
+  const savedBtn=document.getElementById('savedSermons');
+  if(saveBtn){ saveBtn.style.position='relative'; saveBtn.style.zIndex='100'; saveBtn.style.pointerEvents='auto'; }
+  if(savedBtn){ savedBtn.style.position='relative'; savedBtn.style.zIndex='100'; savedBtn.style.pointerEvents='auto'; }
 })();
 
 /* ================= GLOBAL GESTURES ================= */
