@@ -1571,7 +1571,7 @@ selectBox.onchange = () => {
   return;
 }
 
-screen.remove();
+screen.style.display = "none";
 
 const bookScreen = document.createElement("div");
 
@@ -1579,7 +1579,7 @@ bookScreen.style.position = "fixed";
 bookScreen.style.inset = "0";
 bookScreen.style.background = "black";
 bookScreen.style.color = "white";
-bookScreen.style.zIndex = "400";
+bookScreen.style.zIndex = "100001";
 bookScreen.style.padding = "20px";
 bookScreen.style.overflowY = "auto";
 bookScreen.style.zoom = "1";
@@ -1826,6 +1826,43 @@ bookScreen.innerHTML = `
     </div>
   </div>
 `;
+
+/* ================= BOOK EDITOR HEADER / CLOSE ================= */
+const bookEditorHeader = document.createElement("div");
+bookEditorHeader.style.position = "sticky";
+bookEditorHeader.style.top = "0";
+bookEditorHeader.style.zIndex = "200";
+bookEditorHeader.style.display = "flex";
+bookEditorHeader.style.alignItems = "center";
+bookEditorHeader.style.justifyContent = "flex-end";
+bookEditorHeader.style.padding = "0 0 10px";
+
+const bookEditorClose = document.createElement("button");
+bookEditorClose.type = "button";
+bookEditorClose.setAttribute("aria-label", "Close book editor");
+bookEditorClose.innerHTML = "×";
+bookEditorClose.style.width = "48px";
+bookEditorClose.style.height = "48px";
+bookEditorClose.style.borderRadius = "50%";
+bookEditorClose.style.border = "1px solid #00ffff";
+bookEditorClose.style.background = "linear-gradient(145deg,#183238,#05090a)";
+bookEditorClose.style.color = "#00ffff";
+bookEditorClose.style.fontSize = "30px";
+bookEditorClose.style.fontWeight = "900";
+bookEditorClose.style.lineHeight = "1";
+bookEditorClose.style.cursor = "pointer";
+bookEditorClose.style.boxShadow = "inset 0 2px 2px rgba(255,255,255,.12),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 0 #00474d,0 8px 18px rgba(0,0,0,.45)";
+bookEditorClose.onclick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  bookScreen.remove();
+  screen.remove();
+};
+bookEditorHeader.appendChild(bookEditorClose);
+bookScreen.insertBefore(bookEditorHeader, bookScreen.firstChild);
+document.body.appendChild(bookScreen);
+
+
 
 /* ================= COVER UPLOADS ================= */
 
@@ -2296,8 +2333,9 @@ const savedBooks =
 const bookCategory = (bookScreen.querySelector("#bookCategory")?.value || "SERMONS").trim();
 
 // The author sets the selling price for this specific book.
-const priceInput = document.getElementById("bookPrice");
-const bookPrice = Number(priceInput?.value || 0);
+const priceInput = bookScreen.querySelector("#bookPrice");
+const rawBookPrice = String(priceInput?.value ?? "").replace(/[\s,]/g, "");
+const bookPrice = Number(rawBookPrice);
 if(!Number.isFinite(bookPrice) || bookPrice <= 0){
   priceInput?.focus();
   alert("Please enter a valid book price in TZS before saving the book.");
@@ -2604,15 +2642,9 @@ try{
 alert("Book saved successfully. Your free PDF copy has been downloaded, and the book has been added to Heaven's Books.");
 };
 
-document.body.appendChild(bookScreen);
 
   };
 
-  closeBtn.onclick = () => screen.remove();
-
-  screen.appendChild(closeBtn);
-
-  document.body.appendChild(screen);
 };
 
 document.getElementById("startTranscript").onclick = async () => {
