@@ -861,11 +861,11 @@ function getMedia(id){
   <button class="smart-item" id="openHealth">
 
   <div id="healthMain">
-    NENO LA MUNGU
+    HEAVEN'S GUIDE
   </div>
 
   <small>
-    HEAVEN'S GUIDANCE
+    NENO • MAFUNDISHO • IMANI
   </small>
 
 </button>
@@ -883,9 +883,7 @@ function getMedia(id){
   <button id="startTranscript">START</button>
   <button id="stopTranscript">STOP</button>
   <button id="saveTranscript">SAVE</button>
-  <button id="uploadTranscriptFile">UPLOAD FILE</button>
   <button id="savedSermons">SAVED SERMONS</button>
-  <input id="transcriptFileInput" type="file" accept="image/*" hidden>
   <button id="clearTranscript">NEW</button>
 </div>
 
@@ -992,11 +990,12 @@ const guideLanguages={
   "SMART MENU: Gusa kitufe cha DK kufungua menyu kuu ya zana.",
   "SYSTEM KEYPAD: Fungua keypad kutumia namba na OK kuchagua masomo na video.",
   "SERMON TRANSCRIPT: Bonyeza START kuanza kunakili mahubiri ya mchungaji kuwa maandishi.",
-  "UPLOAD FILE: Ukiwa unaandika transcript, unaweza kupakia picha ndani ya transcript.",
-  "PICHA: Picha iliyopakiwa inaweza kusogezwa juu/chini, kuongezwa/kupunguzwa ukubwa na kuzoom ndani ya transcript.",
-  "SAVE: Bonyeza SAVE kuhifadhi transcript pamoja na maandishi na picha zake.",
+  "SAVE: Bonyeza SAVE kuhifadhi transcript yako tayari kwa kutengeneza kitabu.",
+  "CREATE BOOK: Chagua sermon moja au zaidi kutoka SAVED SERMONS, kisha bonyeza CREATE BOOK.",
+  "CHAPTER UPLOAD: Kwenye kila chapter kuna kitufe kifupi cha UPLOAD. Tumia hicho kuongeza ukurasa wa picha ndani ya chapter.",
+  "IMAGE PAGE: Baada ya kupakia picha, chagua ukubwa wa ukurasa. Kisha unaweza kusogeza, kuzoom, kubadilisha picha au kuondoa picha.",
   "SAVED SERMONS: Chagua mahubiri moja au zaidi, kisha bonyeza CREATE BOOK.",
-  "BOOK EDITOR: Hariri kichwa, maudhui, sura, maandishi na picha kabla ya kuhifadhi kitabu.",
+  "BOOK EDITOR: Hariri kichwa, maudhui, sura na maandishi kabla ya kuhifadhi kitabu.",
   "BOOK COVERS: FRONT COVER na BACK COVER zinaweza kuwekwa; back cover huwa ukurasa wa mwisho.",
   "TOOLS: Tumia zana za font, size, rangi, highlight, alignment na styles.",
   "HEAVEN'S BOOKS: Vitabu vilivyochapishwa vinaonekana bookstore; vilivyonunuliwa hufunguka kwenye reader.",
@@ -1011,11 +1010,12 @@ const guideLanguages={
   "SMART MENU: Tap the DK button to open the main smart tools.",
   "SYSTEM KEYPAD: Open the keypad and use number keys plus OK to choose lessons and videos.",
   "SERMON TRANSCRIPT: Press START to turn the pastor's spoken sermon into editable text.",
-  "UPLOAD FILE: While working on a transcript, use UPLOAD FILE to place an image inside it.",
-  "IMAGE CONTROL: Drag the image up/down or sideways, resize it, and zoom it to place it the way you want.",
-  "SAVE: Press SAVE to keep the transcript together with its text and uploaded images.",
+  "SAVE: Press SAVE to keep the sermon transcript ready for book creation.",
+  "CREATE BOOK: Select one or more sermons from SAVED SERMONS, then press CREATE BOOK.",
+  "CHAPTER UPLOAD: Every chapter has a compact UPLOAD button. Use it to add a dedicated image page inside that chapter.",
+  "IMAGE PAGE: After uploading, choose a page size. Then you can move, zoom, resize, replace or remove the image.",
   "SAVED SERMONS: Select one or more sermons, then press CREATE BOOK.",
-  "BOOK EDITOR: Edit the title, contents, chapters, text and images before saving.",
+  "BOOK EDITOR: Edit the title, contents, chapters and text before saving.",
   "BOOK COVERS: Add a FRONT COVER and an optional BACK COVER; the back cover becomes the final page.",
   "TOOLS: Use fonts, sizes, colors, highlights, alignment and text styles.",
   "HEAVEN'S BOOKS: Published books appear in the bookstore; purchased books open in the real reader.",
@@ -1235,9 +1235,9 @@ const smartPanel=document.getElementById("smartPanel");
 const healthMain = document.getElementById("healthMain");
 
 const healthHints = [
+  "HEAVEN'S GUIDE",
   "NENO LA MUNGU",
   "MAFUNDISHO YA IMANI",
-  "HEAVEN'S GUIDANCE",
   "MAISHA YA KIROHO",
 ];
 
@@ -1604,21 +1604,6 @@ const playPause = document.getElementById("playPause");
   transcriptText.scrollTop = 0;
 };
 
-  const uploadTranscriptFile=document.getElementById("uploadTranscriptFile");
-  const transcriptFileInput=document.getElementById("transcriptFileInput");
-  if(uploadTranscriptFile&&transcriptFileInput){
-    uploadTranscriptFile.onclick=e=>{e.preventDefault();e.stopPropagation();transcriptFileInput.value="";transcriptFileInput.click();};
-    transcriptFileInput.onchange=async()=>{
-      const file=transcriptFileInput.files&&transcriptFileInput.files[0];
-      if(!file)return;
-      try{
-        heavensNormalizeViewport();
-        const dataUrl=await compressTranscriptImage(file);
-        insertTranscriptImage(dataUrl,file.name);
-      }catch(err){console.error(err);alert("The image could not be added. Please try another image.");}
-      finally{heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);}
-    };
-  }
   setupTranscriptMedia(transcriptText);
 
   document.getElementById("saveTranscript").onclick = (event) => {
@@ -1922,6 +1907,196 @@ bookScreen.innerHTML = `
       white-space:pre-wrap;
       overflow-wrap:anywhere;
     }
+
+    /* ================= CHAPTER IMAGE PAGES ================= */
+    .chapter-upload-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:4px 0 12px;
+      padding:8px 0 2px;
+    }
+    .chapter-upload-hint{
+      color:#7f9198;
+      font:700 11px/1.35 Arial,sans-serif;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+    }
+    .chapter-upload-btn{
+      appearance:none;
+      border:1px solid rgba(0,255,255,.8);
+      background:linear-gradient(145deg,#182d31,#081013);
+      color:#00ffff;
+      border-radius:999px;
+      padding:8px 13px;
+      min-height:36px;
+      font:900 12px/1 Arial,sans-serif;
+      letter-spacing:.8px;
+      box-shadow:0 4px 0 #00474d,0 8px 15px rgba(0,255,255,.12),inset 0 1px 0 rgba(255,255,255,.12);
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+    .chapter-upload-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #00474d,0 4px 9px rgba(0,255,255,.1);}
+    .chapter-image-page{
+      position:relative;
+      display:block;
+      width:100%;
+      aspect-ratio:210/297;
+      min-height:420px;
+      margin:16px 0 22px;
+      padding:26px;
+      background:linear-gradient(145deg,#ffffff,#f1f4f5);
+      color:#111;
+      border:1px solid #c9d0d3;
+      border-radius:8px;
+      box-shadow:0 15px 32px rgba(0,0,0,.42),0 2px 0 rgba(255,255,255,.8) inset;
+      overflow:hidden;
+      box-sizing:border-box;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .chapter-image-page::before{
+      content:"CHAPTER IMAGE";
+      position:absolute;
+      left:14px;
+      top:10px;
+      color:#7b8589;
+      font:900 9px/1 Arial,sans-serif;
+      letter-spacing:2px;
+      z-index:2;
+      pointer-events:none;
+    }
+    .chapter-image-page::after{
+      content:"";
+      position:absolute;
+      left:14px;
+      right:14px;
+      bottom:12px;
+      height:1px;
+      background:linear-gradient(90deg,transparent,#c9d0d3,transparent);
+      pointer-events:none;
+    }
+    .chapter-image-stage{
+      position:absolute;
+      left:26px;
+      right:26px;
+      top:34px;
+      bottom:34px;
+      overflow:hidden;
+      border-radius:4px;
+    }
+    .chapter-image-item{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:70%;
+      max-width:none;
+      height:auto;
+      transform:translate(-50%,-50%) translate(var(--ix,0px),var(--iy,0px));
+      transform-origin:center center;
+      border-radius:4px;
+      box-shadow:0 8px 22px rgba(0,0,0,.18);
+      user-select:none;
+      -webkit-user-drag:none;
+      pointer-events:none;
+    }
+    .chapter-image-page.editing{outline:2px solid rgba(0,255,255,.7);outline-offset:-2px;}
+    .chapter-image-page .chapter-image-tools{
+      position:absolute;
+      left:50%;
+      top:40px;
+      transform:translateX(-50%);
+      display:flex;
+      align-items:center;
+      gap:5px;
+      padding:6px;
+      background:rgba(5,12,14,.96);
+      border:1px solid #00ffff;
+      border-radius:13px;
+      box-shadow:0 9px 24px rgba(0,0,0,.42);
+      z-index:20;
+    }
+    .chapter-image-tools button{
+      min-width:34px;
+      height:34px;
+      padding:0 9px;
+      border:1px solid #34535a;
+      border-radius:9px;
+      background:#111b1e;
+      color:#00ffff;
+      font:900 13px/1 Arial,sans-serif;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+    .chapter-image-tools button[data-act="replace"],.chapter-image-tools button[data-act="remove"]{padding:0 10px;}
+    .chapter-image-handle{
+      position:absolute;
+      right:18px;
+      bottom:24px;
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:#00ffff;
+      border:2px solid #063338;
+      box-shadow:0 3px 10px rgba(0,0,0,.35);
+      z-index:21;
+      cursor:nwse-resize;
+      touch-action:none;
+    }
+    .chapter-image-size-picker{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding:35px;
+      background:linear-gradient(145deg,#ffffff,#eef4f5);
+      z-index:30;
+      text-align:center;
+    }
+    .chapter-image-size-picker strong{font:900 18px/1.2 Arial,sans-serif;color:#111;letter-spacing:.5px;}
+    .chapter-image-size-picker span{font:12px/1.4 Arial,sans-serif;color:#68777d;max-width:260px;}
+    .chapter-image-size-options{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:9px;width:min(290px,100%);}
+    .chapter-image-size-options button{
+      min-height:48px;
+      border:1px solid #00bfc4;
+      border-radius:12px;
+      background:#061214;
+      color:#00ffff;
+      font:900 12px/1 Arial,sans-serif;
+      letter-spacing:.5px;
+      box-shadow:0 5px 0 #00474d;
+      cursor:pointer;
+    }
+    .chapter-image-size-options button:active{transform:translateY(3px);box-shadow:0 2px 0 #00474d;}
+    .chapter-image-page .chapter-image-status{
+      position:absolute;
+      left:50%;
+      bottom:17px;
+      transform:translateX(-50%);
+      color:#7c898d;
+      font:700 9px/1 Arial,sans-serif;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+      z-index:5;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+    .chapter-image-page .chapter-image-ui-hidden{display:none!important;}
+    .chapter-image-page[data-size="small"] .chapter-image-item{width:46%;}
+    .chapter-image-page[data-size="medium"] .chapter-image-item{width:68%;}
+    .chapter-image-page[data-size="large"] .chapter-image-item{width:86%;}
+    .chapter-image-page[data-size="full"] .chapter-image-item{width:100%;}
+    @media(max-width:520px){
+      .chapter-image-page{min-height:390px;padding:20px;}
+      .chapter-image-stage{left:20px;right:20px;top:31px;bottom:31px;}
+      .chapter-image-page .chapter-image-tools{top:37px;}
+      .chapter-image-tools button{min-width:31px;height:31px;padding:0 7px;font-size:11px;}
+      .chapter-image-size-options{width:260px;}
+    }
     .book-action{
       width:100%;
       min-height:54px;
@@ -2136,6 +2311,176 @@ backCoverInput.onchange = () => {
   reader.readAsDataURL(file);
 };
 
+/* ================= CHAPTER UPLOAD STUDIO =================
+   Images are intentionally uploaded from inside each chapter, not from the
+   transcript. Every upload becomes a dedicated page belonging to that chapter.
+   The author chooses a page size once, then can move/zoom/resize/replace/remove.
+========================= */
+function chapterCleanHTML(root){
+  const clone=root.cloneNode(true);
+  clone.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
+  clone.querySelectorAll('.chapter-image-page').forEach(page=>{
+    page.classList.remove('editing');
+    page.removeAttribute('contenteditable');
+    page.dataset.mediaReady='';
+  });
+  return clone.innerHTML;
+}
+
+function setupChapterImagePage(page,root){
+  if(!page || page.dataset.ready==='1') return;
+  page.dataset.ready='1';
+  page.setAttribute('contenteditable','false');
+  const stage=page.querySelector('.chapter-image-stage');
+  const img=page.querySelector('.chapter-image-item');
+  if(!stage || !img) return;
+
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const getScale=()=>Number(page.dataset.scale||'1')||1;
+  const setScale=(v)=>{
+    const next=clamp(v,.35,2.6);
+    page.dataset.scale=String(next);
+    img.style.width=(Number(page.dataset.baseWidth||70)*next)+'%';
+  };
+  const getX=()=>Number(page.dataset.x||'0')||0;
+  const getY=()=>Number(page.dataset.y||'0')||0;
+  const apply=()=>{img.style.setProperty('--ix',getX()+'px');img.style.setProperty('--iy',getY()+'px');};
+  const setX=v=>{page.dataset.x=String(clamp(v,-Math.max(stage.clientWidth,500),Math.max(stage.clientWidth,500)));apply();};
+  const setY=v=>{page.dataset.y=String(clamp(v,-Math.max(stage.clientHeight,700),Math.max(stage.clientHeight,700)));apply();};
+
+  if(!page.dataset.baseWidth) page.dataset.baseWidth='70';
+  if(!page.dataset.scale) page.dataset.scale='1';
+  setScale(getScale());apply();
+
+  let tools=page.querySelector('.chapter-image-tools');
+  if(!tools){
+    tools=document.createElement('div');
+    tools.className='chapter-image-tools';
+    tools.innerHTML='<button type="button" data-act="minus" aria-label="Zoom out">−</button><button type="button" data-act="plus" aria-label="Zoom in">+</button><button type="button" data-act="up" aria-label="Move up">↑</button><button type="button" data-act="down" aria-label="Move down">↓</button><button type="button" data-act="center" aria-label="Center">◎</button><button type="button" data-act="replace">CHANGE</button><button type="button" data-act="remove">CANCEL</button>';
+    page.appendChild(tools);
+  }
+  let handle=page.querySelector('.chapter-image-handle');
+  if(!handle){handle=document.createElement('span');handle.className='chapter-image-handle';page.appendChild(handle);}
+  let status=page.querySelector('.chapter-image-status');
+  if(!status){status=document.createElement('span');status.className='chapter-image-status';status.textContent='IMAGE PAGE • DRAG • ZOOM • RESIZE';page.appendChild(status);}
+
+  const selectPage=()=>{
+    root.querySelectorAll('.chapter-image-page.editing').forEach(p=>{if(p!==page)p.classList.remove('editing');});
+    page.classList.add('editing');
+  };
+  const finishEditing=()=>page.classList.remove('editing');
+
+  tools.querySelectorAll('button').forEach(btn=>{
+    btn.onpointerdown=e=>e.stopPropagation();
+    btn.onclick=e=>{
+      e.preventDefault();e.stopPropagation();selectPage();
+      const a=btn.dataset.act;
+      if(a==='plus')setScale(getScale()+.1);
+      else if(a==='minus')setScale(getScale()-.1);
+      else if(a==='up')setY(getY()-20);
+      else if(a==='down')setY(getY()+20);
+      else if(a==='center'){page.dataset.x='0';page.dataset.y='0';setScale(1);apply();}
+      else if(a==='replace'){
+        const input=document.createElement('input');input.type='file';input.accept='image/*';input.hidden=true;
+        page.appendChild(input);
+        input.onchange=async()=>{
+          const file=input.files&&input.files[0];
+          if(!file){input.remove();return;}
+          try{img.src=await compressTranscriptImage(file);}
+          catch(err){alert('The image could not be changed. Please try another image.');}
+          input.remove();heavensNormalizeViewport();
+        };
+        input.click();
+      }
+      else if(a==='remove'){
+        if(confirm('Remove this uploaded image page from this chapter?')) page.remove();
+      }
+    };
+  });
+
+  let drag=null;
+  page.addEventListener('pointerdown',e=>{
+    if(e.target===handle||e.target.closest('button')||e.target.closest('input'))return;
+    if(e.target!==img && !e.target.closest('.chapter-image-stage'))return;
+    e.preventDefault();e.stopPropagation();selectPage();
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY,sx:getX(),sy:getY()};
+    page.setPointerCapture?.(e.pointerId);
+  });
+  page.addEventListener('pointermove',e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    setX(drag.sx+e.clientX-drag.x);setY(drag.sy+e.clientY-drag.y);
+  });
+  page.addEventListener('pointerup',e=>{if(drag&&drag.id===e.pointerId)drag=null;});
+  page.addEventListener('pointercancel',()=>drag=null);
+
+  let resize=null;
+  handle.addEventListener('pointerdown',e=>{
+    e.preventDefault();e.stopPropagation();selectPage();
+    resize={id:e.pointerId,startX:e.clientX,startW:parseFloat(getComputedStyle(img).width)||stage.clientWidth*.7};
+    handle.setPointerCapture?.(e.pointerId);
+  });
+  handle.addEventListener('pointermove',e=>{
+    if(!resize||resize.id!==e.pointerId)return;
+    const next=clamp(resize.startW+(e.clientX-resize.startX),stage.clientWidth*.25,stage.clientWidth*1.5);
+    const pct=(next/stage.clientWidth)*100;
+    page.dataset.baseWidth=String(pct/getScale());
+    setScale(getScale());
+  });
+  handle.addEventListener('pointerup',()=>resize=null);
+  handle.addEventListener('pointercancel',()=>resize=null);
+
+  page.addEventListener('click',e=>{if(e.target===page||e.target===stage)selectPage();});
+  page.addEventListener('mouseleave',()=>{ /* controls remain available; selection is not auto-destroyed */ });
+
+  const picker=page.querySelector('.chapter-image-size-picker');
+  if(picker){
+    picker.querySelectorAll('button[data-size]').forEach(btn=>{
+      btn.onclick=e=>{
+        e.preventDefault();e.stopPropagation();
+        page.dataset.size=btn.dataset.size;
+        page.dataset.baseWidth=({small:46,medium:68,large:86,full:100})[btn.dataset.size]||68;
+        page.dataset.scale='1';page.dataset.x='0';page.dataset.y='0';
+        setScale(1);apply();picker.remove();selectPage();
+      };
+    });
+  }
+}
+
+function addChapterImagePage(root,dataUrl,name){
+  const page=document.createElement('div');
+  page.className='chapter-image-page';
+  page.dataset.size='medium';page.dataset.scale='1';page.dataset.x='0';page.dataset.y='0';
+  page.setAttribute('contenteditable','false');
+  const stage=document.createElement('div');stage.className='chapter-image-stage';
+  const img=document.createElement('img');img.className='chapter-image-item';img.src=dataUrl;img.alt=name||'Chapter image';
+  stage.appendChild(img);page.appendChild(stage);
+  const picker=document.createElement('div');picker.className='chapter-image-size-picker';
+  picker.innerHTML='<strong>Choose image size</strong><span>Select how much of this chapter page the image should occupy. This choice closes after selection.</span><div class="chapter-image-size-options"><button type="button" data-size="small">SMALL</button><button type="button" data-size="medium">MEDIUM</button><button type="button" data-size="large">LARGE</button><button type="button" data-size="full">FULL PAGE</button></div>';
+  page.appendChild(picker);
+  root.appendChild(page);
+  setupChapterImagePage(page,root);
+  return page;
+}
+
+function setupChapterUploads(chapter,chapterBody){
+  const bar=chapter.querySelector('.chapter-upload-bar');
+  const uploadBtn=chapter.querySelector('.chapter-upload-btn');
+  const input=chapter.querySelector('.chapter-upload-input');
+  if(!bar||!uploadBtn||!input)return;
+  uploadBtn.onclick=e=>{e.preventDefault();e.stopPropagation();input.value='';input.click();};
+  input.onchange=async()=>{
+    const file=input.files&&input.files[0];if(!file)return;
+    try{
+      heavensNormalizeViewport();
+      const dataUrl=await compressTranscriptImage(file);
+      const page=addChapterImagePage(chapterBody,dataUrl,file.name);
+      page.scrollIntoView({behavior:'smooth',block:'center'});
+    }catch(err){console.error(err);alert('The image could not be added. Please try another image.');}
+    finally{heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);}
+  };
+  chapterBody.querySelectorAll('.chapter-image-page').forEach(page=>setupChapterImagePage(page,chapterBody));
+}
+
 selected.forEach((sermon, index) => {
 
   const chapter = document.createElement("div");
@@ -2148,6 +2493,12 @@ selected.forEach((sermon, index) => {
       value="Chapter ${index + 1}"
       class="chapter-title-input"
     >
+
+    <div class="chapter-upload-bar">
+      <span class="chapter-upload-hint">Add a dedicated image page to this chapter</span>
+      <button type="button" class="chapter-upload-btn">＋ UPLOAD</button>
+      <input class="chapter-upload-input" type="file" accept="image/*" hidden>
+    </div>
 
     <div
       contenteditable="true"
@@ -2163,6 +2514,7 @@ selected.forEach((sermon, index) => {
     chapterBody.textContent=sermon.text||"";
   }
   bookScreen.querySelector("#bookEditorInner").appendChild(chapter);
+  setupChapterUploads(chapter,chapterBody);
 });
 
      const saveBookBtn = document.createElement("button");
@@ -2532,10 +2884,13 @@ bookScreen.querySelector("#bookEditorInner").appendChild(saveBookBtn);
 const chapters = [];
 
 bookScreen.querySelectorAll('div[contenteditable="true"]:not(#bookTitle):not(#bookContents)').forEach((chapterText, index) => {
+  const cleanHTML = chapterCleanHTML(chapterText);
+  const cleanHolder = document.createElement("div");
+  cleanHolder.innerHTML = cleanHTML;
   chapters.push({
     title: bookScreen.querySelectorAll('input[type="text"]')[index].value.trim(),
-    text: chapterText.innerText.trim(),
-    html: chapterText.innerHTML
+    text: String(cleanHolder.innerText || cleanHolder.textContent || "").trim(),
+    html: cleanHTML
   });
 });
 
@@ -2727,65 +3082,100 @@ const chapterBodies = bookScreen.querySelectorAll(
 for (let index = 0; index < chapterBodies.length; index++) {
 
   const chapterBody = chapterBodies[index];
-
   const chapterTitle =
     bookScreen.querySelectorAll('input[type="text"]')[index].value.trim();
 
-  const page = document.createElement("div");
-
-  page.style.position = "fixed";
-  page.style.left = "-10000px";
-  page.style.top = "0";
-  page.style.width = "794px";
-  page.style.minHeight = "1123px";
-  page.style.padding = "60px";
-  page.style.boxSizing = "border-box";
-  page.style.background = "white";
-  page.style.color = "black";
-  page.style.fontFamily = "Arial";
-  page.style.fontSize = "18px";
-  page.style.lineHeight = "1.8";
-
-  page.innerHTML = `
-    <div style="
-      font-size:30px;
-      font-weight:bold;
-      margin-bottom:30px;
-      color:black;
-    ">
-      ${chapterTitle || "Chapter " + (index + 1)}
-    </div>
-
-    <div>
-      ${chapterBody.innerHTML}
-    </div>
-  `;
-
-  document.body.appendChild(page);
-
-  const canvas = await html2canvas(page, {
-    backgroundColor: "#ffffff",
-    scale: 1.5
+  const exportClone = chapterBody.cloneNode(true);
+  exportClone.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
+  exportClone.querySelectorAll('.chapter-image-page').forEach(el=>{
+    el.classList.remove('editing');
+    el.style.breakInside='avoid';
+    el.style.pageBreakInside='avoid';
   });
 
-  document.body.removeChild(page);
+  /* Text and uploaded image pages are exported separately. This makes every
+     chapter upload a genuine additional PDF page instead of stretching the
+     chapter's text page. */
+  const imagePages=[...exportClone.querySelectorAll('.chapter-image-page')];
+  imagePages.forEach(el=>el.remove());
 
-  const image = canvas.toDataURL("image/png");
+  const textHTML=exportClone.innerHTML.trim();
+  const textHolder=document.createElement('div');
+  textHolder.innerHTML=textHTML;
+  const hasText=String(textHolder.innerText||textHolder.textContent||'').trim().length>0;
 
-  pdf.addPage();
+  if(hasText){
+    const page = document.createElement("div");
+    page.style.position = "fixed";
+    page.style.left = "-10000px";
+    page.style.top = "0";
+    page.style.width = "794px";
+    page.style.minHeight = "1123px";
+    page.style.padding = "60px";
+    page.style.boxSizing = "border-box";
+    page.style.background = "white";
+    page.style.color = "black";
+    page.style.fontFamily = "Arial";
+    page.style.fontSize = "18px";
+    page.style.lineHeight = "1.8";
 
-  const pageWidth = 180;
-  const pageHeight =
-    (canvas.height * pageWidth) / canvas.width;
+    page.innerHTML = `
+      <div style="font-size:30px;font-weight:bold;margin-bottom:30px;color:black;">
+        ${chapterTitle || "Chapter " + (index + 1)}
+      </div>
+      <div class="chapter-export-content"></div>
+    `;
+    page.querySelector('.chapter-export-content').appendChild(exportClone);
+    document.body.appendChild(page);
 
-  pdf.addImage(
-    image,
-    "PNG",
-    15,
-    15,
-    pageWidth,
-    pageHeight
-  );
+    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.5});
+    document.body.removeChild(page);
+
+    const image = canvas.toDataURL("image/png");
+    pdf.addPage();
+    const pageWidth = 180;
+    const pageHeight = Math.min(267,(canvas.height * pageWidth) / canvas.width);
+    pdf.addImage(image,"PNG",15,15,pageWidth,pageHeight);
+  }
+
+  for(const sourceImagePage of imagePages){
+    const page = document.createElement("div");
+    page.style.position = "fixed";
+    page.style.left = "-10000px";
+    page.style.top = "0";
+    page.style.width = "794px";
+    page.style.height = "1123px";
+    page.style.boxSizing = "border-box";
+    page.style.background = "white";
+    page.style.color = "black";
+    page.style.overflow = "hidden";
+
+    const imageClone=sourceImagePage.cloneNode(true);
+    imageClone.classList.remove('editing');
+    imageClone.style.width='794px';
+    imageClone.style.height='1123px';
+    imageClone.style.minHeight='0';
+    imageClone.style.aspectRatio='auto';
+    imageClone.style.margin='0';
+    imageClone.style.borderRadius='0';
+    imageClone.style.boxShadow='none';
+    imageClone.style.border='none';
+    imageClone.style.overflow='hidden';
+    imageClone.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
+    const stage=imageClone.querySelector('.chapter-image-stage');
+    if(stage){
+      stage.style.left='42px';stage.style.right='42px';stage.style.top='50px';stage.style.bottom='50px';
+    }
+    page.appendChild(imageClone);
+    document.body.appendChild(page);
+
+    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.5});
+    document.body.removeChild(page);
+
+    const image = canvas.toDataURL("image/png");
+    pdf.addPage();
+    pdf.addImage(image,"PNG",15,15,180,267);
+  }
 }
 
   /* ADD BACK COVER AS FINAL PDF PAGE */
@@ -4060,29 +4450,59 @@ function openBookReader(book,store){
         let current="";
         let rough=0;
         blocks.forEach(block=>{
+          if(block.classList && block.classList.contains('chapter-image-page')){
+            if(current){pieces.push({kind:'text',html:current});current="";rough=0;}
+            pieces.push({kind:'image',html:block.outerHTML});
+            return;
+          }
           const outer=block.outerHTML;
           const nextSize=rough+outer.length;
-          if(current && nextSize>4300){ pieces.push(current); current=outer; rough=outer.length; }
+          if(current && nextSize>4300){ pieces.push({kind:'text',html:current}); current=outer; rough=outer.length; }
           else { current+=outer; rough=nextSize; }
         });
-        if(current)pieces.push(current);
+        if(current)pieces.push({kind:'text',html:current});
       }else{
-        pieces.push(html);
+        pieces.push({kind:'text',html:html});
       }
-      if(!pieces.length)pieces.push("<p></p>");
+      if(!pieces.length)pieces.push({kind:'text',html:"<p></p>"});
 
-      pieces.forEach((piece,pieceIndex)=>addPage("chapter",inner=>{
-        const label=document.createElement("div");
-        label.className="hr-page-subtitle";
-        label.textContent="HEAVEN'S BOOKS";
-        const title=document.createElement("h1");
-        title.className="hr-page-chapter";
-        title.textContent=pieceIndex===0 ? chapterTitle : chapterTitle+" — continued";
-        const content=document.createElement("div");
-        content.className="hr-page-text hr-rich-content";
-        content.innerHTML=piece;
-        inner.append(label,title,content);
-      }));
+      let textPieceIndex=0;
+      pieces.forEach(piece=>{
+        if(piece.kind==='image'){
+          addPage("chapter",inner=>{
+            const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
+            const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=chapterTitle+" — image";
+            const holder=document.createElement("div");holder.className="hr-page-text hr-rich-content";holder.style.paddingTop='10px';
+            holder.innerHTML=piece.html;
+            holder.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
+            const mediaPage=holder.querySelector('.chapter-image-page');
+            if(mediaPage){
+              mediaPage.style.margin='0 auto';
+              mediaPage.style.width='100%';
+              mediaPage.style.maxWidth='520px';
+              mediaPage.style.minHeight='0';
+              mediaPage.style.aspectRatio='210/297';
+              mediaPage.style.background='#fff';
+              mediaPage.style.overflow='hidden';
+              mediaPage.style.boxShadow='0 10px 26px rgba(0,0,0,.16)';
+              mediaPage.style.border='1px solid #ddd';
+              const stage=mediaPage.querySelector('.chapter-image-stage');
+              const img=mediaPage.querySelector('.chapter-image-item');
+              if(stage&&img){stage.style.position='absolute';stage.style.left='26px';stage.style.right='26px';stage.style.top='34px';stage.style.bottom='34px';stage.style.overflow='hidden';}
+            }
+            inner.append(label,title,holder);
+          });
+        }else{
+          addPage("chapter",inner=>{
+            const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
+            const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=textPieceIndex===0?chapterTitle:chapterTitle+" — continued";
+            const content=document.createElement("div");content.className="hr-page-text hr-rich-content";content.innerHTML=piece.html;
+            content.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
+            inner.append(label,title,content);
+          });
+          textPieceIndex++;
+        }
+      });
     }else{
       const words=raw.split(/\s+/).filter(Boolean);
       const target=window.innerWidth<600?1100:1800;
