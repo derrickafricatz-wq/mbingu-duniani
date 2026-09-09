@@ -678,6 +678,13 @@ body.landscape-mode #brandVideo {
 @media(max-width:480px){.hb-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.hb-cover{height:155px}.hb-card-title{font-size:14px}.hb-btn{font-size:11px}}
 @media(min-width:760px){.hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hb-cover{height:240px}}
 
+.hr-cover-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:0!important;background:#111;overflow:hidden}
+.hr-cover-inner .hr-page-cover{width:100%;height:100%;object-fit:contain;background:#111;display:block}
+.hr-cover-fallback{display:flex!important;align-items:center;justify-content:center;background:linear-gradient(145deg,#182328,#070b0d)!important;padding:35px!important}
+.hr-cover-fallback-title{color:#fff;text-align:center;font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,7vw,48px);line-height:1.2;font-weight:800;text-shadow:0 4px 18px rgba(0,0,0,.65)}
+.hr-nav:disabled{opacity:.28;filter:grayscale(.7);cursor:default}
+@media(max-width:600px){.hr-page-text{font-size:18px;line-height:1.75}.hr-page-chapter{padding-top:28%}}
+
 </style>
 </head>
 
@@ -1424,22 +1431,25 @@ const playPause = document.getElementById("playPause");
   transcriptText.scrollTop = 0;
 };
 
-  document.getElementById("saveTranscript").onclick = () => {
-
-  let savedSermons =
-    JSON.parse(localStorage.getItem("savedSermons") || "[]");
-
+  document.getElementById("saveTranscript").onclick = (event) => {
+  if(event) event.stopPropagation();
+  const liveText = String(transcriptText.innerText || transcriptText.textContent || currentTranscript || "").trim();
+  if(!liveText){
+    alert("There is no sermon transcript to save yet.");
+    transcriptText.focus();
+    return;
+  }
+  let savedSermons=[];
+  try{ savedSermons=JSON.parse(localStorage.getItem("savedSermons") || "[]"); }catch(e){ savedSermons=[]; }
+  if(!Array.isArray(savedSermons)) savedSermons=[];
   savedSermons.push({
     title: "Sermon " + (savedSermons.length + 1),
-    text: currentTranscript,
+    text: liveText,
     date: new Date().toLocaleDateString()
   });
-
-  localStorage.setItem(
-    "savedSermons",
-    JSON.stringify(savedSermons)
-  );
-
+  currentTranscript=liveText;
+  localStorage.setItem("savedSermonTranscript", liveText);
+  localStorage.setItem("savedSermons", JSON.stringify(savedSermons));
   alert("Sermon saved successfully.");
 };
 
@@ -1448,10 +1458,11 @@ const playPause = document.getElementById("playPause");
   transcriptText.innerText = "";
 }; 
 
-  document.getElementById("savedSermons").onclick = () => {
-
-  const savedSermons =
-    JSON.parse(localStorage.getItem("savedSermons") || "[]");
+  document.getElementById("savedSermons").onclick = (event) => {
+  if(event) event.stopPropagation();
+  let savedSermons=[];
+  try{ savedSermons=JSON.parse(localStorage.getItem("savedSermons") || "[]"); }catch(e){ savedSermons=[]; }
+  if(!Array.isArray(savedSermons)) savedSermons=[];
 
   const screen = document.createElement("div");
 
@@ -3026,7 +3037,7 @@ printBtn.onclick = () => {
     // Create a temporary print container
     const printWindow = window.open("", "", "width=800,height=600");
     let html = "<html><head><title>Print Lesson</title>";
-    html += "<style>body{font-family: Arial, Helvetica, sans-serif; color:black;} img{max-width:100%; display:block; margin:10px 0;}</style>";
+    html += "<style>body{font-family: Arial, Helvetica, sans-serif; color:black;} img{max-width:100%; display:block; margin:10px 0;}\n</style>";
     html += "</head><body>";
 
     markedElements.forEach(el=>{
@@ -3666,7 +3677,6 @@ function openBookReader(book,store){
     </div>
     <div class="hr-stage" id="hrStage">
       <div class="hr-book" id="hrBook"></div>
-      <div class="hr-hint">SWIPE TO TURN</div>
       <div class="hr-controls">
         <button class="hr-nav" id="hrPrev" type="button" aria-label="Previous page">‹</button>
         <div class="hr-page-count" id="hrPageCount">1 / 1</div>
@@ -3681,186 +3691,179 @@ function openBookReader(book,store){
   const topCountEl=reader.querySelector("#hrTopCount");
   const pages=[];
 
-  function addPage(kind,build){
+  /* Pull the richest copy available. Server rows can be sparse while the
+     author's local savedBooks record still contains the covers/chapters. */
+  const localBooks=(()=>{try{return JSON.parse(localStorage.getItem("savedBooks")||"[]")}catch(e){return[]}})();
+  const localMatch=localBooks.find(b=>
+    (book.supabaseId && b.supabaseId && String(b.supabaseId)===String(book.supabaseId)) ||
+    String(b.title||"").trim().toLowerCase()===String(book.title||"").trim().toLowerCase()
+  );
+  const source=localMatch ? {...book,...localMatch} : book;
+
+  let chapters=source.chapters;
+  if(typeof chapters==="string"){
+    try{chapters=JSON.parse(chapters)}catch(e){chapters=[]}
+  }
+  chapters=Array.isArray(chapters)?chapters.filter(Boolean):[];
+
+  const contents=String(source.contents||"").trim();
+  const front=String(source.frontCover||"").trim();
+  const back=String(source.backCover||"").trim();
+
+  function addPage(type,build){
     const page=document.createElement("article");
-    page.className="hr-page"+(kind==="cover"?" hr-page-cover-wrap":"");
+    page.className="hr-page"+(type==="cover"?" hr-page-cover-wrap":"");
     page.style.display="none";
+    page.style.visibility="visible";
+    page.style.opacity="1";
     const inner=document.createElement("div");
     inner.className="hr-page-inner";
     page.appendChild(inner);
     build(inner,page);
     const running=document.createElement("div");
     running.className="hr-running";
-    running.innerHTML=`<span>${escapeBookHtml(book.title||"")}</span><span>${pages.length+1}</span>`;
+    running.innerHTML=`<span>${escapeBookHtml(source.title||"")}</span><span>${pages.length+1}</span>`;
     page.appendChild(running);
     bookEl.appendChild(page);
     pages.push(page);
   }
 
-  // Front cover is always the first page.
-  const front=String(book.frontCover||"");
-  if(front){
+  function addImagePage(data,alt,fallbackTitle){
     addPage("cover",(inner,page)=>{
+      inner.classList.add("hr-cover-inner");
       const img=document.createElement("img");
       img.className="hr-page-cover";
-      img.alt="Front cover";
-      img.src=front;
-      img.onerror=()=>{
-        img.remove();
-        inner.style.display="grid";inner.style.placeItems="center";inner.style.padding="40px";
-        inner.innerHTML=`<div class="hr-page-title">${escapeBookHtml(book.title||"Untitled Book")}</div>`;
+      img.alt=alt;
+      img.src=data;
+      let settled=false;
+      const showFallback=()=>{
+        if(settled)return;
+        settled=true;
+        img.style.display="none";
+        inner.classList.add("hr-cover-fallback");
+        inner.innerHTML=`<div class="hr-cover-fallback-title">${escapeBookHtml(fallbackTitle||source.title||"Untitled Book")}</div>`;
       };
+      img.onload=()=>{settled=true;img.style.display="block";};
+      img.onerror=showFallback;
       inner.appendChild(img);
-      page.querySelector(".hr-running").style.display="none";
-    });
-  }else{
-    addPage("title",inner=>{
-      const sub=document.createElement("div");sub.className="hr-page-subtitle";sub.textContent="HEAVEN'S BOOKS";
-      const title=document.createElement("h1");title.className="hr-page-title";title.textContent=book.title||"Untitled Book";
-      inner.append(sub,title);
+      setTimeout(()=>{if(!img.complete || !img.naturalWidth)showFallback();},1800);
+      const footer=page.querySelector(".hr-running"); if(footer)footer.style.display="none";
     });
   }
 
-  // Normalize older/local/server records before building the book.
-  let chapterList=Array.isArray(book.chapters)?book.chapters.filter(Boolean):[];
-  if(typeof book.chapters==="string"){
-    try{const parsed=JSON.parse(book.chapters);if(Array.isArray(parsed))chapterList=parsed.filter(Boolean);}catch(e){}
-  }
-  let fallbackText=String(book.text||book.content||"").trim();
-  let contentsText=String(book.contents||"").trim();
-  let back=String(book.backCover||"");
+  // 1. FRONT COVER
+  if(front) addImagePage(front,"Front cover",source.title);
+  else addPage("title",inner=>{
+    inner.innerHTML=`<div class="hr-page-subtitle">HEAVEN'S BOOKS</div><h1 class="hr-page-title">${escapeBookHtml(source.title||"Untitled Book")}</h1><div class="hr-page-rule"></div>`;
+  });
 
-  if(!chapterList.length && !fallbackText || !contentsText || !back){
-    const localBooks=(()=>{try{return JSON.parse(localStorage.getItem("savedBooks")||"[]")}catch(e){return[]}})();
-    const localMatch=localBooks.find(b=>
-      (book.supabaseId&&b.supabaseId&&String(b.supabaseId)===String(book.supabaseId)) ||
-      String(b.title||"").trim().toLowerCase()===String(book.title||"").trim().toLowerCase()
-    );
-    if(localMatch){
-      if(!chapterList.length){
-        if(Array.isArray(localMatch.chapters))chapterList=localMatch.chapters.filter(Boolean);
-        else if(typeof localMatch.chapters==="string"){try{const parsed=JSON.parse(localMatch.chapters);if(Array.isArray(parsed))chapterList=parsed.filter(Boolean)}catch(e){}}
-      }
-      if(!fallbackText)fallbackText=String(localMatch.text||localMatch.content||"").trim();
-      if(!contentsText)contentsText=String(localMatch.contents||"").trim();
-      if(!back)back=String(localMatch.backCover||"");
-    }
-  }
-  if(!chapterList.length && fallbackText)chapterList=[{title:"Book Content",text:fallbackText}];
-
-  // Contents comes immediately after the front cover.
-  if(contentsText){
+  // 2. TABLE OF CONTENTS
+  if(contents){
     addPage("contents",inner=>{
       const sub=document.createElement("div");sub.className="hr-page-subtitle";sub.textContent="HEAVEN'S BOOKS";
       const title=document.createElement("h1");title.className="hr-page-title";title.textContent="TABLE OF CONTENTS";
       const rule=document.createElement("div");rule.className="hr-page-rule";
-      const text=document.createElement("div");text.className="hr-page-text";text.textContent=contentsText;
+      const text=document.createElement("div");text.className="hr-page-text";text.textContent=contents;
       inner.append(sub,title,rule,text);
     });
   }
 
-  // Each chapter gets a clean opening page, followed by neatly paginated text pages.
-  chapterList.forEach((ch,index)=>{
+  // 3. CHAPTERS. Every chapter has an opening page followed by readable pages.
+  chapters.forEach((ch,index)=>{
     const chapterTitle=String(ch?.title||("Chapter "+(index+1))).trim();
     addPage("chapter",inner=>{
+      const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
       const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=chapterTitle;
-      const intro=document.createElement("div");intro.className="hr-page-subtitle";intro.textContent="HEAVEN'S BOOKS";
-      inner.append(title,intro);
+      inner.append(label,title);
     });
 
     const raw=String(ch?.text||"").trim();
-    const paragraphs=raw.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
-    const chunks=[];let current="";
-    const target=window.innerWidth<600?1050:1850;
-    paragraphs.forEach(par=>{
-      if(par.length>target){
-        if(current){chunks.push(current);current="";}
-        for(let i=0;i<par.length;i+=target)chunks.push(par.slice(i,i+target));
-      }else{
-        const candidate=current?(current+"\n\n"+par):par;
-        if(candidate.length>target&&current){chunks.push(current);current=par;}else current=candidate;
-      }
+    if(!raw){
+      addPage("text",inner=>{
+        const text=document.createElement("div");text.className="hr-page-text";text.textContent="";inner.appendChild(text);
+      });
+      return;
+    }
+
+    // Split by words, not arbitrary characters, so sentences remain readable.
+    const words=raw.split(/\s+/).filter(Boolean);
+    const target=window.innerWidth<600?190:300;
+    let chunk="";
+    const chunks=[];
+    words.forEach(word=>{
+      const candidate=chunk ? chunk+" "+word : word;
+      if(candidate.length>target && chunk){chunks.push(chunk);chunk=word;}
+      else chunk=candidate;
     });
-    if(current)chunks.push(current);
-    if(!chunks.length)chunks.push("");
-    chunks.forEach(chunk=>addPage("text",inner=>{
-      const text=document.createElement("div");text.className="hr-page-text";text.textContent=chunk;inner.appendChild(text);
+    if(chunk)chunks.push(chunk);
+    chunks.forEach(textValue=>addPage("text",inner=>{
+      const text=document.createElement("div");text.className="hr-page-text";text.textContent=textValue;inner.appendChild(text);
     }));
   });
 
-  // Back cover is a real final page, never hidden behind the controls.
-  if(back){
-    addPage("cover",(inner,page)=>{
-      const img=document.createElement("img");
-      img.className="hr-page-cover";
-      img.alt="Back cover";
-      img.src=back;
-      img.onerror=()=>{
-        img.remove();
-        inner.style.display="grid";inner.style.placeItems="center";inner.style.padding="40px";
-        inner.innerHTML=`<div class="hr-page-title">THE END</div>`;
-      };
-      inner.appendChild(img);
-      page.querySelector(".hr-running").style.display="none";
-    });
+  // If an old book stored its body as a single text/content field, keep it readable.
+  if(!chapters.length){
+    const fallback=String(source.text||source.content||"").trim();
+    if(fallback){
+      addPage("chapter",inner=>{
+        const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
+        const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent="BOOK CONTENT";
+        inner.append(label,title);
+      });
+      const words=fallback.split(/\s+/).filter(Boolean);let chunk="";const chunks=[];
+      const target=window.innerWidth<600?190:300;
+      words.forEach(word=>{const candidate=chunk?chunk+" "+word:word;if(candidate.length>target&&chunk){chunks.push(chunk);chunk=word}else chunk=candidate});
+      if(chunk)chunks.push(chunk);
+      chunks.forEach(textValue=>addPage("text",inner=>{const t=document.createElement("div");t.className="hr-page-text";t.textContent=textValue;inner.appendChild(t)}));
+    }
   }
 
+  // 4. BACK COVER is always the final page.
+  if(back) addImagePage(back,"Back cover","THE END");
+
+  // Never leave the user looking at an empty sheet.
   if(!pages.length){
     addPage("title",inner=>{
-      const title=document.createElement("h1");title.className="hr-page-title";title.textContent=book.title||"Untitled Book";inner.appendChild(title);
+      inner.innerHTML=`<div class="hr-page-subtitle">HEAVEN'S BOOKS</div><h1 class="hr-page-title">${escapeBookHtml(source.title||"Untitled Book")}</h1><div class="hr-page-text" style="text-align:center;color:#666;">This book has no readable content yet.</div>`;
     });
   }
 
-  let currentPage=0;
-  let turning=false;
-  let turnTimer=null;
-
+  let currentPage=0,turning=false,turnTimer=null;
   function updateReader(){
     pages.forEach((p,i)=>{
       p.style.display=(i===currentPage)?"block":"none";
-      p.style.zIndex=(i===currentPage)?10:1;
+      p.style.visibility="visible";
+      p.style.zIndex=(i===currentPage)?20:1;
       p.classList.remove("is-turning-next","is-turning-prev");
     });
     const label=`${currentPage+1} / ${pages.length}`;
-    pageCountEl.textContent=label;
-    topCountEl.textContent=label;
+    pageCountEl.textContent=label;topCountEl.textContent=label;
+    reader.querySelector("#hrPrev").disabled=currentPage===0;
+    reader.querySelector("#hrNext").disabled=currentPage===pages.length-1;
   }
-
   function turnTo(nextPage,direction){
     if(turning||nextPage<0||nextPage>=pages.length||nextPage===currentPage)return;
     turning=true;
     const old=pages[currentPage],next=pages[nextPage];
-    next.style.display="block";
-    next.style.zIndex="9";
-    old.style.zIndex="10";
+    next.style.display="block";next.style.zIndex="19";old.style.zIndex="20";
     old.classList.add(direction>0?"is-turning-next":"is-turning-prev");
     clearTimeout(turnTimer);
-    turnTimer=setTimeout(()=>{
-      currentPage=nextPage;turning=false;updateReader();
-    },560);
+    turnTimer=setTimeout(()=>{currentPage=nextPage;turning=false;updateReader();},560);
   }
-
-  const next=()=>turnTo(currentPage+1,1);
-  const prev=()=>turnTo(currentPage-1,-1);
-  reader.querySelector("#hrNext").onclick=e=>{e.stopPropagation();next();};
-  reader.querySelector("#hrPrev").onclick=e=>{e.stopPropagation();prev();};
-  const closeReader=()=>{clearTimeout(turnTimer);reader.remove();document.body.style.overflow="";};
-  reader.querySelector(".hr-back").onclick=e=>{e.stopPropagation();closeReader();};
-
+  const next=()=>turnTo(currentPage+1,1),prev=()=>turnTo(currentPage-1,-1);
+  reader.querySelector("#hrNext").onclick=e=>{e.stopPropagation();next()};
+  reader.querySelector("#hrPrev").onclick=e=>{e.stopPropagation();prev()};
+  const closeReader=()=>{clearTimeout(turnTimer);reader.remove();document.body.style.overflow=""};
+  reader.querySelector(".hr-back").onclick=e=>{e.stopPropagation();closeReader()};
   reader.tabIndex=0;reader.focus();
   reader.addEventListener("keydown",e=>{
-    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();next();}
-    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();prev();}
-    if(e.key==="Escape"){e.preventDefault();closeReader();}
-    if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();
+    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();next()}
+    else if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();prev()}
+    else if(e.key==="Escape"){e.preventDefault();closeReader()}
   });
-
   let startX=0,startY=0;
-  reader.addEventListener("touchstart",e=>{const t=e.changedTouches[0];startX=t.screenX;startY=t.screenY;},{passive:true});
-  reader.addEventListener("touchend",e=>{
-    const t=e.changedTouches[0],dx=t.screenX-startX,dy=t.screenY-startY;
-    if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev();}
-  },{passive:true});
+  reader.addEventListener("touchstart",e=>{const t=e.changedTouches[0];startX=t.screenX;startY=t.screenY},{passive:true});
+  reader.addEventListener("touchend",e=>{const t=e.changedTouches[0],dx=t.screenX-startX,dy=t.screenY-startY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev()}},{passive:true});
   reader.addEventListener("contextmenu",e=>e.preventDefault());
   reader.addEventListener("copy",e=>e.preventDefault());
   reader.addEventListener("cut",e=>e.preventDefault());
@@ -3886,6 +3889,21 @@ function openBookReader(book,store){
   const savedBtn=document.getElementById('savedSermons');
   if(saveBtn){ saveBtn.style.position='relative'; saveBtn.style.zIndex='100'; saveBtn.style.pointerEvents='auto'; }
   if(savedBtn){ savedBtn.style.position='relative'; savedBtn.style.zIndex='100'; savedBtn.style.pointerEvents='auto'; }
+})();
+
+/* ================= SAVED SERMONS ROBUST CONTROLS ================= */
+(function reinforceSermonControls(){
+  const saveBtn=document.getElementById("saveTranscript");
+  const savedBtn=document.getElementById("savedSermons");
+  const panel=document.getElementById("transcriptPanel");
+  if(!saveBtn||!savedBtn||!panel)return;
+  [saveBtn,savedBtn].forEach(btn=>{
+    btn.style.position="relative";
+    btn.style.zIndex="1000";
+    btn.style.pointerEvents="auto";
+    btn.style.touchAction="manipulation";
+  });
+  panel.style.zIndex="500";
 })();
 
 /* ================= GLOBAL GESTURES ================= */
