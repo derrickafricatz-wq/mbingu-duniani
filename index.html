@@ -662,7 +662,7 @@ body.landscape-mode #brandVideo {
 .hr-page-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(27px,5vw,42px);line-height:1.18;text-align:center;margin:0 0 26px;color:#151515;letter-spacing:.2px}
 .hr-page-subtitle{text-align:center;color:#777;font:700 11px Arial,sans-serif;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:26px}
 .hr-page-text{font-size:clamp(17px,2.4vw,21px);line-height:1.78;color:#242424;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left}
-.hr-page-text::first-letter{font-size:1.7em;font-weight:700}
+.hr-page-text::first-letter{font-size:1.7em;font-weight:700}.hr-rich-content{white-space:normal}.hr-rich-content p{margin:0 0 1em}.hr-rich-content div{margin:0 0 .75em}.hr-rich-content span,.hr-rich-content b,.hr-rich-content strong,.hr-rich-content em,.hr-rich-content u{color:inherit}
 .hr-page-chapter{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,5.5vw,42px);line-height:1.2;text-align:center;color:#111;margin:0 0 25px;padding-top:19%;}
 .hr-page-chapter:before{content:"CHAPTER";display:block;font:800 10px Arial,sans-serif;letter-spacing:3px;color:#00aebe;margin-bottom:14px}
 .hr-page-chapter::after{content:"";display:block;width:72px;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);margin:24px auto}
@@ -1861,6 +1861,7 @@ bookEditorClose.onclick = (e) => {
 bookEditorHeader.appendChild(bookEditorClose);
 bookScreen.insertBefore(bookEditorHeader, bookScreen.firstChild);
 document.body.appendChild(bookScreen);
+heavensNormalizeViewport();
 
 
 
@@ -1883,6 +1884,7 @@ frontCoverSection.appendChild(frontCoverPreview);
 let coverImage = null;
 
 coverInput.onchange = () => {
+  heavensNormalizeViewport();
   const file = coverInput.files[0];
   if (!file) return;
 
@@ -1916,6 +1918,7 @@ backCoverSection.appendChild(backCoverPreview);
 let backCoverImage = null;
 
 backCoverInput.onchange = () => {
+  heavensNormalizeViewport();
   const file = backCoverInput.files[0];
   if (!file) return;
 
@@ -2323,7 +2326,8 @@ const chapters = [];
 bookScreen.querySelectorAll('div[contenteditable="true"]:not(#bookTitle):not(#bookContents)').forEach((chapterText, index) => {
   chapters.push({
     title: bookScreen.querySelectorAll('input[type="text"]')[index].value.trim(),
-    text: chapterText.innerText.trim()
+    text: chapterText.innerText.trim(),
+    html: chapterText.innerHTML
   });
 });
 
@@ -3326,6 +3330,7 @@ async function openHeavensBookstore(){
     </div>
     <div class="hb-grid" id="hbGrid"></div>`;
   document.body.appendChild(store);
+  heavensNormalizeViewport();
 
   let activeCat="ALL";
   const grid=store.querySelector("#hbGrid");
@@ -3363,7 +3368,7 @@ async function openHeavensBookstore(){
           holder.innerHTML=`<div class="hb-cover-empty">${escapeBookHtml(book.title||'BOOK')}</div>`;
         };
       }
-      card.querySelector(".hb-btn").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
+      card.querySelector(".hb-btn:not(.hb-check-payment)").onclick=()=> paid ? openBookReader(book,store) : startBookPayment(book,store);
       const checkBtn=card.querySelector('.hb-check-payment');
       if(checkBtn){
         checkBtn.onclick=async()=>{
@@ -3449,6 +3454,15 @@ async function openHeavensBookstore(){
 
 function escapeBookHtml(v){return String(v).replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
 
+function heavensNormalizeViewport(){
+  try{
+    document.documentElement.style.zoom="1";
+    document.body.style.zoom="1";
+    document.body.style.transform="none";
+    document.body.style.transformOrigin="top left";
+  }catch(e){}
+}
+
 let heavensPaymentPollTimer = null;
 
 function getBlmPayReference(data){
@@ -3528,22 +3542,25 @@ async function watchHeavensPayment(book,store,reference){
       const result=await checkHeavensPaymentStatus(ref);
       console.log("Heaven's Books BLMPay status response:",result);
 
+      // BLMPay can use a top-level "success" as an API response envelope.
+      // That does NOT mean the customer's payment is completed. Prefer the
+      // actual payment status nested in the response.
       const status=String(
         result?.blmpay_status ||
-        result?.status ||
         result?.payment?.status ||
         result?.payment?.data?.status ||
         result?.data?.blmpay_status ||
-        result?.data?.status ||
         result?.data?.payment?.status ||
         result?.data?.payment?.data?.status ||
         result?.data?.data?.status ||
+        result?.data?.status ||
+        result?.status ||
         ""
       ).trim().toLowerCase();
 
       console.log("Heaven's Books payment reference:",ref,"status:",status);
 
-      if(["completed","success","succeeded","paid"].includes(status)){
+      if(["completed","paid"].includes(status)){
         markBookPaid(book);
         localStorage.removeItem("heavensPendingPayment");
         stopHeavensPaymentPolling();
@@ -3622,10 +3639,10 @@ function heavensPhonePaymentDialog(book, amount){
     </div>`;
     document.body.appendChild(overlay);
     const input=overlay.querySelector("#heavensPayPhone");
-    const close=()=>{overlay.remove();resolve(null);};
+    const close=()=>{overlay.remove();heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);resolve(null);};
     overlay.querySelector(".heavens-payment-close").onclick=close;
     overlay.addEventListener("click",e=>{if(e.target===overlay)close();});
-    overlay.querySelector("#heavensPayContinue").onclick=()=>{const value=input.value.trim();if(!value){input.focus();return;}overlay.remove();resolve(value);};
+    overlay.querySelector("#heavensPayContinue").onclick=()=>{const value=input.value.trim();if(!value){input.focus();return;}overlay.remove();heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);resolve(value);};
     setTimeout(()=>input.focus(),80);
   });
 }
@@ -3687,8 +3704,20 @@ async function startBookPayment(book,store){
         blmpay:data.blmpay || data.payment || data
       }));
 
-      render();
-      alert("BLMPay payment request sent. Complete the mobile-money prompt. Payment reference: " + reference + "\n\nWe will automatically check BLMPay and unlock this book only after BLMPay reports it as completed.");
+      // Do not call the bookstore's local render() here: this function is global
+      // and render() belongs to openHeavensBookstore(). Calling it caused the
+      // payment prompt to be sent successfully and then falsely showed
+      // "render is not defined". Update only this card instead.
+      if(store && document.body.contains(store)){
+        const card=store.querySelector(`.hb-card[data-book-id="${String(book.id).replace(/"/g,'&quot;')}"]`);
+        if(card){
+          const btn=card.querySelector('.hb-btn:not(.hb-check-payment)');
+          if(btn){ btn.className='hb-btn pay'; btn.textContent='PAY'; btn.disabled=false; }
+          const lock=card.querySelector('.hb-lock');
+          if(lock) lock.textContent='Payment sent — checking BLMPay…';
+        }
+      }
+      alert("BLMPay payment request sent. Complete the mobile-money prompt.\n\nWe will automatically check BLMPay and unlock this book only after BLMPay reports that the payment is completed.");
       watchHeavensPayment(book,store,reference);
     }else{
       const msg=data && (data.error || data.message) ? (data.error || data.message) : "BLMPay did not accept the payment request.";
@@ -3722,6 +3751,7 @@ function openBookReader(book,store){
       </div>
     </div>`;
   document.body.appendChild(reader);
+  heavensNormalizeViewport();
   document.body.style.overflow="hidden";
 
   const bookEl=reader.querySelector("#hrBook");
@@ -3729,8 +3759,6 @@ function openBookReader(book,store){
   const topCountEl=reader.querySelector("#hrTopCount");
   const pages=[];
 
-  /* Pull the richest copy available. Server rows can be sparse while the
-     author's local savedBooks record still contains the covers/chapters. */
   const localBooks=(()=>{try{return JSON.parse(localStorage.getItem("savedBooks")||"[]")}catch(e){return[]}})();
   const localMatch=localBooks.find(b=>
     (book.supabaseId && b.supabaseId && String(b.supabaseId)===String(book.supabaseId)) ||
@@ -3806,60 +3834,86 @@ function openBookReader(book,store){
     });
   }
 
-  // 3. CHAPTERS. Every chapter has an opening page followed by readable pages.
+  // Chapters: one chapter opening + its content. Continuation pages are clearly
+  // marked as continuation, so two selected sermons never look like four chapters.
   chapters.forEach((ch,index)=>{
     const chapterTitle=String(ch?.title||("Chapter "+(index+1))).trim();
-    addPage("chapter",inner=>{
-      const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
-      const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=chapterTitle;
-      inner.append(label,title);
-    });
-
+    const html=String(ch?.html||"").trim();
     const raw=String(ch?.text||"").trim();
-    if(!raw){
-      addPage("text",inner=>{
-        const text=document.createElement("div");text.className="hr-page-text";text.textContent="";inner.appendChild(text);
-      });
-      return;
-    }
 
-    // Split by words, not arbitrary characters, so sentences remain readable.
-    const words=raw.split(/\s+/).filter(Boolean);
-    const target=window.innerWidth<600?190:300;
-    let chunk="";
-    const chunks=[];
-    words.forEach(word=>{
-      const candidate=chunk ? chunk+" "+word : word;
-      if(candidate.length>target && chunk){chunks.push(chunk);chunk=word;}
-      else chunk=candidate;
-    });
-    if(chunk)chunks.push(chunk);
-    chunks.forEach(textValue=>addPage("text",inner=>{
-      const text=document.createElement("div");text.className="hr-page-text";text.textContent=textValue;inner.appendChild(text);
-    }));
+    if(html){
+      // Keep the chapter's original formatting (including colors/highlights).
+      // We split only between block-level elements so formatting spans survive.
+      const holder=document.createElement("div");
+      holder.innerHTML=html;
+      const blocks=[...holder.children];
+      const pieces=[];
+      if(blocks.length){
+        let current="";
+        let rough=0;
+        blocks.forEach(block=>{
+          const outer=block.outerHTML;
+          const nextSize=rough+outer.length;
+          if(current && nextSize>4300){ pieces.push(current); current=outer; rough=outer.length; }
+          else { current+=outer; rough=nextSize; }
+        });
+        if(current)pieces.push(current);
+      }else{
+        pieces.push(html);
+      }
+      if(!pieces.length)pieces.push("<p></p>");
+
+      pieces.forEach((piece,pieceIndex)=>addPage("chapter",inner=>{
+        const label=document.createElement("div");
+        label.className="hr-page-subtitle";
+        label.textContent="HEAVEN'S BOOKS";
+        const title=document.createElement("h1");
+        title.className="hr-page-chapter";
+        title.textContent=pieceIndex===0 ? chapterTitle : chapterTitle+" — continued";
+        const content=document.createElement("div");
+        content.className="hr-page-text hr-rich-content";
+        content.innerHTML=piece;
+        inner.append(label,title,content);
+      }));
+    }else{
+      const words=raw.split(/\s+/).filter(Boolean);
+      const target=window.innerWidth<600?1100:1800;
+      const chunks=[];
+      let chunk="";
+      words.forEach(word=>{
+        const candidate=chunk?chunk+" "+word:word;
+        if(candidate.length>target && chunk){chunks.push(chunk);chunk=word;}
+        else chunk=candidate;
+      });
+      if(chunk)chunks.push(chunk);
+      if(!chunks.length)chunks.push("");
+      chunks.forEach((textValue,pieceIndex)=>addPage("chapter",inner=>{
+        const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
+        const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=pieceIndex===0?chapterTitle:chapterTitle+" — continued";
+        const text=document.createElement("div");text.className="hr-page-text";text.textContent=textValue;
+        inner.append(label,title,text);
+      }));
+    }
   });
 
-  // If an old book stored its body as a single text/content field, keep it readable.
+  // Legacy books with one body field.
   if(!chapters.length){
     const fallback=String(source.text||source.content||"").trim();
     if(fallback){
-      addPage("chapter",inner=>{
-        const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
-        const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent="BOOK CONTENT";
-        inner.append(label,title);
-      });
-      const words=fallback.split(/\s+/).filter(Boolean);let chunk="";const chunks=[];
-      const target=window.innerWidth<600?190:300;
+      const words=fallback.split(/\s+/).filter(Boolean);let chunk="";const chunks=[];const target=window.innerWidth<600?1100:1800;
       words.forEach(word=>{const candidate=chunk?chunk+" "+word:word;if(candidate.length>target&&chunk){chunks.push(chunk);chunk=word}else chunk=candidate});
       if(chunk)chunks.push(chunk);
-      chunks.forEach(textValue=>addPage("text",inner=>{const t=document.createElement("div");t.className="hr-page-text";t.textContent=textValue;inner.appendChild(t)}));
+      chunks.forEach((textValue,i)=>addPage("chapter",inner=>{
+        const label=document.createElement("div");label.className="hr-page-subtitle";label.textContent="HEAVEN'S BOOKS";
+        const title=document.createElement("h1");title.className="hr-page-chapter";title.textContent=i===0?"BOOK CONTENT":"BOOK CONTENT — continued";
+        const text=document.createElement("div");text.className="hr-page-text";text.textContent=textValue;inner.append(label,title,text);
+      }));
     }
   }
 
-  // 4. BACK COVER is always the final page.
+  // FINAL PAGE: BACK COVER
   if(back) addImagePage(back,"Back cover","THE END");
 
-  // Never leave the user looking at an empty sheet.
   if(!pages.length){
     addPage("title",inner=>{
       inner.innerHTML=`<div class="hr-page-subtitle">HEAVEN'S BOOKS</div><h1 class="hr-page-title">${escapeBookHtml(source.title||"Untitled Book")}</h1><div class="hr-page-text" style="text-align:center;color:#666;">This book has no readable content yet.</div>`;
@@ -3891,7 +3945,7 @@ function openBookReader(book,store){
   const next=()=>turnTo(currentPage+1,1),prev=()=>turnTo(currentPage-1,-1);
   reader.querySelector("#hrNext").onclick=e=>{e.stopPropagation();next()};
   reader.querySelector("#hrPrev").onclick=e=>{e.stopPropagation();prev()};
-  const closeReader=()=>{clearTimeout(turnTimer);reader.remove();document.body.style.overflow=""};
+  const closeReader=()=>{clearTimeout(turnTimer);reader.remove();document.body.style.overflow="";heavensNormalizeViewport();};
   reader.querySelector(".hr-back").onclick=e=>{e.stopPropagation();closeReader()};
   reader.tabIndex=0;reader.focus();
   reader.addEventListener("keydown",e=>{
