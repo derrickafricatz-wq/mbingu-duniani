@@ -645,9 +645,9 @@ body.landscape-mode #brandVideo {
 .hr-back:active{transform:translateY(3px);box-shadow:inset 0 2px 2px rgba(255,255,255,.08),inset 0 -3px 6px rgba(0,0,0,.5),0 2px 0 #003d43,0 5px 10px rgba(0,0,0,.4)}
 .hr-name{flex:1;font-family:'Russo One',Arial,sans-serif;font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;letter-spacing:.3px}
 .hr-counter{min-width:68px;text-align:right;color:#9fb0b6;font:700 11px Arial,sans-serif}
-.hr-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px 10px 82px;overflow:hidden;background:radial-gradient(ellipse at center,#364147 0,#1a2023 38%,#0b0e10 78%)}
+.hr-stage{position:relative;flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center;padding:0 0 72px;overflow:hidden;background:radial-gradient(ellipse at center,#364147 0,#1a2023 38%,#0b0e10 78%)}
 .hr-stage:before{content:"";position:absolute;width:min(94vw,790px);height:70%;left:50%;top:15%;transform:translateX(-50%);background:rgba(0,0,0,.25);filter:blur(28px);border-radius:50%;pointer-events:none}
-.hr-book{position:relative;width:min(92vw,720px);height:min(76vh,920px);max-height:calc(100dvh - 155px);min-height:390px;perspective:1800px;filter:drop-shadow(0 24px 28px rgba(0,0,0,.55))}
+.hr-book{position:relative;width:100%;height:100%;max-width:none;max-height:none;min-height:0;perspective:1800px;filter:drop-shadow(0 24px 28px rgba(0,0,0,.55))}
 .hr-book:before{content:"";position:absolute;left:-7px;top:2%;bottom:2%;width:10px;border-radius:7px 0 0 7px;background:linear-gradient(90deg,#20282b,#080b0d 55%,#4b5558);box-shadow:-4px 0 10px rgba(0,0,0,.35);z-index:0}
 .hr-page{position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,#f4efe4 0,#fffdf7 5%,#fffdf9 88%,#e7dfd1 100%);border-radius:2px 15px 15px 3px;box-shadow:0 8px 28px rgba(0,0,0,.48),inset -16px 0 25px rgba(92,73,43,.10),inset 2px 0 0 rgba(255,255,255,.9);padding:clamp(25px,5vw,58px) clamp(23px,6vw,68px) 48px;overflow:hidden;transform-origin:left center;backface-visibility:hidden;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.22,.75,.2,1),opacity .55s ease;box-sizing:border-box}
 .hr-page:after{content:"";position:absolute;left:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,rgba(60,45,30,.14),transparent);pointer-events:none}
@@ -673,8 +673,8 @@ body.landscape-mode #brandVideo {
 .hr-nav:active{transform:translateY(4px);box-shadow:inset 0 2px 2px rgba(255,255,255,.08),inset 0 -4px 7px rgba(0,0,0,.55),0 2px 0 #00454b,0 5px 11px rgba(0,0,0,.45)}
 .hr-page-count{min-width:74px;text-align:center;color:#fff;background:linear-gradient(180deg,#172126,#0b1114);border:1px solid #344a51;border-radius:14px;padding:10px 9px;font:700 10px Arial,sans-serif;letter-spacing:.5px;box-shadow:inset 0 1px rgba(255,255,255,.07),0 5px 12px rgba(0,0,0,.3)}
 .hr-hint{position:absolute;right:16px;top:12px;color:#9ba8ad;font:9px Arial,sans-serif;opacity:.55;letter-spacing:1px}
-@media(max-width:600px){.hr-stage{padding:9px 7px 80px}.hr-book{width:92vw;height:calc(100dvh - 166px);max-height:calc(100dvh - 166px);min-height:390px}.hr-page{padding:25px 22px 42px;border-radius:2px 12px 12px 3px}.hr-page-text{font-size:17px;line-height:1.72}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:58px;flex-basis:58px}.hr-counter{min-width:55px;font-size:10px}.hr-nav{width:52px;height:48px}.hr-controls{gap:13px}.hr-page-count{min-width:67px}}
-@media(max-width:600px){.hr-stage{padding:9px 7px 62px}.hr-book{width:96vw;height:calc(100dvh - 136px)}.hr-page{padding:24px 22px 42px}.hr-page-text{font-size:18px;line-height:1.75}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:54px;flex-basis:54px}.hr-counter{min-width:58px;font-size:10px}}
+@media(max-width:600px){.hr-stage{padding:0 0 72px}.hr-book{width:100%;height:100%;max-width:none;max-height:none;min-height:0}.hr-page{padding:24px 22px 42px;border-radius:0}.hr-page-text{font-size:18px;line-height:1.75}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:54px;flex-basis:54px}.hr-counter{min-width:58px;font-size:10px}.hr-nav{width:54px;height:50px}.hr-controls{gap:13px}.hr-page-count{min-width:67px}}
+
 @media(max-width:480px){.hb-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.hb-cover{height:155px}.hb-card-title{font-size:14px}.hb-btn{font-size:11px}}
 @media(min-width:760px){.hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hb-cover{height:240px}}
 
@@ -1465,26 +1465,27 @@ const playPause = document.getElementById("playPause");
   if(!Array.isArray(savedSermons)) savedSermons=[];
 
   const screen = document.createElement("div");
+  screen.id = "savedSermonsScreenFix";
 
   screen.style.position = "fixed";
   screen.style.inset = "0";
   screen.style.background = "black";
   screen.style.color = "white";
-  screen.style.zIndex = "300";
+  screen.style.zIndex = "9999";
   screen.style.padding = "0";
   screen.style.overflowY = "auto";
 
   screen.innerHTML = `
-    <div style="position:sticky;top:0;z-index:20;padding:14px 60px 14px 18px;background:#050505;border-bottom:1px solid #18383d;box-shadow:0 8px 25px rgba(0,0,0,.35);">
-      <h2 style="margin:0;color:#00ffff;text-align:center;font-family:'Russo One';font-size:21px;line-height:1.25;">SAVED SERMONS</h2>
-      <button id="savedSermonsClose" aria-label="Close saved sermons" style="position:absolute;right:14px;top:12px;width:38px;height:38px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:24px;line-height:1;">×</button>
+    <div style="position:sticky;top:0;z-index:100;padding:18px 76px 18px 18px;background:linear-gradient(180deg,#0b1215,#050708);border-bottom:1px solid #18383d;box-shadow:0 8px 25px rgba(0,0,0,.45);min-height:76px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;">
+      <h2 style="margin:0;color:#00ffff;text-align:center;font-family:'Russo One',Arial,sans-serif;font-size:21px;line-height:1.2;letter-spacing:.5px;">SAVED SERMONS</h2>
+      <button id="savedSermonsClose" aria-label="Close saved sermons" type="button" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid #00ffff;background:linear-gradient(145deg,#1d3439,#060b0d);color:#00ffff;font-size:30px;font-weight:700;line-height:1;box-shadow:inset 0 2px 2px rgba(255,255,255,.12),inset 0 -5px 8px rgba(0,0,0,.55),0 5px 0 #00474d,0 8px 18px rgba(0,0,0,.45);">×</button>
     </div>
     <div style="padding:16px;">
       <button id="createBookBtn" style="display:block;width:100%;max-width:430px;margin:0 auto 20px;padding:13px 22px;background:#00ffff;color:black;border:none;border-radius:12px;font-size:18px;font-weight:bold;">CREATE BOOK</button>
       <div id="savedSermonsList"></div>
     </div>
   `;
-  screen.querySelector("#savedSermonsClose").onclick=()=>screen.remove();
+  screen.querySelector("#savedSermonsClose").onclick=(e)=>{e.preventDefault();e.stopPropagation();screen.remove();};
 
   if (savedSermons.length === 0) {
 
@@ -3891,6 +3892,7 @@ function openBookReader(book,store){
   if(savedBtn){ savedBtn.style.position='relative'; savedBtn.style.zIndex='100'; savedBtn.style.pointerEvents='auto'; }
 })();
 
+/* ================= SAVED SERMONS OVERLAY FIX ================= */
 /* ================= SAVED SERMONS ROBUST CONTROLS ================= */
 (function reinforceSermonControls(){
   const saveBtn=document.getElementById("saveTranscript");
