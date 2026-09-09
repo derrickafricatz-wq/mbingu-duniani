@@ -619,34 +619,18 @@ body.landscape-mode #brandVideo {
 .hb-lock{font-size:10px;color:#7f9198;text-align:center;margin-top:8px}
 .hb-empty{grid-column:1/-1;text-align:center;padding:70px 25px;color:#77878d}
 .hb-close{position:absolute;right:14px;top:13px;width:42px;height:42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:22px;z-index:5}
-#heavensReader{position:fixed;inset:0;z-index:700;background:#111;color:#171717;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none;font-family:Georgia,'Times New Roman',serif}
-.hr-head{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0e1317;border-bottom:1px solid #233139;color:#fff;font-family:Arial,Helvetica,sans-serif}
-.hr-back{width:42px;height:42px;flex:0 0 42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:27px;line-height:1}
-.hr-name{flex:1;font-family:'Russo One';font-size:16px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
-.hr-counter{min-width:68px;text-align:right;color:#8ea0a7;font:700 11px Arial,sans-serif}
-.hr-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px 10px 70px;overflow:hidden;background:radial-gradient(circle at center,#2a2d2f 0,#111 72%)}
-.hr-book{position:relative;width:min(94vw,760px);height:min(calc(100dvh - 154px),980px);max-height:calc(100% - 2px);perspective:1800px}
-.hr-page{position:absolute;inset:0;background:#fffdf7;border-radius:3px 12px 12px 3px;box-shadow:0 10px 35px rgba(0,0,0,.45),inset -10px 0 20px rgba(0,0,0,.035);padding:clamp(24px,5vw,58px) clamp(22px,6vw,68px) 48px;overflow:hidden;transform-origin:left center;backface-visibility:hidden;transition:transform .46s ease,opacity .46s ease;box-sizing:border-box}
-.hr-page.is-turning-next{transform:rotateY(-92deg);opacity:.2}
-.hr-page.is-turning-prev{transform:rotateY(92deg);opacity:.2;transform-origin:right center}
-.hr-page-inner{height:100%;overflow:auto;scrollbar-width:none}
-.hr-page-inner::-webkit-scrollbar{display:none}
-.hr-page-cover{width:100%;height:100%;object-fit:cover;display:block;border-radius:2px}
-.hr-page-cover-wrap{padding:0;background:#000;display:flex;align-items:center;justify-content:center}
-.hr-page-cover-wrap .hr-page-inner{overflow:hidden;width:100%;height:100%}
-.hr-page-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(27px,5vw,42px);line-height:1.2;text-align:center;margin:0 0 28px;color:#151515}
-.hr-page-subtitle{text-align:center;color:#777;font:600 11px Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
-.hr-page-text{font-size:clamp(17px,2.4vw,21px);line-height:1.82;color:#242424;white-space:pre-wrap;overflow-wrap:anywhere}
-.hr-page-text::first-letter{font-size:1.7em;font-weight:700}
-.hr-page-chapter{font-family:'Playfair Display',Georgia,serif;font-size:clamp(25px,5vw,38px);line-height:1.2;text-align:center;color:#111;margin:0 0 30px;padding-top:18%;}
-.hr-page-chapter::after{content:"";display:block;width:58px;height:1px;background:#888;margin:22px auto}
-.hr-running{position:absolute;left:clamp(22px,6vw,68px);right:clamp(22px,6vw,68px);bottom:14px;display:flex;justify-content:space-between;gap:15px;color:#999;font:10px Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px}
-.hr-controls{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;z-index:20}
-.hr-nav{width:48px;height:42px;border-radius:13px;border:1px solid #00ffff;background:#101719;color:#00ffff;font-size:25px;font-weight:800;box-shadow:0 5px 0 #004c4c}
-.hr-nav:active{transform:translateY(3px);box-shadow:0 2px 0 #004c4c}
-.hr-page-count{min-width:72px;text-align:center;color:#fff;background:#0e1317;border:1px solid #30434a;border-radius:12px;padding:9px 8px;font:700 11px Arial,sans-serif}
-.hr-hint{position:absolute;right:14px;top:12px;color:#9ba8ad;font:10px Arial,sans-serif;opacity:.8}
-@media(max-width:600px){.hr-stage{padding:9px 7px 62px}.hr-book{width:96vw;height:calc(100dvh - 136px)}.hr-page{padding:24px 22px 42px}.hr-page-text{font-size:18px;line-height:1.75}.hr-hint{display:none}.hr-running{left:22px;right:22px}.hr-head{height:54px;flex-basis:54px}.hr-counter{min-width:58px;font-size:10px}}
+#heavensReader{position:fixed;inset:0;z-index:700;background:#080a0c;color:#fff;display:flex;flex-direction:column;overflow:hidden;user-select:none;-webkit-user-select:none}
+.hr-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0e1317;border-bottom:1px solid #233139}
+.hr-back{width:42px;height:42px;border-radius:50%;border:1px solid #00ffff;background:#111;color:#00ffff;font-size:22px}
+.hr-name{flex:1;font-family:'Russo One';font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr-body{flex:1;overflow:auto;padding:18px 17px 60px;-webkit-user-select:none;user-select:none}
+.hr-cover{width:100%;max-height:58vh;object-fit:contain;background:#000;border-radius:14px;display:block;margin:0 auto 18px}
+.hr-content{font-size:18px;line-height:1.85;color:#eee;white-space:pre-wrap}
+.hr-chapter{padding:18px 0;border-top:1px solid #26343a}
+.hr-chapter h2{color:#00ffff;font-family:'Russo One';font-size:22px;margin:0 0 12px}
+.hr-pay{margin:50px auto;max-width:420px;text-align:center;padding:25px;border:1px solid #00ffff;border-radius:18px;background:#101518}
+.hr-pay button{width:100%;padding:15px;border-radius:13px;border:0;background:#00ffff;color:#001015;font-weight:900;font-size:17px}
+.hr-note{color:#82939a;font-size:12px;line-height:1.6;margin-top:12px}
 @media(max-width:480px){.hb-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px}.hb-cover{height:155px}.hb-card-title{font-size:14px}.hb-btn{font-size:11px}}
 @media(min-width:760px){.hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hb-cover{height:240px}}
 
@@ -3566,158 +3550,20 @@ async function startBookPayment(book,store){
 function openBookReader(book,store){
   const existing=document.getElementById("heavensReader"); if(existing) existing.remove();
   if(!isBookPaid(book)){startBookPayment(book,store);return;}
-
-  const reader=document.createElement("div");
-  reader.id="heavensReader";
-  reader.innerHTML=`
-    <div class="hr-head">
-      <button class="hr-back" aria-label="Close book">‹</button>
-      <div class="hr-name">${escapeBookHtml(book.title||"Untitled Book")}</div>
-      <div class="hr-counter" id="hrTopCount">1 / 1</div>
-    </div>
-    <div class="hr-stage" id="hrStage">
-      <div class="hr-book" id="hrBook"></div>
-      <div class="hr-hint">SWIPE OR USE ARROWS</div>
-      <div class="hr-controls">
-        <button class="hr-nav" id="hrPrev" aria-label="Previous page">‹</button>
-        <div class="hr-page-count" id="hrPageCount">PAGE 1 / 1</div>
-        <button class="hr-nav" id="hrNext" aria-label="Next page">›</button>
-      </div>
-    </div>`;
+  const reader=document.createElement("div"); reader.id="heavensReader";
+  reader.innerHTML=`<div class="hr-head"><button class="hr-back">‹</button><div class="hr-name">${escapeBookHtml(book.title)}</div></div><div class="hr-body" id="hrBody"></div>`;
   document.body.appendChild(reader);
-
-  const bookEl=reader.querySelector("#hrBook");
-  const pageCountEl=reader.querySelector("#hrPageCount");
-  const topCountEl=reader.querySelector("#hrTopCount");
-  const pages=[];
-
-  function addPage(kind, build){
-    const page=document.createElement("article");
-    page.className="hr-page"+(kind==="cover"?" hr-page-cover-wrap":"");
-    const inner=document.createElement("div");
-    inner.className="hr-page-inner";
-    page.appendChild(inner);
-    build(inner,page);
-    const running=document.createElement("div");
-    running.className="hr-running";
-    running.innerHTML=`<span>${escapeBookHtml(book.title||"")}</span><span>${pages.length+1}</span>`;
-    page.appendChild(running);
-    bookEl.appendChild(page);
-    pages.push(page);
-  }
-
-  if(book.frontCover){
-    addPage("cover",(inner,page)=>{
-      inner.innerHTML=`<img class="hr-page-cover" src="${escapeBookHtml(book.frontCover)}" alt="Front cover">`;
-      page.querySelector(".hr-running").style.display="none";
-    });
-  }else{
-    addPage("title",(inner)=>{
-      const sub=document.createElement("div"); sub.className="hr-page-subtitle"; sub.textContent="HEAVEN'S BOOKS";
-      const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent=book.title||"Untitled Book";
-      inner.append(sub,title);
-    });
-  }
-
-  if(book.contents){
-    addPage("contents",(inner)=>{
-      const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent="Table of Contents";
-      const text=document.createElement("div"); text.className="hr-page-text"; text.textContent=book.contents;
-      inner.append(title,text);
-    });
-  }
-
-  const chapterList=Array.isArray(book.chapters)?book.chapters:[];
-  chapterList.forEach((ch,index)=>{
-    addPage("chapter",(inner)=>{
-      const title=document.createElement("h1"); title.className="hr-page-chapter"; title.textContent=ch.title||("Chapter "+(index+1));
-      inner.appendChild(title);
-    });
-
-    const raw=String(ch.text||"").trim();
-    const paragraphs=raw.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
-    const chunks=[];
-    let current="";
-    const target=window.innerWidth<600?1150:1900;
-    paragraphs.forEach(par=>{
-      const candidate=current?(current+"\n\n"+par):par;
-      if(candidate.length>target && current){chunks.push(current);current=par;}
-      else current=candidate;
-    });
-    if(current)chunks.push(current);
-    if(!chunks.length)chunks.push("");
-
-    chunks.forEach((chunk)=>addPage("text",(inner)=>{
-      const text=document.createElement("div"); text.className="hr-page-text"; text.textContent=chunk;
-      inner.appendChild(text);
-    }));
-  });
-
-  if(book.backCover){
-    addPage("cover",(inner,page)=>{
-      inner.innerHTML=`<img class="hr-page-cover" src="${escapeBookHtml(book.backCover)}" alt="Back cover">`;
-      page.querySelector(".hr-running").style.display="none";
-    });
-  }
-
-  if(pages.length===0){
-    addPage("title",(inner)=>{
-      const title=document.createElement("h1"); title.className="hr-page-title"; title.textContent=book.title||"Untitled Book";
-      inner.appendChild(title);
-    });
-  }
-
-  let currentPage=0;
-  function updateReader(){
-    pages.forEach((p,i)=>{
-      p.style.display=i===currentPage?"block":"none";
-      p.classList.remove("is-turning-next","is-turning-prev");
-    });
-    pageCountEl.textContent=`PAGE ${currentPage+1} / ${pages.length}`;
-    topCountEl.textContent=`${currentPage+1} / ${pages.length}`;
-  }
-  function turnTo(nextPage,direction){
-    if(nextPage<0||nextPage>=pages.length||nextPage===currentPage)return;
-    const old=pages[currentPage], next=pages[nextPage];
-    next.style.display="block";
-    next.style.zIndex="2";
-    old.style.zIndex="1";
-    old.classList.add(direction>0?"is-turning-next":"is-turning-prev");
-    setTimeout(()=>{
-      currentPage=nextPage;
-      updateReader();
-    },330);
-  }
-  function next(){turnTo(currentPage+1,1)}
-  function prev(){turnTo(currentPage-1,-1)}
-
-  reader.querySelector("#hrNext").onclick=next;
-  reader.querySelector("#hrPrev").onclick=prev;
+  const body=reader.querySelector("#hrBody");
+  if(book.frontCover){const img=document.createElement("img");img.className="hr-cover";img.src=book.frontCover;body.appendChild(img);}
+  if(book.contents){const c=document.createElement("div");c.className="hr-chapter";c.innerHTML=`<h2>TABLE OF CONTENTS</h2><div class="hr-content"></div>`;c.querySelector(".hr-content").textContent=book.contents;body.appendChild(c);}
+  (book.chapters||[]).forEach(ch=>{const sec=document.createElement("section");sec.className="hr-chapter";const h=document.createElement("h2");h.textContent=ch.title||"Chapter";const t=document.createElement("div");t.className="hr-content";t.textContent=ch.text||"";sec.appendChild(h);sec.appendChild(t);body.appendChild(sec);});
+  const note=document.createElement("div");note.className="hr-note";note.textContent="This reader does not provide download, print, copy, or share controls.";body.appendChild(note);
   reader.querySelector(".hr-back").onclick=()=>reader.remove();
-  reader.addEventListener("keydown",e=>{
-    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();next();}
-    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();prev();}
-    if(e.key==="Escape")reader.remove();
-    if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();
-  });
-  reader.tabIndex=0;
-  reader.focus();
-
-  let startX=0,startY=0;
-  reader.addEventListener("touchstart",e=>{
-    const t=e.changedTouches[0]; startX=t.screenX; startY=t.screenY;
-  },{passive:true});
-  reader.addEventListener("touchend",e=>{
-    const t=e.changedTouches[0];
-    const dx=t.screenX-startX, dy=t.screenY-startY;
-    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.2){dx<0?next():prev();}
-  },{passive:true});
-
   reader.addEventListener("contextmenu",e=>e.preventDefault());
   reader.addEventListener("copy",e=>e.preventDefault());
   reader.addEventListener("cut",e=>e.preventDefault());
   reader.addEventListener("dragstart",e=>e.preventDefault());
-  updateReader();
+  reader.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&["c","p","s","u"].includes(e.key.toLowerCase()))e.preventDefault();});
 }
 
 // Optional gateway return hook: if the gateway is configured to redirect back with
