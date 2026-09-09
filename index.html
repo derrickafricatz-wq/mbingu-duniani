@@ -527,6 +527,13 @@ body.landscape-mode #brandVideo {
     background: linear-gradient(145deg, #38ffff 0%, #00dede 55%, #009999 100%);
   }
 
+  .transcript-media{position:relative;display:inline-block;vertical-align:middle;margin:14px 8px;max-width:96%;min-width:90px;border:1px dashed rgba(0,255,255,.55);border-radius:12px;padding:4px;background:rgba(0,0,0,.35);box-sizing:border-box;touch-action:none;user-select:none;}
+  .transcript-media.selected{outline:2px solid #00ffff;box-shadow:0 0 0 4px rgba(0,255,255,.10),0 10px 30px rgba(0,0,0,.35);}
+  .transcript-media img{display:block;width:100%;height:auto;max-width:none;border-radius:8px;pointer-events:none;}
+  .transcript-media-handle{position:absolute;right:-9px;bottom:-9px;width:20px;height:20px;border-radius:50%;background:#00ffff;border:2px solid #001010;box-shadow:0 3px 10px rgba(0,0,0,.45);cursor:nwse-resize;touch-action:none;}
+  .transcript-media-tools{position:absolute;left:50%;top:-48px;transform:translateX(-50%);display:flex;gap:5px;padding:5px;border:1px solid #00ffff;border-radius:12px;background:#071113;box-shadow:0 8px 20px rgba(0,0,0,.55);z-index:30;}
+  .transcript-media-tools button{min-width:32px;height:32px;border:1px solid #00ffff;border-radius:8px;background:#111;color:#00ffff;font-weight:900;padding:0 8px;}
+  .transcript-media-note{display:block;color:#7f9198;font:11px Arial,sans-serif;text-align:center;margin-top:4px;}
   #transcriptText {
     color: white !important;
     background: black !important;
@@ -704,14 +711,25 @@ body.landscape-mode #brandVideo {
 Install App
 </button>
 
-<div id="guideOverlay" style="
-  position:fixed; inset:0; background:rgba(0,0,0,0.7); color:#00ffff;
-  z-index:100; display:none; flex-direction:column; justify-content:center; 
-  align-items:center; font-family:'Russo One'; font-size:28px; text-align:center; padding:20px;">
-  <div id="guideText">Welcome! Swipe up/down or press buttons to explore.</div>
-  <button id="nextGuide" style="
-    margin-top:30px; padding:12px 20px; border:none; border-radius:12px;
-    background:#00ffff; color:black; font-size:22px;">Next</button>
+<div id="guideOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.88);color:#00ffff;z-index:100000;display:none;flex-direction:column;justify-content:center;align-items:center;font-family:'Russo One';text-align:center;padding:22px;box-sizing:border-box;backdrop-filter:blur(8px);">
+  <div id="guideHome" style="width:min(520px,100%);">
+    <div style="font-size:12px;letter-spacing:3px;color:#8ea0a7;margin-bottom:12px;">MBINGU DUNIANI</div>
+    <div style="font-size:clamp(28px,8vw,44px);font-weight:900;line-height:1.15;margin-bottom:10px;">GUIDE</div>
+    <div style="font-family:Arial,sans-serif;color:#b8c5ca;font-size:14px;line-height:1.5;margin-bottom:25px;">Choose your guide language.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <button id="guideSwahili" type="button" style="min-height:64px;padding:14px;border:1px solid #00ffff;border-radius:16px;background:linear-gradient(145deg,#18ffff,#008f8f);color:#001010;font-size:18px;font-weight:900;box-shadow:0 7px 0 #005858,0 12px 22px rgba(0,255,255,.18);">SWAHILI</button>
+      <button id="guideEnglish" type="button" style="min-height:64px;padding:14px;border:1px solid #00ffff;border-radius:16px;background:linear-gradient(145deg,#18ffff,#008f8f);color:#001010;font-size:18px;font-weight:900;box-shadow:0 7px 0 #005858,0 12px 22px rgba(0,255,255,.18);">ENGLISH</button>
+    </div>
+    <button id="closeGuideHome" type="button" style="margin-top:18px;min-height:48px;padding:10px 22px;border:1px solid #334a50;border-radius:14px;background:#111;color:#fff;font-size:15px;font-weight:800;">CLOSE</button>
+  </div>
+  <div id="guideStepsView" style="display:none;width:min(620px,100%);">
+    <div id="guideLanguageTitle" style="font-size:12px;letter-spacing:3px;color:#8ea0a7;margin-bottom:12px;"></div>
+    <div id="guideText" style="font-size:clamp(22px,6vw,32px);line-height:1.35;min-height:180px;display:flex;align-items:center;justify-content:center;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button id="guideBack" type="button" style="min-width:110px;min-height:48px;padding:10px 18px;border:1px solid #334a50;border-radius:14px;background:#111;color:#fff;font-size:15px;font-weight:800;">LANGUAGE</button>
+      <button id="nextGuide" type="button" style="min-width:110px;min-height:48px;padding:10px 20px;border:none;border-radius:14px;background:#00ffff;color:#001010;font-size:17px;font-weight:900;box-shadow:0 6px 0 #005858;">NEXT</button>
+    </div>
+  </div>
 </div>
 
 <script src="health-data.js"></script>
@@ -810,20 +828,10 @@ function getMedia(id){
 </div>
 
 <div id="clockBox"></div>
-<button id="settingsBtn" style="
-  position:fixed;
-  top:10px;
-  right:20px;
-  padding:10px 14px;
-  border:none;
-  border-radius:10px;
-  background:#00ffff;
-  color:black;
-  font-size:18px;
-  z-index:200;
-">
-
-</button>
+<button id="settingsBtn" aria-label="Open guide" style="
+  position:fixed;top:10px;right:20px;padding:10px 14px;border:none;border-radius:10px;
+  background:#00ffff;color:black;font-size:18px;font-weight:900;letter-spacing:.5px;z-index:200;
+">GUIDE</button>
 <div id="lessonLabel">powered by deka</div>
 
 <div id="adImage"><img id="adImg"></div>
@@ -853,11 +861,11 @@ function getMedia(id){
   <button class="smart-item" id="openHealth">
 
   <div id="healthMain">
-    LEARN DISEASES
+    NENO LA MUNGU
   </div>
 
   <small>
-    TWENDE ZETU DARASANI
+    HEAVEN'S GUIDANCE
   </small>
 
 </button>
@@ -875,7 +883,9 @@ function getMedia(id){
   <button id="startTranscript">START</button>
   <button id="stopTranscript">STOP</button>
   <button id="saveTranscript">SAVE</button>
+  <button id="uploadTranscriptFile">UPLOAD FILE</button>
   <button id="savedSermons">SAVED SERMONS</button>
+  <input id="transcriptFileInput" type="file" accept="image/*" hidden>
   <button id="clearTranscript">NEW</button>
 </div>
 
@@ -975,70 +985,57 @@ function goFullScreen(){
 }
 document.body.addEventListener("click", goFullScreen, {once:true});
 
-const guideSteps = [
-
-  { text: "PLATFORM. GUIDE." },
-
-  { text: "Videos play automatically. Tap once for sound." },
-
-  { text: "Swipe UP to show the smart menu." },
-
-  { text: "Swipe DOWN to hide menus and panels." },
-
-  { text: "Tap the smart button to open system tools." },
-
-  { text: "SYSTEM KEYPAD opens lesson controls." },
-
-  { text: "Use keys 15 then press OK to open lessons." },
-
-  { text: "REFRESH restores the main playlist." },
-
-  { text: "Control videos anytime." },
-
-  { text: "TWENDE ZETU DARASANI opens deep health learning." },
-
-  { text: "Select a topic to study health in depth." },
-
-  { text: "SHOW / HIDE manages topic visibility." },
-
-  { text: "Tap lesson text or images to mark them." },
-
-  { text: "PRINT exports marked lesson sections only." },
-
-  { text: "PLAY/PAUSE controls lesson scrolling." },
-
-  { text: "ROTATE switches portrait and landscape view." },
-
-  { text: "EXIT returns to the AFYA CARE home screen." },
-
-  { text: "Settings reopens this guide anytime." },
-  
-  { text: "THAT'S IT. ENJOY THE JOURNEY." }
-  
-
-];
-
-let guideIndex = 0;
-const guideOverlay = document.getElementById("guideOverlay");
-const guideText = document.getElementById("guideText");
-const nextGuide = document.getElementById("nextGuide");
-
-nextGuide.onclick = () => {
-  guideIndex++;
-  if(guideIndex >= guideSteps.length){
-    guideOverlay.style.display = "none";
-  } else {
-    guideText.innerText = guideSteps[guideIndex].text;
-  }
+const guideLanguages={
+ sw:{title:"MWONGOZO WA KISWAHILI",steps:[
+  "Karibu Mbingu Duniani — GUIDE inakusaidia kujifunza vipengele vipya vya app.",
+  "VIDEO: Video huanza kucheza kiotomatiki. Gusa skrini mara moja ukiitaji sauti.",
+  "SMART MENU: Gusa kitufe cha DK kufungua menyu kuu ya zana.",
+  "SYSTEM KEYPAD: Fungua keypad kutumia namba na OK kuchagua masomo na video.",
+  "SERMON TRANSCRIPT: Bonyeza START kuanza kunakili mahubiri ya mchungaji kuwa maandishi.",
+  "UPLOAD FILE: Ukiwa unaandika transcript, unaweza kupakia picha ndani ya transcript.",
+  "PICHA: Picha iliyopakiwa inaweza kusogezwa juu/chini, kuongezwa/kupunguzwa ukubwa na kuzoom ndani ya transcript.",
+  "SAVE: Bonyeza SAVE kuhifadhi transcript pamoja na maandishi na picha zake.",
+  "SAVED SERMONS: Chagua mahubiri moja au zaidi, kisha bonyeza CREATE BOOK.",
+  "BOOK EDITOR: Hariri kichwa, maudhui, sura, maandishi na picha kabla ya kuhifadhi kitabu.",
+  "BOOK COVERS: FRONT COVER na BACK COVER zinaweza kuwekwa; back cover huwa ukurasa wa mwisho.",
+  "TOOLS: Tumia zana za font, size, rangi, highlight, alignment na styles.",
+  "HEAVEN'S BOOKS: Vitabu vilivyochapishwa vinaonekana bookstore; vilivyonunuliwa hufunguka kwenye reader.",
+  "NENO LA MUNGU / HEAVEN'S GUIDANCE: Hufungua eneo la masomo ya kiroho na mafundisho.",
+  "ROTATE: Kwenye somo unaweza kubadili portrait na landscape.",
+  "GUIDE: Bonyeza GUIDE wakati wowote kuchagua Kiswahili au English tena.",
+  "Uko tayari — chunguza Mbingu Duniani na tumia kila kipengele kwa urahisi."
+ ]},
+ en:{title:"ENGLISH GUIDE",steps:[
+  "Welcome to Mbingu Duniani — GUIDE explains the newest app features.",
+  "VIDEO: Videos can play automatically. Tap once if you need sound.",
+  "SMART MENU: Tap the DK button to open the main smart tools.",
+  "SYSTEM KEYPAD: Open the keypad and use number keys plus OK to choose lessons and videos.",
+  "SERMON TRANSCRIPT: Press START to turn the pastor's spoken sermon into editable text.",
+  "UPLOAD FILE: While working on a transcript, use UPLOAD FILE to place an image inside it.",
+  "IMAGE CONTROL: Drag the image up/down or sideways, resize it, and zoom it to place it the way you want.",
+  "SAVE: Press SAVE to keep the transcript together with its text and uploaded images.",
+  "SAVED SERMONS: Select one or more sermons, then press CREATE BOOK.",
+  "BOOK EDITOR: Edit the title, contents, chapters, text and images before saving.",
+  "BOOK COVERS: Add a FRONT COVER and an optional BACK COVER; the back cover becomes the final page.",
+  "TOOLS: Use fonts, sizes, colors, highlights, alignment and text styles.",
+  "HEAVEN'S BOOKS: Published books appear in the bookstore; purchased books open in the real reader.",
+  "NENO LA MUNGU / HEAVEN'S GUIDANCE: Opens the spiritual learning and guidance area.",
+  "ROTATE: Inside lessons, use ROTATE to switch between portrait and landscape.",
+  "GUIDE: Press GUIDE anytime to choose Swahili or English again.",
+  "You are ready — explore Mbingu Duniani and enjoy every feature."
+ ]}
 };
-
-const settingsBtn = document.getElementById("settingsBtn");
-
-settingsBtn.onclick = () => {
-  guideOverlay.style.display = "flex";
-  guideIndex = 0;
-  guideText.innerText = guideSteps[0].text;
-};
+let guideIndex=0,activeGuideLanguage=null;
+const guideOverlay=document.getElementById("guideOverlay"),guideHome=document.getElementById("guideHome"),guideStepsView=document.getElementById("guideStepsView"),guideText=document.getElementById("guideText"),guideLanguageTitle=document.getElementById("guideLanguageTitle"),nextGuide=document.getElementById("nextGuide");
+function openGuideLanguage(lang){activeGuideLanguage=lang;guideIndex=0;const d=guideLanguages[lang];guideHome.style.display="none";guideStepsView.style.display="block";guideLanguageTitle.textContent=d.title;guideText.textContent=d.steps[0];nextGuide.textContent="NEXT";}
+function showGuideHome(){activeGuideLanguage=null;guideHome.style.display="block";guideStepsView.style.display="none";}
+document.getElementById("guideSwahili").onclick=()=>openGuideLanguage("sw");
+document.getElementById("guideEnglish").onclick=()=>openGuideLanguage("en");
+document.getElementById("guideBack").onclick=showGuideHome;
+document.getElementById("closeGuideHome").onclick=()=>{guideOverlay.style.display="none";showGuideHome();};
+nextGuide.onclick=()=>{if(!activeGuideLanguage)return;const d=guideLanguages[activeGuideLanguage];guideIndex++;if(guideIndex>=d.steps.length){guideOverlay.style.display="none";showGuideHome();return;}guideText.textContent=d.steps[guideIndex];nextGuide.textContent=guideIndex===d.steps.length-1?"DONE":"NEXT";};
+const settingsBtn=document.getElementById("settingsBtn");
+settingsBtn.onclick=()=>{guideOverlay.style.display="flex";showGuideHome();};
 
 /* ================= VIDEO ================= */
 const video = document.getElementById("brandVideo");
@@ -1238,10 +1235,10 @@ const smartPanel=document.getElementById("smartPanel");
 const healthMain = document.getElementById("healthMain");
 
 const healthHints = [
-  "LEARN DISEASES",
-  "SYMPTOMS GUIDE",
-  "TREATMENT METHODS",
-  "PREVENTION TIPS",
+  "NENO LA MUNGU",
+  "MAFUNDISHO YA IMANI",
+  "HEAVEN'S GUIDANCE",
+  "MAISHA YA KIROHO",
 ];
 
 let healthIndex = 0;
@@ -1319,6 +1316,182 @@ const transcriptPanel = document.getElementById("transcriptPanel");
  let currentTranscript = localStorage.getItem("savedSermonTranscript") || "";
 
  const transcriptText = document.getElementById("transcriptText");
+
+
+/* ================= TRANSCRIPT IMAGE STUDIO =================
+   Uploaded sermon images stay inside the transcript, but the author can
+   drag, resize and zoom them before saving. The same HTML travels into the
+   Book Editor and later into the Heaven's Books reader/PDF workflow.
+========================= */
+async function compressTranscriptImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const maxSide=1800;
+        const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(img.width*scale));
+        canvas.height=Math.max(1,Math.round(img.height*scale));
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL("image/webp",.84));
+      };
+      img.onerror=reject;
+      img.src=reader.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function transcriptMediaSelect(media){
+  const root=media.closest("#transcriptText, .chapter-body");
+  if(root) root.querySelectorAll(".transcript-media.selected").forEach(el=>{if(el!==media)el.classList.remove("selected");});
+  media.classList.add("selected");
+}
+
+function setupOneTranscriptMedia(media,root){
+  if(!media || media.dataset.mediaReady==="1") return;
+  media.dataset.mediaReady="1";
+  media.setAttribute("contenteditable","false");
+  const img=media.querySelector("img");
+  if(!img)return;
+
+  let tools=media.querySelector(".transcript-media-tools");
+  if(!tools){
+    tools=document.createElement("div");
+    tools.className="transcript-media-tools";
+    tools.innerHTML='<button type="button" data-act="minus">−</button><button type="button" data-act="plus">+</button><button type="button" data-act="up">↑</button><button type="button" data-act="down">↓</button><button type="button" data-act="center">◎</button>';
+    media.appendChild(tools);
+  }
+  let handle=media.querySelector(".transcript-media-handle");
+  if(!handle){handle=document.createElement("span");handle.className="transcript-media-handle";media.appendChild(handle);}
+  let note=media.querySelector(".transcript-media-note");
+  if(!note){note=document.createElement("span");note.className="transcript-media-note";note.textContent="Drag • resize • zoom";media.appendChild(note);}
+
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const getScale=()=>Number(media.dataset.scale||"1")||1;
+  const setScale=(scale)=>{
+    const next=clamp(scale,.2,3);
+    media.dataset.scale=String(next);
+    media.style.width=(Number(media.dataset.baseWidth||"320")*next)+"px";
+  };
+  const getX=()=>Number(media.dataset.x||"0")||0;
+  const getY=()=>Number(media.dataset.y||"0")||0;
+  const applyTransform=()=>{media.style.transform=`translate(${getX()}px,${getY()}px)`;};
+  const setX=x=>{media.dataset.x=String(clamp(x,-900,900));applyTransform();};
+  const setY=y=>{media.dataset.y=String(clamp(y,-900,900));applyTransform();};
+
+  if(!media.dataset.baseWidth){
+    const current=media.getBoundingClientRect().width||320;
+    media.dataset.baseWidth=String(Math.round(Math.max(120,Math.min((root.clientWidth||600)*.82,current))));
+  }
+  setScale(getScale());applyTransform();
+
+  tools.querySelectorAll("button").forEach(btn=>{
+    btn.onpointerdown=e=>e.stopPropagation();
+    btn.onclick=e=>{
+      e.preventDefault();e.stopPropagation();transcriptMediaSelect(media);
+      const a=btn.dataset.act;
+      if(a==="plus")setScale(getScale()+.1);
+      else if(a==="minus")setScale(getScale()-.1);
+      else if(a==="up")setY(getY()-20);
+      else if(a==="down")setY(getY()+20);
+      else if(a==="center"){setX(0);setY(0);media.style.marginLeft="auto";media.style.marginRight="auto";}
+    };
+  });
+
+  let drag=null;
+  media.addEventListener("pointerdown",e=>{
+    if(e.target===handle||e.target.closest("button"))return;
+    e.preventDefault();e.stopPropagation();transcriptMediaSelect(media);
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY,sx:getX(),sy:getY()};
+    media.setPointerCapture?.(e.pointerId);
+  });
+  media.addEventListener("pointermove",e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    setX(drag.sx+e.clientX-drag.x);setY(drag.sy+e.clientY-drag.y);
+  });
+  media.addEventListener("pointerup",e=>{if(drag&&drag.id===e.pointerId)drag=null;});
+  media.addEventListener("pointercancel",()=>drag=null);
+
+  let resize=null;
+  handle.addEventListener("pointerdown",e=>{
+    e.preventDefault();e.stopPropagation();transcriptMediaSelect(media);
+    resize={id:e.pointerId,startX:e.clientX,startW:media.getBoundingClientRect().width};
+    handle.setPointerCapture?.(e.pointerId);
+  });
+  handle.addEventListener("pointermove",e=>{
+    if(!resize||resize.id!==e.pointerId)return;
+    const maxW=Math.max(120,(root.clientWidth||600)*.96);
+    const nextW=clamp(resize.startW+(e.clientX-resize.startX),90,maxW);
+    const base=Number(media.dataset.baseWidth||320)||320;
+    setScale(nextW/base);
+  });
+  handle.addEventListener("pointerup",()=>resize=null);
+  handle.addEventListener("pointercancel",()=>resize=null);
+}
+
+function setupTranscriptMedia(root){
+  if(!root)return;
+  root.querySelectorAll(".transcript-media").forEach(media=>setupOneTranscriptMedia(media,root));
+}
+
+function insertTranscriptImage(dataUrl,name,root=transcriptText){
+  root.focus();
+  const media=document.createElement("span");
+  media.className="transcript-media";
+  media.setAttribute("contenteditable","false");
+  media.dataset.baseWidth=String(Math.max(180,Math.min((root.clientWidth||600)*.82,420)));
+  media.dataset.scale="1";media.dataset.x="0";media.dataset.y="0";
+  const img=document.createElement("img");img.src=dataUrl;img.alt=name||"Uploaded sermon image";media.appendChild(img);
+
+  const selection=window.getSelection();
+  let range;
+  if(selection&&selection.rangeCount&&root.contains(selection.anchorNode))range=selection.getRangeAt(0).cloneRange();
+  else{range=document.createRange();range.selectNodeContents(root);range.collapse(false);}
+  range.deleteContents();range.insertNode(media);
+  const spacer=document.createElement("div");spacer.innerHTML="<br>";media.after(spacer);
+  const newRange=document.createRange();newRange.setStart(spacer,0);newRange.collapse(true);
+  selection.removeAllRanges();selection.addRange(newRange);
+  setupOneTranscriptMedia(media,root);transcriptMediaSelect(media);
+}
+
+function getTranscriptCleanClone(){
+  const clone=transcriptText.cloneNode(true);
+  clone.querySelectorAll(".transcript-media-tools,.transcript-media-handle,.transcript-media-note").forEach(el=>el.remove());
+  clone.querySelectorAll(".transcript-media").forEach(media=>{
+    media.removeAttribute("contenteditable");
+    media.dataset.mediaReady="";
+  });
+  return clone;
+}
+
+function getTranscriptText(){
+  const clone=getTranscriptCleanClone();
+  return String(clone.innerText||clone.textContent||"").trim();
+}
+
+function getTranscriptHTML(){
+  const clone=getTranscriptCleanClone();
+  clone.querySelectorAll(".transcript-media-tools,.transcript-media-handle,.transcript-media-note").forEach(el=>el.remove());
+  clone.querySelectorAll(".transcript-media").forEach(media=>{
+    media.removeAttribute("contenteditable");
+    media.dataset.mediaReady="";
+  });
+  return clone.innerHTML;
+}
+
+const savedTranscriptHTML=localStorage.getItem("savedSermonTranscriptHTML");
+if(savedTranscriptHTML){
+  transcriptText.innerHTML=savedTranscriptHTML;
+}else if(currentTranscript){
+  transcriptText.textContent=currentTranscript;
+}
+setupTranscriptMedia(transcriptText);
+
 
   transcriptText.addEventListener("keyup", () => {
   const selection = window.getSelection();
@@ -1431,10 +1604,28 @@ const playPause = document.getElementById("playPause");
   transcriptText.scrollTop = 0;
 };
 
+  const uploadTranscriptFile=document.getElementById("uploadTranscriptFile");
+  const transcriptFileInput=document.getElementById("transcriptFileInput");
+  if(uploadTranscriptFile&&transcriptFileInput){
+    uploadTranscriptFile.onclick=e=>{e.preventDefault();e.stopPropagation();transcriptFileInput.value="";transcriptFileInput.click();};
+    transcriptFileInput.onchange=async()=>{
+      const file=transcriptFileInput.files&&transcriptFileInput.files[0];
+      if(!file)return;
+      try{
+        heavensNormalizeViewport();
+        const dataUrl=await compressTranscriptImage(file);
+        insertTranscriptImage(dataUrl,file.name);
+      }catch(err){console.error(err);alert("The image could not be added. Please try another image.");}
+      finally{heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);}
+    };
+  }
+  setupTranscriptMedia(transcriptText);
+
   document.getElementById("saveTranscript").onclick = (event) => {
   if(event) event.stopPropagation();
-  const liveText = String(transcriptText.innerText || transcriptText.textContent || currentTranscript || "").trim();
-  if(!liveText){
+  const liveHTML = getTranscriptHTML().trim();
+  const liveText = getTranscriptText() || String(currentTranscript || "").trim();
+  if(!liveText && !liveHTML){
     alert("There is no sermon transcript to save yet.");
     transcriptText.focus();
     return;
@@ -1445,17 +1636,25 @@ const playPause = document.getElementById("playPause");
   savedSermons.push({
     title: "Sermon " + (savedSermons.length + 1),
     text: liveText,
+    html: liveHTML,
     date: new Date().toLocaleDateString()
   });
   currentTranscript=liveText;
   localStorage.setItem("savedSermonTranscript", liveText);
-  localStorage.setItem("savedSermons", JSON.stringify(savedSermons));
-  alert("Sermon saved successfully.");
+  localStorage.setItem("savedSermonTranscriptHTML", liveHTML);
+  try{
+    localStorage.setItem("savedSermons", JSON.stringify(savedSermons));
+  }catch(err){
+    alert("The sermon is too large to save. Please use a smaller image or reduce its size, then save again.");
+    return;
+  }
+  alert("Sermon saved successfully with its transcript images.");
 };
 
  document.getElementById("clearTranscript").onclick = () => {
   currentTranscript = "";
-  transcriptText.innerText = "";
+  transcriptText.innerHTML = "";
+  localStorage.removeItem("savedSermonTranscriptHTML");
 }; 
 
   document.getElementById("savedSermons").onclick = (event) => {
@@ -1547,8 +1746,10 @@ selectBox.onchange = () => {
 }; 
 
       item.onclick = () => {
-  transcriptText.innerText = sermon.text;
-  currentTranscript = sermon.text;
+  transcriptText.innerHTML = sermon.html || "";
+  if(!sermon.html) transcriptText.textContent = sermon.text || "";
+  currentTranscript = sermon.text || transcriptText.innerText || "";
+  setupTranscriptMedia(transcriptText);
   screen.remove();
 };
 
@@ -1951,9 +2152,16 @@ selected.forEach((sermon, index) => {
     <div
       contenteditable="true"
       class="chapter-body"
-    >${sermon.text}</div>
+    ></div>
   `;
 
+  const chapterBody=chapter.querySelector(".chapter-body");
+  if(sermon.html){
+    chapterBody.innerHTML=sermon.html;
+    setupTranscriptMedia(chapterBody);
+  }else{
+    chapterBody.textContent=sermon.text||"";
+  }
   bookScreen.querySelector("#bookEditorInner").appendChild(chapter);
 });
 
