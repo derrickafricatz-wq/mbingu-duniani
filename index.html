@@ -999,7 +999,7 @@ const guideLanguages={
   "BOOK COVERS: FRONT COVER na BACK COVER zinaweza kuwekwa; back cover huwa ukurasa wa mwisho.",
   "TOOLS: Tumia zana za font, size, rangi, highlight, alignment na styles.",
   "HEAVEN'S BOOKS: Vitabu vilivyochapishwa vinaonekana bookstore; vilivyonunuliwa hufunguka kwenye reader.",
-  "NENO LA MUNGU / HEAVEN'S GUIDANCE: Hufungua eneo la masomo ya kiroho na mafundisho.",
+  "NENO LA MUNGU / HEAVEN ON EARTH: Hufungua eneo la masomo ya kiroho na mafundisho.",
   "ROTATE: Kwenye somo unaweza kubadili portrait na landscape.",
   "GUIDE: Bonyeza GUIDE wakati wowote kuchagua Kiswahili au English tena.",
   "Uko tayari — chunguza Mbingu Duniani na tumia kila kipengele kwa urahisi."
@@ -1019,7 +1019,7 @@ const guideLanguages={
   "BOOK COVERS: Add a FRONT COVER and an optional BACK COVER; the back cover becomes the final page.",
   "TOOLS: Use fonts, sizes, colors, highlights, alignment and text styles.",
   "HEAVEN'S BOOKS: Published books appear in the bookstore; purchased books open in the real reader.",
-  "NENO LA MUNGU / HEAVEN'S GUIDANCE: Opens the spiritual learning and guidance area.",
+  "NENO LA MUNGU / HEAVEN ON EARTH: Opens the spiritual learning and guidance area.",
   "ROTATE: Inside lessons, use ROTATE to switch between portrait and landscape.",
   "GUIDE: Press GUIDE anytime to choose Swahili or English again.",
   "You are ready — explore Mbingu Duniani and enjoy every feature."
@@ -1235,7 +1235,7 @@ const smartPanel=document.getElementById("smartPanel");
 const healthMain = document.getElementById("healthMain");
 
 const healthHints = [
-  "HEAVEN'S GUIDE",
+  "HEAVEN ON EARTH",
   "NENO LA MUNGU",
   "MAFUNDISHO YA IMANI",
   "MAISHA YA KIROHO",
@@ -1329,14 +1329,14 @@ async function compressTranscriptImage(file){
     reader.onload=()=>{
       const img=new Image();
       img.onload=()=>{
-        const maxSide=1800;
+        const maxSide=1200;
         const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
         const canvas=document.createElement("canvas");
         canvas.width=Math.max(1,Math.round(img.width*scale));
         canvas.height=Math.max(1,Math.round(img.height*scale));
         const ctx=canvas.getContext("2d");
         ctx.drawImage(img,0,0,canvas.width,canvas.height);
-        resolve(canvas.toDataURL("image/webp",.84));
+        resolve(canvas.toDataURL("image/jpeg",.68));
       };
       img.onerror=reject;
       img.src=reader.result;
@@ -2532,6 +2532,56 @@ saveBookBtn.style.borderRadius = "12px";
 saveBookBtn.style.fontSize = "18px";
 saveBookBtn.style.fontWeight = "bold";
 
+// ================= BOOK SAVE PROGRESS =================
+const saveProgress = document.createElement("div");
+saveProgress.style.display = "none";
+saveProgress.style.marginTop = "12px";
+saveProgress.style.padding = "10px 12px";
+saveProgress.style.border = "1px solid rgba(0,255,255,.28)";
+saveProgress.style.borderRadius = "12px";
+saveProgress.style.background = "linear-gradient(145deg,rgba(0,255,255,.08),rgba(255,255,255,.02))";
+saveProgress.style.color = "#b9c8cc";
+saveProgress.style.font = "800 12px/1.35 Arial,sans-serif";
+saveProgress.style.textAlign = "center";
+saveProgress.style.letterSpacing = ".5px";
+
+const saveProgressBar = document.createElement("div");
+saveProgressBar.style.height = "6px";
+saveProgressBar.style.marginTop = "8px";
+saveProgressBar.style.borderRadius = "99px";
+saveProgressBar.style.background = "#172326";
+saveProgressBar.style.overflow = "hidden";
+
+const saveProgressFill = document.createElement("div");
+saveProgressFill.style.height = "100%";
+saveProgressFill.style.width = "0%";
+saveProgressFill.style.borderRadius = "99px";
+saveProgressFill.style.background = "#00ffff";
+saveProgressFill.style.transition = "width .25s ease";
+saveProgressBar.appendChild(saveProgressFill);
+saveProgress.appendChild(document.createTextNode("Preparing…"));
+saveProgress.appendChild(saveProgressBar);
+
+function updateBookSaveProgress(percent,message){
+  const n=Math.max(0,Math.min(100,Math.round(percent)));
+  saveProgress.style.display="block";
+  saveProgress.firstChild.textContent=`${message} • ${n}%`;
+  saveProgressFill.style.width=n+"%";
+  saveBookBtn.disabled=true;
+  saveBookBtn.style.opacity=".72";
+  saveBookBtn.innerText=`SAVING ${n}%`;
+}
+function finishBookSaveProgress(message="ACCESS COMPLETED"){
+  saveProgress.style.display="block";
+  saveProgress.firstChild.textContent=message+" • 100%";
+  saveProgressFill.style.width="100%";
+  saveBookBtn.disabled=false;
+  saveBookBtn.style.opacity="1";
+  saveBookBtn.innerText="SAVE BOOK";
+}
+
+bookScreen.querySelector("#bookEditorInner").appendChild(saveProgress);
+
    const toolsBtn = document.createElement("button");
 
 toolsBtn.innerText = "TOOLS";
@@ -2878,7 +2928,13 @@ toolsBtn.onclick = () => {
 
 bookScreen.querySelector("#bookEditorInner").appendChild(saveBookBtn); 
 
+      let savingBook=false;
       saveBookBtn.onclick = async () => {
+  if(savingBook) return;
+  savingBook=true;
+  updateBookSaveProgress(3,"Preparing book");
+  await new Promise(r=>setTimeout(r,40));
+  try{
   const bookTitle = document.getElementById("bookTitle").innerText.trim();
 
 const chapters = [];
@@ -2954,6 +3010,8 @@ localStorage.setItem(
   "savedBooks",
   JSON.stringify(savedBooks)
 );
+updateBookSaveProgress(12,"Book draft saved locally");
+await new Promise(r=>setTimeout(r,30));
 
 // PDF generation/download is deliberately completed BEFORE server publishing.
 // That way a slow/offline Heaven's Books server can never prevent the author's free PDF download.
@@ -3030,9 +3088,10 @@ if (coverImage) {
 
 document.body.appendChild(coverPage);
 
+updateBookSaveProgress(18,"Building front cover");
 const coverCanvas = await html2canvas(coverPage, {
   backgroundColor: "#ffffff",
-  scale: 1.5
+  scale: 1.35
 });
 
 document.body.removeChild(coverPage);
@@ -3053,9 +3112,10 @@ const contentsElement = document.getElementById("bookContents");
 contentsElement.style.background = "#ffffff";
 contentsElement.style.color = "#000000";
 
+updateBookSaveProgress(27,"Building table of contents");
 const contentsCanvas = await html2canvas(contentsElement, {
   backgroundColor: "#ffffff",
-  scale: 2
+  scale: 1.5
 });
 
 const contentsImage = contentsCanvas.toDataURL("image/png");
@@ -3082,6 +3142,9 @@ const chapterBodies = bookScreen.querySelectorAll(
 for (let index = 0; index < chapterBodies.length; index++) {
 
   const chapterBody = chapterBodies[index];
+  const chapterStartProgress=30 + Math.round((index / Math.max(1,chapterBodies.length))*55);
+  updateBookSaveProgress(chapterStartProgress,`Building chapter ${index+1} of ${chapterBodies.length}`);
+  await new Promise(r=>setTimeout(r,20));
   const chapterTitle =
     bookScreen.querySelectorAll('input[type="text"]')[index].value.trim();
 
@@ -3128,7 +3191,7 @@ for (let index = 0; index < chapterBodies.length; index++) {
     page.querySelector('.chapter-export-content').appendChild(exportClone);
     document.body.appendChild(page);
 
-    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.5});
+    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.25});
     document.body.removeChild(page);
 
     const image = canvas.toDataURL("image/png");
@@ -3169,7 +3232,7 @@ for (let index = 0; index < chapterBodies.length; index++) {
     page.appendChild(imageClone);
     document.body.appendChild(page);
 
-    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.5});
+    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.0,useCORS:true,imageTimeout:10000});
     document.body.removeChild(page);
 
     const image = canvas.toDataURL("image/png");
@@ -3180,6 +3243,8 @@ for (let index = 0; index < chapterBodies.length; index++) {
 
   /* ADD BACK COVER AS FINAL PDF PAGE */
 
+updateBookSaveProgress(88,"Finishing PDF pages");
+await new Promise(r=>setTimeout(r,20));
 if (backCoverImage) {
 
   const backCoverPage = document.createElement("div");
@@ -3224,10 +3289,15 @@ if (backCoverImage) {
   document.body.removeChild(backCoverPage);
 }     
 
+updateBookSaveProgress(92,"Preparing PDF download");
+await new Promise(r=>setTimeout(r,30));
 pdf.save((bookTitle || "Untitled Book") + ".pdf");
+updateBookSaveProgress(95,"PDF ready • publishing to Heaven's Books");
+await new Promise(r=>setTimeout(r,40));
 
 // Publish only after the PDF has been handed to the browser.
 // The PDF is the author's free copy; the bookstore version remains protected by payment.
+let published=false;
 try{
   const remoteBook = await publishBookToHeavensServer(newBook);
   if(remoteBook && remoteBook.id){
@@ -3235,13 +3305,27 @@ try{
     const pos = savedBooks.findIndex(b => b.id === newBook.id);
     if(pos >= 0) savedBooks[pos] = newBook;
     localStorage.setItem("savedBooks", JSON.stringify(savedBooks));
+    published=true;
     console.log("Heaven's Books: published", remoteBook.id);
   }
 }catch(syncErr){
   console.warn("Heaven's Books server sync failed; local copy/PDF kept:", syncErr);
 }
 
-alert("Book saved successfully. Your free PDF copy has been downloaded, and the book has been added to Heaven's Books.");
+if(published){
+  finishBookSaveProgress("ACCESS COMPLETED • PDF SAVED • BOOK PUBLISHED");
+  alert("Access completed. Your PDF has been saved and the book has been published to Heaven's Books.");
+}else{
+  finishBookSaveProgress("PDF SAVED • BOOKSTORE SYNC PENDING");
+  alert("PDF saved successfully. Your book is saved on this device, but Heaven's Books could not finish publishing it right now. You can try SAVE BOOK again when you are online.");
+}
+  }catch(saveErr){
+    console.error("Book save failed:",saveErr);
+    finishBookSaveProgress("SAVE PAUSED • PLEASE TRY AGAIN");
+    alert("The book could not finish saving. Nothing has been removed. Please try SAVE BOOK again.\n\n" + (saveErr?.message || saveErr));
+  }finally{
+    savingBook=false;
+  }
 };
 
 
