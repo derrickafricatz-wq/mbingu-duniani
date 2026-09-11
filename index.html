@@ -604,6 +604,32 @@ body.landscape-mode #brandVideo {
   }
   
 
+/* ================= MINISTRY ACCESS + SADAKA YAKO ================= */
+.ministry-access-overlay,.sadaka-overlay{
+  position:fixed;inset:0;z-index:100500;display:none;align-items:center;justify-content:center;
+  padding:20px;box-sizing:border-box;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);
+}
+.ministry-access-card,.sadaka-card{
+  width:min(470px,100%);box-sizing:border-box;border:1px solid #00ffff;border-radius:24px;
+  background:linear-gradient(145deg,#101b1f,#05090a);color:#fff;padding:25px 20px 22px;
+  box-shadow:0 22px 55px rgba(0,0,0,.65),0 0 35px rgba(0,255,255,.10);
+}
+.ministry-kicker,.sadaka-kicker{color:#7f9198;text-align:center;font:900 10px/1 Arial,sans-serif;letter-spacing:2.5px;margin-bottom:9px}
+.ministry-access-card h2,.sadaka-card h2{margin:0;color:#00ffff;text-align:center;font:900 clamp(23px,6vw,31px)/1.15 'Russo One',Arial,sans-serif;letter-spacing:.5px}
+.ministry-access-card p,.sadaka-card p{color:#b9c7cc;text-align:center;font:14px/1.55 Arial,sans-serif;margin:13px 0 18px}
+.ministry-access-label,.sadaka-label{display:block;color:#00ffff;font:900 11px/1 Arial,sans-serif;letter-spacing:1.5px;margin:13px 0 7px}
+.ministry-access-input,.sadaka-input{width:100%;height:54px;padding:0 15px;box-sizing:border-box;border:1px solid #31545a;border-radius:13px;background:#05090a;color:#fff;font-size:17px;outline:none}
+.ministry-access-input:focus,.sadaka-input:focus{border-color:#00ffff;box-shadow:0 0 0 3px rgba(0,255,255,.10)}
+.ministry-access-actions,.sadaka-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}
+.ministry-access-actions button,.sadaka-actions button{min-height:52px;border-radius:13px;font-weight:900;cursor:pointer;touch-action:manipulation}
+.ministry-unlock,.sadaka-submit{border:1px solid #00ffff;background:linear-gradient(145deg,#18ffff,#008f8f);color:#001010;box-shadow:0 6px 0 #005858}
+.ministry-cancel,.sadaka-cancel{border:1px solid #334a50;background:#111;color:#fff}
+.ministry-access-status,.sadaka-status{min-height:20px;margin-top:13px;text-align:center;color:#9eb0b5;font:700 12px/1.4 Arial,sans-serif}
+.sadaka-heart{font-size:30px;text-align:center;margin:4px 0 4px}
+.sadaka-note{font-size:12px!important;color:#829298!important;margin:8px 0 0!important}
+.sadaka-processing{opacity:.7;pointer-events:none}
+@media(max-width:420px){.ministry-access-card,.sadaka-card{padding:22px 16px 18px;border-radius:20px}}
+
 /* ================= HEAVENS BOOKSTORE ================= */
 #heavensBookstore{
   position:fixed; inset:0; z-index:600; background:#07090b; color:#fff;
@@ -732,6 +758,42 @@ Install App
   </div>
 </div>
 
+<!-- MINISTRY AUTHOR ACCESS -->
+<div id="ministryAccessOverlay" class="ministry-access-overlay" aria-hidden="true">
+  <div class="ministry-access-card" role="dialog" aria-modal="true" aria-labelledby="ministryAccessTitle">
+    <div class="ministry-kicker">MBINGU DUNIANI • MINISTRY AREA</div>
+    <h2 id="ministryAccessTitle">MINISTRY AUTHOR ACCESS</h2>
+    <p>This area is reserved for authorized ministry authors and church content creators.</p>
+    <label class="ministry-access-label" for="ministryAccessKey">ACCESS KEY</label>
+    <input id="ministryAccessKey" class="ministry-access-input" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Enter the ministry key">
+    <div class="ministry-access-actions">
+      <button id="ministryAccessCancel" class="ministry-cancel" type="button">CANCEL</button>
+      <button id="ministryAccessUnlock" class="ministry-unlock" type="button">UNLOCK</button>
+    </div>
+    <div id="ministryAccessStatus" class="ministry-access-status"></div>
+  </div>
+</div>
+
+<!-- SADAKA YAKO -->
+<div id="sadakaOverlay" class="sadaka-overlay" aria-hidden="true">
+  <div class="sadaka-card" role="dialog" aria-modal="true" aria-labelledby="sadakaTitle">
+    <div class="sadaka-heart">♥</div>
+    <div class="sadaka-kicker">MBINGU DUNIANI • CHURCH GIVING</div>
+    <h2 id="sadakaTitle">SADAKA YAKO</h2>
+    <p>To support the ministry. Enter your mobile-money number and the amount you would like to give.</p>
+    <label class="sadaka-label" for="sadakaPhone">MOBILE-MONEY NUMBER</label>
+    <input id="sadakaPhone" class="sadaka-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XXXXXXXX">
+    <label class="sadaka-label" for="sadakaAmount">SADAKA (TZS)</label>
+    <input id="sadakaAmount" class="sadaka-input" type="number" min="1" step="1" inputmode="numeric" placeholder="Enter amount">
+    <div class="sadaka-actions">
+      <button id="sadakaCancel" class="sadaka-cancel" type="button">CANCEL</button>
+      <button id="sadakaSubmit" class="sadaka-submit" type="button">TOA SADAKA</button>
+    </div>
+    <div id="sadakaStatus" class="sadaka-status"></div>
+    <p class="sadaka-note">Your PIN is entered only on the secure mobile-money prompt sent to your phone.</p>
+  </div>
+</div>
+
 <script src="health-data.js"></script>
 <script src="lesson-data.js"></script>
 <script src="ads-data.js"></script>
@@ -856,6 +918,10 @@ function getMedia(id){
  
   <button class="smart-item" id="openTranscript">
     SERMON TRANSCRIPT
+  </button>
+
+  <button class="smart-item" id="openSadaka">
+    SADAKA YAKO
   </button>
   
   <button class="smart-item" id="openHealth">
@@ -989,8 +1055,9 @@ const guideLanguages={
   "VIDEO: Video huanza kucheza kiotomatiki. Gusa skrini mara moja ukiitaji sauti.",
   "SMART MENU: Gusa kitufe cha DK kufungua menyu kuu ya zana.",
   "SYSTEM KEYPAD: Fungua keypad kutumia namba na OK kuchagua masomo na video.",
-  "SERMON TRANSCRIPT: Bonyeza START kuanza kunakili mahubiri ya mchungaji kuwa maandishi.",
+  "SERMON TRANSCRIPT: Eneo hili ni la waandishi wa huduma walioidhinishwa. Ingiza ministry access key ili kufungua transcript.",
   "SAVE: Bonyeza SAVE kuhifadhi transcript yako tayari kwa kutengeneza kitabu.",
+  "SADAKA YAKO: Weka namba ya simu na kiasi cha sadaka; prompt salama ya mobile-money itatumwa kwenye simu yako. PIN inawekwa kwenye prompt ya simu, si ndani ya app.",
   "CREATE BOOK: Chagua sermon moja au zaidi kutoka SAVED SERMONS, kisha bonyeza CREATE BOOK.",
   "CHAPTER UPLOAD: Kwenye kila chapter kuna kitufe kifupi cha UPLOAD. Tumia hicho kuongeza ukurasa wa picha ndani ya chapter.",
   "IMAGE PAGE: Baada ya kupakia picha, chagua ukubwa wa ukurasa. Kisha unaweza kusogeza, kuzoom, kubadilisha picha au kuondoa picha.",
@@ -999,7 +1066,7 @@ const guideLanguages={
   "BOOK COVERS: FRONT COVER na BACK COVER zinaweza kuwekwa; back cover huwa ukurasa wa mwisho.",
   "TOOLS: Tumia zana za font, size, rangi, highlight, alignment na styles.",
   "HEAVEN'S BOOKS: Vitabu vilivyochapishwa vinaonekana bookstore; vilivyonunuliwa hufunguka kwenye reader.",
-  "NENO LA MUNGU / HEAVEN ON EARTH: Hufungua eneo la masomo ya kiroho na mafundisho.",
+  "HEAVEN ON EARTH: Hufungua eneo la masomo ya kiroho na mafundisho.",
   "ROTATE: Kwenye somo unaweza kubadili portrait na landscape.",
   "GUIDE: Bonyeza GUIDE wakati wowote kuchagua Kiswahili au English tena.",
   "Uko tayari — chunguza Mbingu Duniani na tumia kila kipengele kwa urahisi."
@@ -1009,8 +1076,9 @@ const guideLanguages={
   "VIDEO: Videos can play automatically. Tap once if you need sound.",
   "SMART MENU: Tap the DK button to open the main smart tools.",
   "SYSTEM KEYPAD: Open the keypad and use number keys plus OK to choose lessons and videos.",
-  "SERMON TRANSCRIPT: Press START to turn the pastor's spoken sermon into editable text.",
+  "SERMON TRANSCRIPT: This area is reserved for authorized ministry authors. Enter the ministry access key to open the transcript.",
   "SAVE: Press SAVE to keep the sermon transcript ready for book creation.",
+  "SADAKA YAKO: Enter your mobile-money number and donation amount; a secure payment prompt is sent to your phone. Enter your PIN only on that phone prompt.",
   "CREATE BOOK: Select one or more sermons from SAVED SERMONS, then press CREATE BOOK.",
   "CHAPTER UPLOAD: Every chapter has a compact UPLOAD button. Use it to add a dedicated image page inside that chapter.",
   "IMAGE PAGE: After uploading, choose a page size. Then you can move, zoom, resize, replace or remove the image.",
@@ -1019,7 +1087,7 @@ const guideLanguages={
   "BOOK COVERS: Add a FRONT COVER and an optional BACK COVER; the back cover becomes the final page.",
   "TOOLS: Use fonts, sizes, colors, highlights, alignment and text styles.",
   "HEAVEN'S BOOKS: Published books appear in the bookstore; purchased books open in the real reader.",
-  "NENO LA MUNGU / HEAVEN ON EARTH: Opens the spiritual learning and guidance area.",
+  "HEAVEN ON EARTH: Opens the spiritual learning and guidance area.",
   "ROTATE: Inside lessons, use ROTATE to switch between portrait and landscape.",
   "GUIDE: Press GUIDE anytime to choose Swahili or English again.",
   "You are ready — explore Mbingu Duniani and enjoy every feature."
@@ -1309,6 +1377,7 @@ smartPanel.addEventListener("click",resetTimer);
 
 const openControls = document.getElementById("openControls");
 const openTranscript = document.getElementById("openTranscript");
+const openSadaka = document.getElementById("openSadaka");
 const openHealth = document.getElementById("openHealth");
 
 const transcriptPanel = document.getElementById("transcriptPanel");
@@ -1593,16 +1662,56 @@ const rew = document.getElementById("rew");
 const ff = document.getElementById("ff");
 const playPause = document.getElementById("playPause");
 
- openTranscript.onclick = () => {
-  // Hide the main-screen guide/settings button so it cannot
-  // overlap the transcript title or CLOSE button.
-  settingsBtn.style.display = "none";
+async function verifyMinistryAccess(key){
+  const session=await ensureHeavensAnonymousSession();
+  if(!session || !session.access_token) throw new Error("Could not create a secure app session.");
+  const {data,error}=await heavensSupabase.functions.invoke("heavens-ministry-access",{body:{key:String(key||"")}});
+  if(error) throw error;
+  if(!data || !data.success) throw new Error(data?.error || "Access denied.");
+  return true;
+}
 
-  transcriptPanel.style.display = "block";
+function openTranscriptAfterAuthorization(){
+  settingsBtn.style.display="none";
+  transcriptPanel.style.display="block";
+  transcriptText.scrollTop=0;
+}
 
-  // Start the transcript at the top every time it opens.
-  transcriptText.scrollTop = 0;
+const ministryAccessOverlay=document.getElementById("ministryAccessOverlay");
+const ministryAccessKey=document.getElementById("ministryAccessKey");
+const ministryAccessStatus=document.getElementById("ministryAccessStatus");
+const ministryAccessClose=()=>{ministryAccessOverlay.style.display="none";ministryAccessOverlay.setAttribute("aria-hidden","true");heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);};
+
+openTranscript.onclick=async()=>{
+  smartPanel.classList.remove("show");
+  const unlockedUntil=Number(sessionStorage.getItem("mbinguMinistryAccessUntil")||0);
+  if(unlockedUntil>Date.now()){openTranscriptAfterAuthorization();return;}
+  ministryAccessKey.value="";
+  ministryAccessStatus.textContent="";
+  ministryAccessOverlay.style.display="flex";
+  ministryAccessOverlay.setAttribute("aria-hidden","false");
+  setTimeout(()=>ministryAccessKey.focus(),80);
 };
+
+document.getElementById("ministryAccessCancel").onclick=ministryAccessClose;
+ministryAccessOverlay.addEventListener("click",e=>{if(e.target===ministryAccessOverlay)ministryAccessClose();});
+document.getElementById("ministryAccessUnlock").onclick=async()=>{
+  const btn=document.getElementById("ministryAccessUnlock");
+  const key=ministryAccessKey.value.trim();
+  if(!key){ministryAccessStatus.textContent="Enter the ministry access key.";ministryAccessKey.focus();return;}
+  btn.disabled=true;btn.textContent="CHECKING…";ministryAccessStatus.textContent="Verifying ministry authorization…";
+  try{
+    await verifyMinistryAccess(key);
+    sessionStorage.setItem("mbinguMinistryAccessUntil",String(Date.now()+8*60*60*1000));
+    ministryAccessStatus.textContent="MINISTRY ACCESS GRANTED ✓";
+    setTimeout(()=>{ministryAccessClose();openTranscriptAfterAuthorization();},350);
+  }catch(err){
+    console.warn("Ministry access denied:",err);
+    ministryAccessStatus.textContent="ACCESS DENIED — AUTHORIZED MINISTRY AUTHORS ONLY";
+    ministryAccessKey.select();
+  }finally{btn.disabled=false;btn.textContent="UNLOCK";}
+};
+ministryAccessKey.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("ministryAccessUnlock").click();});
 
   setupTranscriptMedia(transcriptText);
 
@@ -1635,6 +1744,73 @@ const playPause = document.getElementById("playPause");
   }
   alert("Sermon saved successfully with its transcript images.");
 };
+
+/* ================= SADAKA YAKO / BLMPAY ================= */
+function normalizeTzPhone(value){
+  let p=String(value||"").replace(/[^0-9+]/g,"");
+  if(p.startsWith("+255")) p=p.slice(1);
+  else if(p.startsWith("0")) p="255"+p.slice(1);
+  return p;
+}
+function validTzPhone(p){return /^255[67][0-9]{8}$/.test(p);}
+
+async function startSadakaPayment(){
+  const phoneInput=document.getElementById("sadakaPhone");
+  const amountInput=document.getElementById("sadakaAmount");
+  const statusEl=document.getElementById("sadakaStatus");
+  const submit=document.getElementById("sadakaSubmit");
+  const phone=normalizeTzPhone(phoneInput.value.trim());
+  const amount=Math.round(Number(String(amountInput.value||"").replace(/[\s,]/g,"")));
+  if(!validTzPhone(phone)){statusEl.textContent="Enter a valid Tanzanian mobile-money number.";phoneInput.focus();return;}
+  if(!Number.isFinite(amount)||amount<=0){statusEl.textContent="Enter a valid sadaka amount.";amountInput.focus();return;}
+  submit.classList.add("sadaka-processing");submit.textContent="SENDING…";statusEl.textContent="Creating your secure BLMPay prompt…";
+  try{
+    const session=await ensureHeavensAnonymousSession();
+    const {data,error}=await heavensSupabase.functions.invoke("heavens-blmpay-donation",{body:{phone_number:phone,amount}});
+    if(error) throw error;
+    if(!data||!data.success) throw new Error(data?.error||"BLMPay could not create the donation request.");
+    const ref=String(data.reference||"");
+    statusEl.textContent="PAYMENT REQUEST SENT ✓ Complete the prompt on your phone.";
+    if(ref){await pollSadakaPayment(ref,statusEl);}
+  }catch(err){
+    console.error("Sadaka payment error:",err);
+    statusEl.textContent="Payment request could not be sent: "+(err?.message||err);
+  }finally{submit.classList.remove("sadaka-processing");submit.textContent="TOA SADAKA";}
+}
+
+async function pollSadakaPayment(reference,statusEl){
+  let tries=0;
+  const poll=async()=>{
+    tries++;
+    try{
+      const {data,error}=await heavensSupabase.functions.invoke("heavens-blmpay-donation-status",{body:{reference}});
+      if(error) throw error;
+      const status=String(data?.status||"").toLowerCase();
+      if(["completed","paid"].includes(status)){
+        statusEl.textContent="SADAKA IMEPOKELEWA ✓ Asante kwa kuunga mkono kazi ya Mungu.";
+        return;
+      }
+      if(["failed","voided","cancelled","expired"].includes(status)){
+        statusEl.textContent="Sadaka haikukamilika. Hakuna malipo yaliyothibitishwa na BLMPay.";
+        return;
+      }
+    }catch(e){console.warn("Sadaka status check:",e);}
+    if(tries<40)setTimeout(poll,3000);
+    else statusEl.textContent="Bado tunasubiri uthibitisho wa BLMPay. Unaweza kufunga paneli; usirudie malipo bila kuangalia kwanza.";
+  };
+  poll();
+}
+
+openSadaka.onclick=()=>{
+  smartPanel.classList.remove("show");
+  const overlay=document.getElementById("sadakaOverlay");
+  document.getElementById("sadakaStatus").textContent="";
+  overlay.style.display="flex";overlay.setAttribute("aria-hidden","false");
+  setTimeout(()=>document.getElementById("sadakaPhone").focus(),80);
+};
+document.getElementById("sadakaCancel").onclick=()=>{const o=document.getElementById("sadakaOverlay");o.style.display="none";o.setAttribute("aria-hidden","true");heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);};
+document.getElementById("sadakaOverlay").addEventListener("click",e=>{if(e.target.id==="sadakaOverlay")document.getElementById("sadakaCancel").click();});
+document.getElementById("sadakaSubmit").onclick=startSadakaPayment;
 
  document.getElementById("clearTranscript").onclick = () => {
   currentTranscript = "";
