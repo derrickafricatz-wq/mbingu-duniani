@@ -3201,43 +3201,92 @@ for (let index = 0; index < chapterBodies.length; index++) {
     pdf.addImage(image,"PNG",15,15,pageWidth,pageHeight);
   }
 
-  for(const sourceImagePage of imagePages){
-    const page = document.createElement("div");
-    page.style.position = "fixed";
-    page.style.left = "-10000px";
-    page.style.top = "0";
-    page.style.width = "794px";
-    page.style.height = "1123px";
-    page.style.boxSizing = "border-box";
-    page.style.background = "white";
-    page.style.color = "black";
-    page.style.overflow = "hidden";
+  /*
+     IMPORTANT: Do not use html2canvas for chapter image pages.
+     Android/WebView can throw:
+       "createPattern ... canvas element with a width or height of 0"
+     when html2canvas encounters a transient image/canvas dimension of zero.
+     These pages are simple enough to render directly to a real, fixed-size
+     canvas. That is faster and much more reliable on phones.
+  */
+  for(let imageIndex=0; imageIndex<imagePages.length; imageIndex++){
+    const sourceImagePage=imagePages[imageIndex];
+    updateBookSaveProgress(
+      55 + Math.round((imageIndex / Math.max(1,imagePages.length))*28),
+      `Building image page ${imageIndex+1} of ${imagePages.length}`
+    );
+    await new Promise(r=>setTimeout(r,20));
 
-    const imageClone=sourceImagePage.cloneNode(true);
-    imageClone.classList.remove('editing');
-    imageClone.style.width='794px';
-    imageClone.style.height='1123px';
-    imageClone.style.minHeight='0';
-    imageClone.style.aspectRatio='auto';
-    imageClone.style.margin='0';
-    imageClone.style.borderRadius='0';
-    imageClone.style.boxShadow='none';
-    imageClone.style.border='none';
-    imageClone.style.overflow='hidden';
-    imageClone.querySelectorAll('.chapter-image-tools,.chapter-image-handle,.chapter-image-size-picker,.chapter-image-status,.transcript-media-tools,.transcript-media-handle,.transcript-media-note').forEach(el=>el.remove());
-    const stage=imageClone.querySelector('.chapter-image-stage');
-    if(stage){
-      stage.style.left='42px';stage.style.right='42px';stage.style.top='50px';stage.style.bottom='50px';
+    const sourceImg=sourceImagePage.querySelector('.chapter-image-item');
+    if(!sourceImg || !sourceImg.src){
+      console.warn('Skipping chapter image page with no image source.');
+      continue;
     }
-    page.appendChild(imageClone);
-    document.body.appendChild(page);
 
-    const canvas = await html2canvas(page, {backgroundColor:"#ffffff",scale:1.0,useCORS:true,imageTimeout:10000});
-    document.body.removeChild(page);
+    /* Make absolutely sure the uploaded data image is decoded before drawing. */
+    try{
+      if(!sourceImg.complete || !(sourceImg.naturalWidth>0 && sourceImg.naturalHeight>0)){
+        await new Promise((resolve,reject)=>{
+          const done=()=>{cleanup();resolve();};
+          const fail=()=>{cleanup();reject(new Error('Uploaded chapter image could not be decoded.'));};
+          const cleanup=()=>{sourceImg.removeEventListener('load',done);sourceImg.removeEventListener('error',fail);};
+          sourceImg.addEventListener('load',done,{once:true});
+          sourceImg.addEventListener('error',fail,{once:true});
+        });
+      }
+      if(sourceImg.decode) await sourceImg.decode().catch(()=>{});
+    }catch(e){
+      console.warn('Chapter image decode failed:',e);
+      throw new Error('One of the uploaded chapter images could not be prepared for the PDF. Please change that image and try again.');
+    }
 
-    const image = canvas.toDataURL("image/png");
+    const PDF_W=794, PDF_H=1123;
+    const canvas=document.createElement('canvas');
+    canvas.width=PDF_W;
+    canvas.height=PDF_H;
+    const ctx=canvas.getContext('2d');
+    if(!ctx || canvas.width<=0 || canvas.height<=0){
+      throw new Error('Could not create the chapter image page canvas.');
+    }
+
+    ctx.fillStyle='#ffffff';
+    ctx.fillRect(0,0,PDF_W,PDF_H);
+
+    /* Match the editor's image stage: a clean inner area on the page. */
+    const stageX=42, stageY=50, stageW=PDF_W-84, stageH=PDF_H-100;
+    const scale=Number(sourceImagePage.dataset.scale||'1')||1;
+    const baseWidth=Number(sourceImagePage.dataset.baseWidth||'68')||68;
+    const x=Number(sourceImagePage.dataset.x||'0')||0;
+    const y=Number(sourceImagePage.dataset.y||'0')||0;
+
+    const drawW=stageW*(baseWidth/100)*scale;
+    const ratio=(sourceImg.naturalHeight||sourceImg.height||1)/(sourceImg.naturalWidth||sourceImg.width||1);
+    const drawH=drawW*ratio;
+    const drawX=stageX+(stageW-drawW)/2+x;
+    const drawY=stageY+(stageH-drawH)/2+y;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(stageX,stageY,stageW,stageH);
+    ctx.clip();
+    ctx.drawImage(sourceImg,drawX,drawY,drawW,drawH);
+    ctx.restore();
+
+    /* Subtle book-page framing, matching the app's dedicated image-page design. */
+    ctx.strokeStyle='#c9d0d3';
+    ctx.lineWidth=1;
+    ctx.strokeRect(14.5,14.5,PDF_W-29,PDF_H-29);
+    ctx.fillStyle='#7b8589';
+    ctx.font='900 9px Arial, sans-serif';
+    ctx.letterSpacing='2px';
+    ctx.fillText('CHAPTER IMAGE',14,28);
+
+    const image=canvas.toDataURL('image/jpeg',0.88);
+    if(!image || canvas.width<=0 || canvas.height<=0){
+      throw new Error('The chapter image page could not be rendered.');
+    }
     pdf.addPage();
-    pdf.addImage(image,"PNG",15,15,180,267);
+    pdf.addImage(image,'JPEG',15,15,180,267);
   }
 }
 
