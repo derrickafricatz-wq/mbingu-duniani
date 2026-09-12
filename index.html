@@ -1768,16 +1768,17 @@ async function startSadakaPayment(){
     const session=await ensureHeavensAnonymousSession();
     const {data,error}=await heavensSupabase.functions.invoke("heavens-blmpay-donation",{body:{phone_number:phone,amount}});
     if(error){
-      let detail="";
-      try{
-        if(error.context && typeof error.context.json === "function"){
-          const body=await error.context.json();
-          detail=String(body?.error||body?.message||"");
-        }
-      }catch(_){}
-      throw new Error(detail || error.message || "The Sadaka payment service could not be reached.");
+      console.error("Sadaka Edge Function invoke error:",error);
+      const detail = String(error?.message || error || "");
+      if(/failed to send a request/i.test(detail)){
+        throw new Error("Sadaka payment service is not reachable. Please make sure the heavens-blmpay-donation Edge Function is deployed in Supabase.");
+      }
+      throw error;
     }
-    if(!data||!data.success) throw new Error(data?.error||"BLMPay could not create the donation request.");
+    if(!data||!data.success){
+      const apiDetail = data?.blmpay?.message || data?.blmpay?.error || data?.blmpay?.code || data?.error;
+      throw new Error(apiDetail ? String(apiDetail) : "BLMPay could not create the donation request.");
+    }
     const ref=String(data.reference||"");
     statusEl.textContent="PAYMENT REQUEST SENT ✓ Complete the prompt on your phone.";
     if(ref){await pollSadakaPayment(ref,statusEl);}
@@ -1814,12 +1815,7 @@ openSadaka.onclick=()=>{
   smartPanel.classList.remove("show");
   const overlay=document.getElementById("sadakaOverlay");
   document.getElementById("sadakaStatus").textContent="";
-  document.getElementById("sadakaSubmit").disabled=false;
-  document.getElementById("sadakaSubmit").classList.remove("sadaka-processing");
-  document.getElementById("sadakaSubmit").textContent="TOA SADAKA";
   overlay.style.display="flex";overlay.setAttribute("aria-hidden","false");
-  heavensNormalizeViewport();
-  setTimeout(heavensNormalizeViewport,120);
   setTimeout(()=>document.getElementById("sadakaPhone").focus(),80);
 };
 document.getElementById("sadakaCancel").onclick=()=>{const o=document.getElementById("sadakaOverlay");o.style.display="none";o.setAttribute("aria-hidden","true");heavensNormalizeViewport();setTimeout(heavensNormalizeViewport,120);};
